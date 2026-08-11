@@ -1,0 +1,547 @@
+import os
+import re
+import shutil
+import cv2
+import uuid
+import base64
+import json
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Depends, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from sqlalchemy.orm import Session
+import cloudinary
+import cloudinary.uploader
+from dotenv import load_dotenv
+
+from pydantic import BaseModel
+from database import init_db, get_db
+from models import Video, PreviewFrame, Identity, DetectedFace, BlurSelection, TimelineEntry, ManualBlurBox
+from services.detection import FaceDetectionService
+from services.recognition import FaceRecognitionService
+from services.tracking import SimpleTracker
+from services.rendering import RenderingService
+import numpy as np
+
+load_dotenv()
+
+# Setup Cloudinary
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET")
+)
+
+app = FastAPI(title="BlurSystem API v2.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+MAX_UPLOAD_BYTES = 500 * 1024 * 1024  # 500 MB
+ALLOWED_VIDEO_EXT = {'mp4', 'mov', 'avi', 'mkv', 'webm'}
+ALLOWED_IMAGE_EXT = {'jpg', 'jpeg', 'png', 'webp'}
+ALLOWED_BLUR_TYPES = {'gaussian', 'pixelate', 'black'}
+
+def sanitize_filename(filename: str | None) -> str:
+    if not filename:
+        return "upload.bin"
+    base = os.path.basename(filename)
+    base = re.sub(r'[^\w.\-]', '_', base)
+    return base or "upload.bin"
+
+# Globals for services
+detection_service = None
+recognition_service = None
+
+processing_status = {}
+
+@app.on_event("startup")
+def startup_event():
+    os.makedirs("uploads", exist_ok=True)
+    os.makedirs("temp/previews", exist_ok=True)
+    os.makedirs("processed", exist_ok=True)
+    init_db()
+    
+    global detection_service, recognition_service
+    detection_service = FaceDetectionService()
+    recognition_service = FaceRecognitionService()
+
+def ndarray_to_base64(img):
+    if img is None or img.size == 0:
+        return None
+    _, buffer = cv2.imencode('.jpg', img)
+    return base64.b64encode(buffer).decode('utf-8')
+
+@app.post("/api/upload")
+async def upload_video(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    try:
+        ext = file.filename.split('.')[-1].lower()
+        is_image = ext in ['jpg', 'jpeg', 'png', 'webp']
+        if ext not in ['mp4', 'mov', 'avi', 'mkv', 'webm'] and not is_image:
+            raise HTTPException(400, "Only video and image files are supported")
+            
+        unique_name = f"{uuid.uuid4().hex}_{file.filename}"
+        file_path = os.path.join("uploads", unique_name)
+        
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+            
+        if is_image:
+            img = cv2.imread(file_path)
+            if img is None:
+                raise HTTPException(400, "Invalid image file")
+            height, width = img.shape[:2]
+            fps = 1.0
+            total_frames = 1
+            duration = 0.0
+        else:
+            cap = cv2.VideoCapture(file_path)
+            fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            duration = total_frames / fps if fps > 0 else 0.0
+            cap.release()
+        
+        video = Video(
+            filename=file.filename,
+            original_path=file_path,
+            fps=fps,
+            width=width,
+            height=height,
+            total_frames=total_frames,
+            duration_seconds=duration,
+            status="uploaded"
+        )
+        db.add(video)
+        db.commit()
+        db.refresh(video)
+        
+        return {
+            "video_id": video.id,
+            "filename": video.filename,
+            "fps": video.fps,
+            "width": video.width,
+            "height": video.height,
+            "total_frames": video.total_frames,
+            "duration_seconds": video.duration_seconds
+        }
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
+@app.get("/api/preview-frames/{video_id}")
+async def get_preview_frames(video_id: int, db: Session = Depends(get_db)):
+    video = db.query(Video).filter(Video.id == video_id).first()
+    if not video:
+        raise HTTPException(404, "Video not found")
+        
+    existing_frames = db.query(PreviewFrame).filter(PreviewFrame.video_id == video_id).all()
+    if existing_frames:
+        return {"frames": [{"frame_number": f.frame_number, "timestamp_ms": f.timestamp_ms, "thumbnail_url": f"/api/thumbnail/{video_id}/{f.frame_number}"} for f in existing_frames]}
+        
+    frames_dir = os.path.join("temp", "previews", str(video_id))
+    os.makedirs(frames_dir, exist_ok=True)
+    
+    interval = max(1, int(video.fps))
+    extracted = RenderingService.extract_preview_frames(video.original_path, interval_frames=interval)
+    
+    result = []
+    for frame_num, ts_ms, img in extracted:
+        thumb = cv2.resize(img, (320, int(320 * (video.height / video.width))))
+        thumb_path = os.path.join(frames_dir, f"frame_{frame_num}.jpg")
+        cv2.imwrite(thumb_path, thumb)
+        
+        pf = PreviewFrame(video_id=video_id, frame_number=frame_num, timestamp_ms=ts_ms, thumbnail_path=thumb_path)
+        db.add(pf)
+        result.append({"frame_number": frame_num, "timestamp_ms": ts_ms, "thumbnail_url": f"/api/thumbnail/{video_id}/{frame_num}"})
+        
+    db.commit()
+    return {"frames": result}
+
+@app.get("/api/thumbnail/{video_id}/{frame_number}")
+async def serve_thumbnail(video_id: int, frame_number: int, db: Session = Depends(get_db)):
+    pf = db.query(PreviewFrame).filter(PreviewFrame.video_id == video_id, PreviewFrame.frame_number == frame_number).first()
+    if not pf or not os.path.exists(pf.thumbnail_path):
+        raise HTTPException(404, "Thumbnail not found")
+    return FileResponse(pf.thumbnail_path)
+
+@app.post("/api/select-keyframes")
+async def select_keyframes(video_id: int = Form(...), keyframe_indices: str = Form(...), db: Session = Depends(get_db)):
+    video = db.query(Video).filter(Video.id == video_id).first()
+    if not video:
+        raise HTTPException(404, "Video not found")
+        
+    indices = json.loads(keyframe_indices)
+    video.status = "keyframes_selected"
+    db.commit()
+    
+    return {"status": "ok", "count": len(indices)}
+
+class ManualBoxInput(BaseModel):
+    start_frame_number: int
+    x: int
+    y: int
+    width: int
+    height: int
+    is_tracking: bool = True
+
+class ManualBlurRequest(BaseModel):
+    boxes: list[ManualBoxInput]
+
+@app.get("/api/manual-blur/{video_id}")
+async def get_manual_blur(video_id: int, db: Session = Depends(get_db)):
+    boxes = db.query(ManualBlurBox).filter(ManualBlurBox.video_id == video_id).all()
+    return {"boxes": [{"id": b.id, "start_frame_number": b.start_frame_number, "x": b.x, "y": b.y, "width": b.width, "height": b.height, "is_tracking": b.is_tracking} for b in boxes]}
+
+@app.post("/api/manual-blur/{video_id}")
+async def save_manual_blur(video_id: int, req: ManualBlurRequest, db: Session = Depends(get_db)):
+    db.query(ManualBlurBox).filter(ManualBlurBox.video_id == video_id).delete()
+    for box in req.boxes:
+        db.add(ManualBlurBox(
+            video_id=video_id,
+            start_frame_number=box.start_frame_number,
+            x=box.x,
+            y=box.y,
+            width=box.width,
+            height=box.height,
+            is_tracking=box.is_tracking
+        ))
+    db.commit()
+    return {"status": "ok"}
+
+def detection_pipeline(video_id: int, keyframe_indices: list[int], skip_frames: int):
+    global processing_status
+    processing_status[video_id] = {"status": "processing", "progress": 0}
+    
+    db = next(get_db())
+    try:
+        video = db.query(Video).filter(Video.id == video_id).first()
+        if not video:
+            return
+            
+        cap = cv2.VideoCapture(video.original_path)
+        tracker = SimpleTracker(max_age=30, min_iou=0.3)
+        
+        identities = [] # list of dicts: {"identity_id": int, "avg_embedding": np.ndarray, "thumbnail": str, "count": 1, "conf": float}
+        next_identity_id = 1
+        
+        # Clear existing data
+        db.query(DetectedFace).filter(DetectedFace.video_id == video_id).delete()
+        db.query(Identity).filter(Identity.video_id == video_id).delete()
+        db.commit()
+        
+        frame_idx = 0
+        total_frames = video.total_frames
+        
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+                
+            processing_status[video_id]["progress"] = int((frame_idx / total_frames) * 100)
+            
+            # Detect on keyframes or interval
+            if frame_idx in keyframe_indices or frame_idx % skip_frames == 0:
+                detections = detection_service.detect_faces(frame)
+                
+                # Recognition
+                tracker_input = []
+                for det in detections:
+                    bbox = det["bbox"]
+                    x1, y1, x2, y2 = bbox["x1"], bbox["y1"], bbox["x2"], bbox["y2"]
+                    
+                    # Add generous padding for recognition (InsightFace needs context)
+                    w, h = x2 - x1, y2 - y1
+                    px1, py1 = max(0, int(x1 - w*0.5)), max(0, int(y1 - h*0.5))
+                    px2, py2 = min(frame.shape[1], int(x2 + w*0.5)), min(frame.shape[0], int(y2 + h*0.5))
+                    crop = frame[py1:py2, px1:px2]
+                    
+                    emb = recognition_service.extract_embedding(crop)
+                    identity_id = None
+                    
+                    if emb is not None:
+                        # Match identity
+                        matched_id = recognition_service.match_identity(emb, identities, threshold=0.45)
+                        if matched_id is not None:
+                            identity_id = matched_id
+                            # Update existing
+                            for idx, identity in enumerate(identities):
+                                if identity["identity_id"] == identity_id:
+                                    identities[idx]["count"] += 1
+                                    # Running average of embedding
+                                    identities[idx]["avg_embedding"] = (identities[idx]["avg_embedding"] * (identities[idx]["count"]-1) + emb) / identities[idx]["count"]
+                                    identities[idx]["avg_embedding"] /= np.linalg.norm(identities[idx]["avg_embedding"])
+                                    identities[idx]["conf"] = (identities[idx]["conf"] * (identities[idx]["count"]-1) + det["confidence"]) / identities[idx]["count"]
+                                    break
+                        else:
+                            # New identity
+                            identity_id = next_identity_id
+                            next_identity_id += 1
+                            identities.append({
+                                "identity_id": identity_id,
+                                "avg_embedding": emb,
+                                "thumbnail": ndarray_to_base64(cv2.resize(crop, (112, 112)) if crop.size > 0 else None),
+                                "count": 1,
+                                "conf": det["confidence"]
+                            })
+                            
+                    tracker_input.append({
+                        "bbox": bbox,
+                        "confidence": det["confidence"],
+                        "embedding": emb,
+                        "identity_id": identity_id
+                    })
+                    
+                # Tracking
+                tracks = tracker.update(tracker_input)
+            else:
+                # Track without detection
+                # In a real system, we'd use optical flow or KCF for skipped frames.
+                # For ByteTrack IoU, we need detections. If we just skip, we can reuse last known locations,
+                # but to be accurate we'll just run detection if not skipping.
+                # To simplify: we'll actually run detection on EVERY frame, but only do recognition on intervals/keyframes to save time.
+                detections = detection_service.detect_faces(frame)
+                tracker_input = [{"bbox": d["bbox"]} for d in detections]
+                tracks = tracker.update(tracker_input)
+                
+            # Save detections to DB
+            for track in tracks:
+                if track.get("identity_id") is not None:
+                    bbox = track["bbox"]
+                    df = DetectedFace(
+                        video_id=video_id,
+                        frame_number=frame_idx,
+                        bbox_x1=bbox["x1"], bbox_y1=bbox["y1"], bbox_x2=bbox["x2"], bbox_y2=bbox["y2"],
+                        confidence=1.0, # Approximate from track
+                        identity_id=track["identity_id"] # We need to map this later
+                    )
+                    # We store temporarily, we'll fix identity_ids after DB insertion
+                    db.add(df)
+                    
+            frame_idx += 1
+            if frame_idx % 100 == 0:
+                db.commit()
+                
+        cap.release()
+        db.commit()
+        
+        # Create Identity records
+        id_map = {} # temp_id -> db_id
+        for temp_id_dict in identities:
+            temp_id = temp_id_dict["identity_id"]
+            db_ident = Identity(
+                video_id=video_id,
+                label=f"Person {chr(64 + temp_id) if temp_id <= 26 else temp_id}",
+                representative_thumbnail=temp_id_dict["thumbnail"],
+                avg_embedding=temp_id_dict["avg_embedding"].tobytes() if temp_id_dict["avg_embedding"] is not None else None,
+                appearance_count=temp_id_dict["count"],
+                avg_confidence=temp_id_dict["conf"]
+            )
+            db.add(db_ident)
+            db.commit()
+            db.refresh(db_ident)
+            id_map[temp_id] = db_ident.id
+            
+            # Default blur selection
+            bs = BlurSelection(video_id=video_id, identity_id=db_ident.id, should_blur=True)
+            db.add(bs)
+            
+        db.commit()
+        
+        # Update DetectedFace with real identity_ids
+        for temp_id, db_id in id_map.items():
+            db.query(DetectedFace).filter(DetectedFace.video_id == video_id, DetectedFace.identity_id == temp_id).update({"identity_id": db_id})
+            
+        # Create Timeline Entries
+        fps = video.fps
+        for db_id in id_map.values():
+            faces = db.query(DetectedFace).filter(DetectedFace.identity_id == db_id).order_by(DetectedFace.frame_number).all()
+            for face in faces:
+                ts = (face.frame_number / fps) * 1000
+                te = TimelineEntry(identity_id=db_id, frame_number=face.frame_number, timestamp_ms=ts)
+                db.add(te)
+                
+        db.commit()
+        video.status = "detection_complete"
+        db.commit()
+        processing_status[video_id] = {"status": "completed", "progress": 100}
+        
+    except Exception as e:
+        processing_status[video_id] = {"status": "error", "error": str(e)}
+        print(f"Pipeline error: {e}")
+    finally:
+        db.close()
+
+@app.post("/api/start-detection/{video_id}")
+async def start_detection(video_id: int, background_tasks: BackgroundTasks, keyframe_indices: str = Form(...), skip_frames: int = Form(5), db: Session = Depends(get_db)):
+    video = db.query(Video).filter(Video.id == video_id).first()
+    if not video:
+        raise HTTPException(404, "Video not found")
+        
+    indices = json.loads(keyframe_indices)
+    background_tasks.add_task(detection_pipeline, video_id, indices, skip_frames)
+    return {"status": "processing"}
+
+@app.get("/api/status/{video_id}")
+async def get_status(video_id: int):
+    status = processing_status.get(video_id, {"status": "unknown", "progress": 0})
+    return status
+
+@app.get("/api/recognized-persons/{video_id}")
+async def get_recognized_persons(video_id: int, db: Session = Depends(get_db)):
+    identities = db.query(Identity).filter(Identity.video_id == video_id).all()
+    res = []
+    for iden in identities:
+        blur_sel = db.query(BlurSelection).filter(BlurSelection.identity_id == iden.id).first()
+        timeline = db.query(TimelineEntry).filter(TimelineEntry.identity_id == iden.id).order_by(TimelineEntry.frame_number).limit(5).all()
+        
+        def fmt_time(ms):
+            s = ms // 1000
+            return f"{int(s//3600):02d}:{int((s%3600)//60):02d}:{int(s%60):02d}"
+            
+        res.append({
+            "id": iden.id,
+            "label": iden.label,
+            "representative_thumbnail": iden.representative_thumbnail,
+            "appearance_count": iden.appearance_count,
+            "avg_confidence": iden.avg_confidence,
+            "should_blur": blur_sel.should_blur if blur_sel else True,
+            "timeline_summary": [{"frame_number": t.frame_number, "timestamp_ms": t.timestamp_ms, "timestamp_formatted": fmt_time(t.timestamp_ms)} for t in timeline]
+        })
+    return res
+
+@app.post("/api/update-blur-selection")
+async def update_blur_selection(video_id: int = Form(...), selections: str = Form(...), db: Session = Depends(get_db)):
+    # selections is JSON list of {"identity_id": int, "should_blur": bool}
+    sels = json.loads(selections)
+    for s in sels:
+        db.query(BlurSelection).filter(BlurSelection.identity_id == s["identity_id"]).update({"should_blur": s["should_blur"]})
+    db.commit()
+    return {"status": "ok"}
+
+@app.get("/api/timeline/{video_id}/{identity_id}")
+async def get_timeline(video_id: int, identity_id: int, db: Session = Depends(get_db)):
+    timeline = db.query(TimelineEntry).filter(TimelineEntry.identity_id == identity_id).order_by(TimelineEntry.frame_number).all()
+    def fmt_time(ms):
+        s = ms // 1000
+        return f"{int(s//3600):02d}:{int((s%3600)//60):02d}:{int(s%60):02d}"
+    
+    return [
+        {"frame_number": t.frame_number, "timestamp_ms": t.timestamp_ms, "timestamp_formatted": fmt_time(t.timestamp_ms)}
+        for t in timeline
+    ]
+
+@app.post("/api/render-preview/{video_id}")
+async def render_preview(video_id: int, blur_type: str = Form("gaussian"), blur_strength: int = Form(31), db: Session = Depends(get_db)):
+    video = db.query(Video).filter(Video.id == video_id).first()
+    if not video:
+        raise HTTPException(404, "Video not found")
+        
+    blurs = db.query(BlurSelection).filter(BlurSelection.video_id == video_id).all()
+    identity_blur_map = {b.identity_id: b.should_blur for b in blurs}
+    
+    faces = db.query(DetectedFace).filter(DetectedFace.video_id == video_id).all()
+    face_data = {}
+    for f in faces:
+        if f.frame_number not in face_data:
+            face_data[f.frame_number] = []
+        face_data[f.frame_number].append({
+            "bbox": {"x1": f.bbox_x1, "y1": f.bbox_y1, "x2": f.bbox_x2, "y2": f.bbox_y2},
+            "identity_id": f.identity_id
+        })
+        
+    manual_boxes_db = db.query(ManualBlurBox).filter(ManualBlurBox.video_id == video_id).all()
+    manual_boxes = [{"start_frame_number": b.start_frame_number, "x": b.x, "y": b.y, "width": b.width, "height": b.height, "is_tracking": b.is_tracking} for b in manual_boxes_db]
+        
+    ext = video.original_path.split('.')[-1].lower() if video.original_path else "mp4"
+    is_image = ext in ALLOWED_IMAGE_EXT
+    out_ext = ext if is_image else "mp4"
+    out_path = os.path.join("temp", "previews", str(video_id), f"preview_blur.{out_ext}")
+    
+    # We could scale down the video for faster preview, but let's just render
+    success = RenderingService.render_video(
+        video.original_path, out_path, identity_blur_map, face_data, 
+        manual_boxes=manual_boxes, blur_type=blur_type, blur_strength=blur_strength
+    )
+    
+    if not success:
+        raise HTTPException(500, "Preview render failed")
+        
+    return {"preview_url": f"/api/serve-video/{video_id}/preview"}
+
+import glob
+@app.get("/api/serve-video/{video_id}/{v_type}")
+async def serve_video(video_id: int, v_type: str, db: Session = Depends(get_db)):
+    if v_type == "preview":
+        pattern = os.path.join("temp", "previews", str(video_id), "preview_blur.*")
+    elif v_type == "export":
+        pattern = os.path.join("processed", f"{video_id}_final.*")
+    else:
+        raise HTTPException(400, "Invalid video type")
+        
+    matches = glob.glob(pattern)
+    if not matches:
+        raise HTTPException(404, "File not found")
+        
+    path = matches[0]
+    ext = path.split('.')[-1].lower()
+    is_image = ext in ALLOWED_IMAGE_EXT
+    media_type = f"image/{ext}" if is_image else "video/mp4"
+    return FileResponse(path, media_type=media_type)
+
+@app.post("/api/export-video/{video_id}")
+async def export_video(video_id: int, blur_type: str = Form("gaussian"), blur_strength: int = Form(51), db: Session = Depends(get_db)):
+    video = db.query(Video).filter(Video.id == video_id).first()
+    if not video:
+        raise HTTPException(404, "Video not found")
+        
+    blurs = db.query(BlurSelection).filter(BlurSelection.video_id == video_id).all()
+    identity_blur_map = {b.identity_id: b.should_blur for b in blurs}
+    
+    faces = db.query(DetectedFace).filter(DetectedFace.video_id == video_id).all()
+    face_data = {}
+    for f in faces:
+        if f.frame_number not in face_data:
+            face_data[f.frame_number] = []
+        face_data[f.frame_number].append({
+            "bbox": {"x1": f.bbox_x1, "y1": f.bbox_y1, "x2": f.bbox_x2, "y2": f.bbox_y2},
+            "identity_id": f.identity_id
+        })
+        
+    manual_boxes_db = db.query(ManualBlurBox).filter(ManualBlurBox.video_id == video_id).all()
+    manual_boxes = [{"start_frame_number": b.start_frame_number, "x": b.x, "y": b.y, "width": b.width, "height": b.height, "is_tracking": b.is_tracking} for b in manual_boxes_db]
+        
+    ext = video.original_path.split('.')[-1].lower() if video.original_path else "mp4"
+    is_image = ext in ALLOWED_IMAGE_EXT
+    out_ext = ext if is_image else "mp4"
+    
+    out_path = os.path.join("processed", f"{video_id}_final.{out_ext}")
+    
+    success = RenderingService.render_video(
+        video.original_path, out_path, identity_blur_map, face_data, 
+        manual_boxes=manual_boxes, blur_type=blur_type, blur_strength=blur_strength
+    )
+    
+    if not success:
+        raise HTTPException(500, "Export render failed")
+        
+    cloudinary_url = None
+    try:
+        r_type = "image" if is_image else "video"
+        up = cloudinary.uploader.upload(out_path, folder="blur_system/processed", resource_type=r_type)
+        cloudinary_url = up["secure_url"]
+    except Exception as e:
+        print(f"Cloudinary upload failed: {e}")
+        
+    return {
+        "download_url": f"/api/serve-video/{video_id}/export",
+        "cloudinary_url": cloudinary_url
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

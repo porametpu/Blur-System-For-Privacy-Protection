@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+python-multipart
+ultralytics
+opencv-python-headless
+python-dotenv
+sqlalchemy
+numpy
+scipy
+aiofiles
+insightface
+onnxruntime
+cloudinary
