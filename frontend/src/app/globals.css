@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-500: #1a73e8;
+  /* Vivid blue */
+  --color-brand-600: #1557b0;
+  --color-accent-400: #00d2ff;
+  /* Cyan accent for gradient */
+}
+
+:root {
+  --background: #f0f7fb;
+  --foreground: #f0f7fb;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+
+  --mesh-light-blue: rgba(220, 240, 255, 0.8);
+  --mesh-white: rgba(255, 255, 255, 0.8);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-outfit), sans-serif;
+
+  /* Create the soft mesh gradient background */
+  background-image:
+    radial-gradient(at 0% 0%, var(--mesh-white) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, var(--mesh-light-blue) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, var(--mesh-white) 0px, transparent 50%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Base utility classes for the new design */
+.glass-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #1a73e8, #00d2ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-heading {
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-slide-in {
+  animation: fadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom Checkbox / Radio styling */
+input[type=radio].custom-radio {
+  appearance: none;
+  background-color: transparent;
+  margin: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #cbd5e1;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+}
+
+input[type=radio].custom-radio::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em white;
+  background-color: white;
+}
+
+input[type=radio].custom-radio:checked {
+  border-color: transparent;
+  background-color: transparent;
+}
+
+input[type=radio].custom-radio:checked::before {
+  transform: scale(1);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 20px;
+}
+
+.text-color-black {
+  color: #000000;
+}
