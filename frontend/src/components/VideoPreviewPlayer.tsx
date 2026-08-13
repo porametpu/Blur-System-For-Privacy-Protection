@@ -92,7 +92,7 @@ export default function VideoPreviewPlayer({ src, isLoading = false }: VideoPrev
         <>
           <video 
             ref={videoRef}
-            src={src}
+            src={src || undefined}
             className="w-full h-full object-contain"
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}

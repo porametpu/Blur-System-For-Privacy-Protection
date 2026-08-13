@@ -23,6 +23,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ vide
         if (res.headers.has('Content-Range')) {
             headers.set('Content-Range', res.headers.get('Content-Range')!);
         }
+        if (res.headers.has('content-disposition')) {
+            headers.set('Content-Disposition', res.headers.get('content-disposition')!);
+        } else {
+            const ext = res.headers.get('Content-Type')?.includes('image') ? 'jpg' : 'mp4';
+            headers.set('Content-Disposition', `attachment; filename="blurred_${videoId}.${ext}"`);
+        }
 
         return new NextResponse(res.body, {
             status: res.status,

@@ -1,9 +1,19 @@
 import { Video, PreviewFrame, DetectedPerson, TimelineEntry, BlurSelection, BlurType } from './types';
 
+const getAuthHeader = (): Record<string, string> => {
+    if (typeof window === 'undefined') return {};
+    const token = localStorage.getItem('token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
+
 export const uploadVideo = async (file: File): Promise<Video> => {
     const fd = new FormData();
     fd.append('file', file);
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: getAuthHeader(),
+        body: fd
+    });
     if (!res.ok) throw new Error(await res.text());
     return res.json();
 };
@@ -52,19 +62,21 @@ export const updateBlurSelections = async (videoId: number, selections: BlurSele
     if (!res.ok) throw new Error(await res.text());
 };
 
-export const renderPreview = async (videoId: number, blurType: string = 'gaussian', blurStrength: number = 31): Promise<{ preview_url: string }> => {
+export const renderPreview = async (videoId: number, blurType: string = 'gaussian', blurStrength: number = 31, stickerImage?: string): Promise<{ preview_url: string }> => {
     const fd = new FormData();
     fd.append('blur_type', blurType);
     fd.append('blur_strength', blurStrength.toString());
+    if (stickerImage) fd.append('sticker_image', stickerImage);
     const res = await fetch(`/api/preview-video/${videoId}`, { method: 'POST', body: fd });
     if (!res.ok) throw new Error(await res.text());
     return res.json();
 };
 
-export const exportVideo = async (videoId: number, blurType: string, blurStrength: number): Promise<{ download_url: string, cloudinary_url?: string }> => {
+export const exportVideo = async (videoId: number, blurType: string, blurStrength: number, stickerImage?: string): Promise<{ download_url: string, cloudinary_url?: string }> => {
     const fd = new FormData();
     fd.append('blur_type', blurType);
     fd.append('blur_strength', blurStrength.toString());
+    if (stickerImage) fd.append('sticker_image', stickerImage);
     const res = await fetch(`/api/export-video/${videoId}`, { method: 'POST', body: fd });
     if (!res.ok) throw new Error(await res.text());
     return res.json();
@@ -91,4 +103,59 @@ export const saveManualBlurBoxes = async (videoId: number, boxes: any[]): Promis
         body: JSON.stringify({ boxes })
     });
     if (!res.ok) throw new Error(await res.text());
+};
+
+export const registerUser = async (data: { email: str; password: str; full_name?: string }) => {
+    const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || err.error || 'Registration failed');
+    }
+    return res.json();
+};
+
+export const loginUser = async (data: { email: str; password: str }) => {
+    const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || err.error || 'Login failed');
+    }
+    return res.json();
+};
+
+export const googleLoginUser = async (data: { token?: string; email: string; full_name?: string; google_id: string; avatar_url?: string }) => {
+    const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || err.error || 'Google login failed');
+    }
+    return res.json();
+};
+
+export const getCurrentUser = async () => {
+    const res = await fetch('/api/auth/me', {
+        headers: getAuthHeader(),
+    });
+    if (!res.ok) return null;
+    return res.json();
+};
+
+export const getUserHistory = async () => {
+    const res = await fetch('/api/history', {
+        headers: getAuthHeader(),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
 };

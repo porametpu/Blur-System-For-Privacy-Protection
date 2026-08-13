@@ -15,6 +15,10 @@ import ExportPanel from '../components/ExportPanel';
 import ManualControl from '../components/ManualControl';
 import ImageManualRedaction from '../components/ImageManualRedaction';
 import { SkeletonCard, SkeletonGrid } from '../components/SkeletonLoader';
+import HistoryView from '../components/HistoryView';
+import AuthView from '../components/AuthView';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 import { AppStep, Video, PreviewFrame, DetectedPerson, TimelineEntry, BlurType } from '../lib/types';
 import * as api from '../lib/api';
@@ -43,6 +47,7 @@ function BlurApp() {
   // Settings
   const [blurType, setBlurType] = useState<BlurType>('gaussian');
   const [blurStrength, setBlurStrength] = useState<number>(50);
+  const [stickerImage, setStickerImage] = useState<string | null>(null); // base64
 
   // Export & Preview
   const [previewVideoUrl, setPreviewVideoUrl] = useState<string | null>(null);
@@ -266,7 +271,7 @@ function BlurApp() {
     setIsLoading(true);
     setPreviewVideoUrl(null);
     try {
-      const res = await api.renderPreview(videoId, blurType, blurStrength);
+      const res = await api.renderPreview(videoId, blurType, blurStrength, blurType === 'sticker' ? (stickerImage ?? undefined) : undefined);
       setPreviewVideoUrl(res.preview_url);
     } catch (err: any) {
       addToast(err.message, 'error');
@@ -284,7 +289,7 @@ function BlurApp() {
     if (!videoId) return;
     setIsLoading(true);
     try {
-      const res = await api.exportVideo(videoId, type, strength);
+      const res = await api.exportVideo(videoId, type, strength, type === 'sticker' ? (stickerImage ?? undefined) : undefined);
       setExportData({ downloadUrl: res.download_url, cloudinaryUrl: res.cloudinary_url });
       addToast('Video exported successfully!', 'success');
       setStep('export');
@@ -584,12 +589,153 @@ function BlurApp() {
                           </div>
                           PIXELATE
                         </button>
-                        <button onClick={() => setBlurType('black')} className={`w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-transform ${blurType === 'black' ? 'bg-slate-800 text-white shadow-lg shadow-slate-800/20' : 'border border-slate-100 bg-white text-slate-500 hover:bg-slate-50'}`}>
+                        <button onClick={() => { setBlurType('black'); }} className={`w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-transform ${blurType === 'black' ? 'bg-slate-800 text-white shadow-lg shadow-slate-800/20' : 'border border-slate-100 bg-white text-slate-500 hover:bg-slate-50'}`}>
                           <div className={`w-6 h-6 rounded-md flex items-center justify-center ${blurType === 'black' ? 'bg-white' : 'border border-slate-200'}`}>
                             <span className={`w-4 h-4 rounded-sm ${blurType === 'black' ? 'bg-slate-800' : 'bg-slate-800'}`}></span>
                           </div>
                           BLACK BOX
                         </button>
+
+                        {/* Sticker / Custom Image option */}
+                        <button
+                          onClick={() => setBlurType('sticker')}
+                          className={`w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-transform ${
+                            blurType === 'sticker'
+                              ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20'
+                              : 'border border-slate-100 bg-white text-slate-500 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div className={`w-6 h-6 rounded-md flex items-center justify-center overflow-hidden ${
+                            blurType === 'sticker' ? 'bg-white' : 'border border-slate-200'
+                          }`}>
+                            {stickerImage
+                              ? <img src={`data:image/png;base64,${stickerImage}`} className="w-full h-full object-cover" alt="sticker" />
+                              : <span className="text-base leading-none">{blurType === 'sticker' ? '✅' : '🖼️'}</span>
+                            }
+                          </div>
+                          CUSTOM STICKER
+                        </button>
+
+                        {/* Sticker upload zone — visible only when sticker mode active */}
+                        {blurType === 'sticker' && (
+                          <div className="ml-1 mt-1 space-y-3">
+
+                            {/* Tips */}
+                            <div className="rounded-xl bg-purple-50 border border-purple-100 p-3 space-y-1.5">
+                              <p className="text-[10px] font-black text-purple-500 uppercase tracking-widest">💡 Tips for best result</p>
+                              <ul className="text-[10px] text-slate-500 space-y-0.5 leading-relaxed">
+                                <li>• <b>PNG with transparency</b> works best — background stays clean</li>
+                                <li>• Recommended size: <b>200×200 px</b> or square ratio</li>
+                                <li>• Avoid very thin images — it will be stretched to face shape</li>
+                                <li>• Emoji-style or icon stickers look great on faces</li>
+                              </ul>
+                            </div>
+
+                            {/* Default presets */}
+                            <div>
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Quick presets</p>
+                              <div className="grid grid-cols-5 gap-1.5">
+                                {[
+                                  { emoji: '😊', label: 'Happy' },
+                                  { emoji: '😎', label: 'Cool' },
+                                  { emoji: '🤡', label: 'Clown' },
+                                  { emoji: '❓', label: 'Unknown' },
+                                  { emoji: '🚫', label: 'No' },
+                                  { emoji: '⭐', label: 'Star' },
+                                  { emoji: '🐱', label: 'Cat' },
+                                  { emoji: '🎭', label: 'Mask' },
+                                  { emoji: '👽', label: 'Alien' },
+                                  { emoji: '🤖', label: 'Robot' },
+                                ].map(({ emoji, label }) => {
+                                  const handlePresetClick = () => {
+                                    const canvas = document.createElement('canvas');
+                                    canvas.width = 200; canvas.height = 200;
+                                    const ctx = canvas.getContext('2d')!;
+                                    ctx.clearRect(0, 0, 200, 200);
+                                    ctx.font = '160px serif';
+                                    ctx.textAlign = 'center';
+                                    ctx.textBaseline = 'middle';
+                                    ctx.fillText(emoji, 100, 108);
+                                    const dataUrl = canvas.toDataURL('image/png');
+                                    setStickerImage(dataUrl.split(',')[1]);
+                                  };
+                                  return (
+                                    <button
+                                      key={emoji}
+                                      onClick={handlePresetClick}
+                                      title={label}
+                                      className="flex flex-col items-center gap-0.5 p-1.5 rounded-xl hover:bg-purple-100 transition-colors group"
+                                    >
+                                      <span className="text-2xl leading-none group-hover:scale-110 transition-transform inline-block">{emoji}</span>
+                                      <span className="text-[8px] text-slate-400 font-semibold">{label}</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            {/* Divider */}
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-px bg-slate-100" />
+                              <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">or upload your own</span>
+                              <div className="flex-1 h-px bg-slate-100" />
+                            </div>
+
+                            {/* Upload zone */}
+                            <label
+                              htmlFor="sticker-upload"
+                              className={`flex flex-col items-center justify-center gap-2 w-full p-3 rounded-xl border-2 border-dashed cursor-pointer transition-colors ${
+                                stickerImage
+                                  ? 'border-purple-400 bg-purple-50'
+                                  : 'border-slate-200 hover:border-purple-400 hover:bg-purple-50'
+                              }`}
+                            >
+                              {stickerImage ? (
+                                <>
+                                  <img
+                                    src={`data:image/png;base64,${stickerImage}`}
+                                    className="h-12 object-contain rounded-lg"
+                                    alt="Sticker preview"
+                                  />
+                                  <span className="text-[10px] font-bold text-purple-600 uppercase tracking-widest">Active — click to change</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="text-xl">🖼️</span>
+                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
+                                    PNG / JPG / WebP<br />
+                                    <span className="normal-case font-medium text-slate-300">200×200px square recommended</span>
+                                  </span>
+                                </>
+                              )}
+                            </label>
+                            <input
+                              id="sticker-upload"
+                              type="file"
+                              accept="image/png,image/jpeg,image/webp,image/gif"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                const reader = new FileReader();
+                                reader.onload = (ev) => {
+                                  const result = ev.target?.result as string;
+                                  setStickerImage(result.split(',')[1]);
+                                };
+                                reader.readAsDataURL(file);
+                                e.target.value = '';
+                              }}
+                            />
+                            {stickerImage && (
+                              <button
+                                onClick={() => setStickerImage(null)}
+                                className="w-full text-[10px] font-bold text-red-400 hover:text-red-600 uppercase tracking-widest transition-colors"
+                              >
+                                ✕ Remove sticker
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -666,7 +812,11 @@ function BlurApp() {
                       </div>
                     </div>
                   ) : null}
-                  <img src={previewVideoUrl || ''} className="w-full max-h-[70vh] object-contain" alt="Preview Result" />
+                  {previewVideoUrl ? (
+                    <img src={previewVideoUrl} className="w-full max-h-[70vh] object-contain" alt="Preview Result" />
+                  ) : (
+                    <div className="text-slate-400 font-bold text-sm">Rendering preview...</div>
+                  )}
                 </div>
               ) : (
                 <VideoPreviewPlayer src={previewVideoUrl || ''} isLoading={isLoading} />
@@ -677,9 +827,9 @@ function BlurApp() {
           {step === 'export' && (
             <div className="space-y-6 fade-slide-in">
               <div className="flex justify-between items-end max-w-3xl mx-auto mb-6">
-                <div>
-                  <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight text-color-black">Export Video</h2>
-                </div>
+                <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight text-color-black">
+                  {videoInfo?.total_frames === 1 ? 'Export Image' : 'Export Video'}
+                </h2>
                 {!exportData && (
                   <button onClick={() => setStep('preview_blur')} className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                     <ArrowLeft className="w-5 h-5" />
@@ -688,11 +838,25 @@ function BlurApp() {
               </div>
 
               <ExportPanel
-                onExport={(type, strength) => handleExport(type, strength)}
+                initialBlurType={blurType}
+                initialStrength={blurStrength}
+                onSettingsChange={() => setExportData(null)}
+                onExport={(type, strength) => {
+                  setBlurType(type);
+                  setBlurStrength(strength);
+                  handleExport(type, strength);
+                }}
+                onStartOver={resetFlow}
                 isExporting={isLoading}
                 downloadUrl={exportData?.downloadUrl || null}
                 cloudinaryUrl={exportData?.cloudinaryUrl}
                 isImage={videoInfo?.total_frames === 1}
+                stickerImage={stickerImage}
+                summary={{
+                  personsBlurred: [...blurSelections.entries()].filter(([, v]) => v).length,
+                  totalPersons: detectedPersons.length,
+                  blurMode: blurType,
+                }}
               />
             </div>
           )}
@@ -711,10 +875,25 @@ function BlurApp() {
   );
 }
 
+function MainContent() {
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab');
+
+  if (tab === 'history') {
+    return <HistoryView />;
+  }
+  
+  if (tab === 'login') {
+    return <AuthView />;
+  }
+
+  return <BlurApp />;
+}
+
 export default function Page() {
   return (
-    <ToastProvider>
-      <BlurApp />
-    </ToastProvider>
+    <Suspense fallback={<div className="h-full w-full bg-white dark:bg-slate-900" />}>
+      <MainContent />
+    </Suspense>
   );
 }
