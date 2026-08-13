@@ -2,13 +2,14 @@ import cv2
 import numpy as np
 import os
 import subprocess
+import base64
 from concurrent.futures import ThreadPoolExecutor
 
 class RenderingService:
     @staticmethod
-    def apply_blur_to_frame(frame: np.ndarray, regions: list[dict], blur_type: str = 'gaussian', blur_strength: int = 51) -> np.ndarray:
+    def apply_effect_to_frame(frame: np.ndarray, regions: list[dict], blur_type: str = 'gaussian', blur_strength: int = 51, sticker_img: np.ndarray = None) -> np.ndarray:
         """
-        Applies blur to specified regions in a frame.
+        Applies blur/effect to specified regions in a frame.
         regions is a list of {"x1", "y1", "x2", "y2"}
         """
         if frame is None or not regions:
@@ -53,10 +54,29 @@ class RenderingService:
                 
             elif blur_type == "black":
                 roi = np.zeros_like(roi)
+
+            elif blur_type == "sticker" and sticker_img is not None:
+                rh, rw = roi.shape[:2]
+                # Resize sticker to fit region
+                sticker_resized = cv2.resize(sticker_img, (rw, rh), interpolation=cv2.INTER_AREA)
+                if sticker_resized.shape[2] == 4:
+                    # Has alpha channel — composite over roi
+                    alpha = sticker_resized[:, :, 3:4].astype(np.float32) / 255.0
+                    sticker_rgb = sticker_resized[:, :, :3].astype(np.float32)
+                    roi_f = roi.astype(np.float32)
+                    blended = sticker_rgb * alpha + roi_f * (1.0 - alpha)
+                    roi = blended.clip(0, 255).astype(np.uint8)
+                else:
+                    roi = sticker_resized[:, :, :3]
                 
             res[y1:y2, x1:x2] = roi
             
         return res
+
+    # Keep backward compat alias
+    @staticmethod
+    def apply_blur_to_frame(frame: np.ndarray, regions: list[dict], blur_type: str = 'gaussian', blur_strength: int = 51, sticker_img: np.ndarray = None) -> np.ndarray:
+        return RenderingService.apply_effect_to_frame(frame, regions, blur_type, blur_strength, sticker_img)
 
     @staticmethod
     def extract_preview_frames(video_path: str, interval_frames: int = 30) -> list[tuple[int, float, np.ndarray]]:
@@ -118,12 +138,23 @@ class RenderingService:
         manual_boxes: list[dict] = None,
         blur_type: str = 'gaussian', 
         blur_strength: int = 51,
+        sticker_image_b64: str = None,
         progress_callback = None
     ) -> bool:
         """
-        Renders the video applying blur to specified identities and manual boxes.
+        Renders the video applying blur/effect to specified identities and manual boxes.
+        sticker_image_b64: base64 encoded image string (no data: prefix)
         manual_boxes: [{"start_frame_number": int, "x": int, "y": int, "width": int, "height": int}]
         """
+        # Decode sticker image once
+        sticker_img = None
+        if blur_type == 'sticker' and sticker_image_b64:
+            try:
+                img_bytes = base64.b64decode(sticker_image_b64)
+                img_array = np.frombuffer(img_bytes, dtype=np.uint8)
+                sticker_img = cv2.imdecode(img_array, cv2.IMREAD_UNCHANGED)
+            except Exception as e:
+                print(f"Sticker decode error: {e}")
         ext = input_path.split('.')[-1].lower()
         is_image = ext in ['jpg', 'jpeg', 'png', 'webp']
 
@@ -147,7 +178,7 @@ class RenderingService:
                 })
             
             if regions_to_blur:
-                img = RenderingService.apply_blur_to_frame(img, regions_to_blur, blur_type, blur_strength)
+                img = RenderingService.apply_effect_to_frame(img, regions_to_blur, blur_type, blur_strength, sticker_img)
                 
             cv2.imwrite(output_path, img)
             return True
@@ -238,7 +269,7 @@ class RenderingService:
             active_trackers = retained_trackers
 
             if regions_to_blur:
-                frame = RenderingService.apply_blur_to_frame(frame, regions_to_blur, blur_type, blur_strength)
+                frame = RenderingService.apply_effect_to_frame(frame, regions_to_blur, blur_type, blur_strength, sticker_img)
                 
             out.write(frame)
             frame_idx += 1

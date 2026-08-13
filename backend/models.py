@@ -6,10 +6,25 @@ from database import Base
 def utcnow():
     return datetime.now(timezone.utc)
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    password_hash = Column(String, nullable=True)
+    full_name = Column(String, nullable=True)
+    google_id = Column(String, unique=True, index=True, nullable=True)
+    avatar_url = Column(String, nullable=True)
+    created_at = Column(DateTime, default=utcnow)
+
+    videos = relationship("Video", back_populates="user", cascade="all, delete-orphan")
+
+
 class Video(Base):
     __tablename__ = "videos"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     filename = Column(String, index=True)
     original_path = Column(String)
     fps = Column(Float)
@@ -20,6 +35,7 @@ class Video(Base):
     status = Column(String, default="uploaded")
     created_at = Column(DateTime, default=utcnow)
 
+    user = relationship("User", back_populates="videos")
     preview_frames = relationship("PreviewFrame", back_populates="video", cascade="all, delete-orphan")
     detected_faces = relationship("DetectedFace", back_populates="video", cascade="all, delete-orphan")
     identities = relationship("Identity", back_populates="video", cascade="all, delete-orphan")

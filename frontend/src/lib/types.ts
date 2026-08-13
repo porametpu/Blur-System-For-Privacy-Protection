@@ -37,7 +37,7 @@ export interface BlurSelection {
 
 export type AppStep = 'upload' | 'tools_selection' | 'face_map' | 'preview' | 'keyframes' | 'detecting' | 'results' | 'blur_manager' | 'preview_blur' | 'export' | 'manual_control';
 
-export type BlurType = 'gaussian' | 'pixelate' | 'black';
+export type BlurType = 'gaussian' | 'pixelate' | 'black' | 'sticker';
 
 export interface ManualBlurBox {
   id?: number;
