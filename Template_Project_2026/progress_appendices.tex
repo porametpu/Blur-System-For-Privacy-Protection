@@ -1,0 +1,43 @@
+\setcounter{chapter}{-1}
+\appendiceschapter{รายการ API หลักของระบบ}
+
+ภาคผนวกนี้สรุป API ที่ใช้เชื่อมส่วนหน้ากับส่วนหลังในซอร์สโค้ดปัจจุบัน เพื่อใช้เป็นแนวทางสำหรับการทดสอบแบบ end-to-end และการพัฒนาต่อไป
+
+\begin{table}[H]
+\centering
+\caption{รายการ API หลักของ Blur System}
+\label{tab:api-list}
+\begin{tabular}{|p{0.16\textwidth}|p{0.39\textwidth}|p{0.30\textwidth}|}
+\hline
+\textbf{Method} & \textbf{Endpoint} & \textbf{หน้าที่} \\
+\hline
+POST & \texttt{/api/upload} & รับภาพหรือวิดีโอและสร้างข้อมูลเมตา \\
+\hline
+GET & \texttt{/api/preview-frames/\{video\_id\}} & อ่านเฟรมตัวอย่างสำหรับเลือกเฟรม \\
+\hline
+POST & \texttt{/api/start-detection/\{video\_id\}} & เริ่มงานตรวจจับใบหน้าแบบเบื้องหลัง \\
+\hline
+GET & \texttt{/api/status/\{video\_id\}} & อ่านสถานะและความคืบหน้าของงานตรวจจับ \\
+\hline
+GET & \texttt{/api/recognized-persons/\{video\_id\}} & อ่านกลุ่มบุคคลที่ตรวจพบสำหรับ Face Map \\
+\hline
+POST & \texttt{/api/update-blur-selection} & บันทึกการเลือกปกปิดรายบุคคล \\
+\hline
+GET/POST & \texttt{/api/manual-blur/\{video\_id\}} & อ่านหรือบันทึกกรอบ Manual Blur \\
+\hline
+POST & \texttt{/api/render-preview/\{video\_id\}} & สร้างตัวอย่างผลลัพธ์ \\
+\hline
+POST & \texttt{/api/export-video/\{video\_id\}} & สร้างและส่งออกไฟล์ผลลัพธ์ \\
+\hline
+\end{tabular}
+\end{table}
+
+\section*{ขั้นตอนใช้งานโดยสังเขป}
+
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item อัปโหลดภาพหรือวิดีโอที่ระบบรองรับ
+    \item เลือกโหมด Auto Blur, Detect \& Select หรือ Manual Control
+    \item หากใช้ Detect \& Select ให้รอการตรวจจับ แล้วเลือกบุคคลที่ต้องการปกปิดหรือยกเว้น
+    \item ปรับชนิดและความเข้มของการปกปิด หรือวาดกรอบ Manual Blur เพิ่มเติม
+    \item สร้างตัวอย่างเพื่อตรวจสอบความครอบคลุมของการปกปิด แล้วจึงส่งออกไฟล์ผลลัพธ์
+\end{enumerate}

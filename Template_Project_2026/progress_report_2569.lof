@@ -1,0 +1,33 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1}{\ignorespaces ตัวอย่างคุณลักษณะ Haar แบบขอบ แบบเส้น และแบบสี่สี่เหลี่ยมที่ใช้ในตัวจำแนกแบบ Cascade}}{4}{figure.caption.5}%
+\contentsline {figure}{\numberline {2}{\ignorespaces ตัวอย่างใบหน้าไอเกนจากกระบวนการ PCA}}{6}{figure.caption.6}%
+\contentsline {figure}{\numberline {3}{\ignorespaces ตัวอย่างใบหน้า Fisherfaces จากกระบวนการ LDA}}{7}{figure.caption.7}%
+\contentsline {figure}{\numberline {4}{\ignorespaces การเปรียบเทียบจุดสำคัญที่กำหนดด้วยมือและตรวจจับอัตโนมัติด้วย Gabor-EBGM และ HOG-EBGM}}{8}{figure.caption.8}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5}{\ignorespaces สถาปัตยกรรมของระบบ Blur System}}{11}{figure.caption.10}%
+\contentsline {figure}{\numberline {6}{\ignorespaces ลำดับการประมวลผลภาพและวิดีโอ}}{12}{figure.caption.11}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Activity Diagram การอัปโหลดสื่อเข้าสู่ระบบ}}{13}{figure.caption.12}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Activity Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}}{14}{figure.caption.13}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Activity Diagram การตรวจจับและเลือกบุคคลที่ต้องการปกปิด}}{15}{figure.caption.14}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Activity Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}}{16}{figure.caption.15}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Activity Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}}{17}{figure.caption.16}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Activity Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}}{18}{figure.caption.17}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Use Case Diagram ภาพรวมการใช้งานระบบ Blur System}}{19}{figure.caption.18}%
+\contentsline {figure}{\numberline {14}{\ignorespaces System Sequence Diagram การอัปโหลดสื่อเข้าสู่ระบบ}}{20}{figure.caption.19}%
+\contentsline {figure}{\numberline {15}{\ignorespaces System Sequence Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}}{21}{figure.caption.20}%
+\contentsline {figure}{\numberline {16}{\ignorespaces System Sequence Diagram การตรวจจับและจัดกลุ่มใบหน้า}}{22}{figure.caption.21}%
+\contentsline {figure}{\numberline {17}{\ignorespaces System Sequence Diagram การเลือกบุคคลและการปกปิดแบบรายบุคคล}}{23}{figure.caption.22}%
+\contentsline {figure}{\numberline {18}{\ignorespaces System Sequence Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}}{24}{figure.caption.23}%
+\contentsline {figure}{\numberline {19}{\ignorespaces System Sequence Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}}{25}{figure.caption.24}%
+\contentsline {figure}{\numberline {20}{\ignorespaces System Sequence Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}}{26}{figure.caption.25}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {21}{\ignorespaces หน้าจอหลักและส่วนอัปโหลดไฟล์}}{30}{figure.caption.29}%
+\contentsline {figure}{\numberline {22}{\ignorespaces หน้าจอเลือกเครื่องมือและตั้งค่าการประมวลผล}}{30}{figure.caption.30}%
+\contentsline {figure}{\numberline {23}{\ignorespaces หน้าจอการตรวจจับและเลือกบุคคลที่ต้องการปกปิด}}{31}{figure.caption.31}%
+\contentsline {figure}{\numberline {24}{\ignorespaces หน้าจอรายการคีย์เฟรมและช่วงเวลาที่ตรวจพบบุคคล}}{32}{figure.caption.32}%
+\contentsline {figure}{\numberline {25}{\ignorespaces หน้าจอควบคุมและกำหนดพื้นที่ปกปิดด้วยตนเอง}}{32}{figure.caption.33}%
+\contentsline {figure}{\numberline {26}{\ignorespaces หน้าจอการทำงานของโหมด AI Auto-Blur}}{33}{figure.caption.34}%
+\contentsline {figure}{\numberline {27}{\ignorespaces หน้าจอตรวจสอบผลลัพธ์หลังประมวลผลก่อนส่งออกไฟล์}}{33}{figure.caption.35}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {28}{\ignorespaces ผลการฝึกแบบจำลอง YOLOv8n-face ด้วยชุดข้อมูล WIDER FACE}}{36}{figure.caption.38}%

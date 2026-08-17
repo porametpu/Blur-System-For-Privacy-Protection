@@ -1,0 +1,114 @@
+\documentclass{cskkuproject}
+
+% รายงานฉบับนี้แยกจาก main.tex เพื่อไม่กระทบไฟล์ตัวอย่างของเทมเพลต
+\titleTH{ระบบเบลออัตโนมัติเพื่อความเป็นส่วนตัว}
+\titleEN{Blur System for Privacy Protection}
+
+\firstStudentID{663380383-1}
+\firstStudentPrefixTH{นาย}
+\firstStudentPrefixEN{Mr.}
+\firstStudentNameTH{ณัฐภัทร วรจินดา}
+\firstStudentNameEN{Nattapat Worajin}
+
+\secondStudentID{663380606-7}
+\secondStudentPrefixTH{นาย}
+\secondStudentPrefixEN{Mr.}
+\secondStudentNameTH{ปรเมศวร์ พุทธทองศรี}
+\secondStudentNameEN{Poramet Puttongsree}
+
+\degreeTH{วิทยาศาสตรบัณฑิต}
+\degreeEN{Bachelor of Science}
+\majorTH{วิทยาการคอมพิวเตอร์}
+\majorEN{Computer Science}
+
+\advisorTH{อ.ดร.พบพร ด่านวิรุทัย}
+\advisorEN{Dr. Pobporn Danvirutai}
+
+\academicYearTH{2569}
+\academicYearEN{2026}
+\courseCode{CP354 771}
+\courseName{โครงงานคอมพิวเตอร์ 1}
+\semester{1}
+\projectGroup{CS 2569/CS3-9}
+
+\keywordsTH{ความเป็นส่วนตัว, การตรวจจับใบหน้า, การเบลอภาพ, การติดตามวัตถุ, ปัญญาประดิษฐ์}
+\keywordsEN{privacy protection, face detection, image redaction, object tracking, artificial intelligence}
+
+\renewcommand{\arraystretch}{1.2}
+
+% กล่องชั่วคราวสำหรับรูปที่ผู้จัดทำจะนำมาใส่ภายหลัง
+% ไม่มีการเรียก \includegraphics จึงยังคง compile ได้เมื่อไฟล์รูปไม่พร้อม
+\newcommand{\reportimageplaceholder}[2][5.5cm]{%
+  \fbox{\parbox[c][#1][c]{0.86\textwidth}{\centering\textit{#2}}}%
+}
+
+% คำอธิบายเพิ่มเติมใต้ Caption ให้อยู่ใน figure เดียวกันและไม่แยกข้ามหน้า
+\newcommand{\figuredescription}[2]{%
+  \par\smallskip
+  \begin{minipage}{0.94\textwidth}%
+    \setlength{\parindent}{0pt}%
+    \setlength{\leftskip}{0pt}%
+    \setlength{\rightskip}{0pt}%
+    \setlength{\parfillskip}{0pt plus 1fil}%
+    \textbf{คำอธิบายภาพที่ \ref{#1}:} #2
+  \end{minipage}%
+}
+
+\begin{document}
+
+\makeprogresscover{1}
+
+\pagenumbering{arabic}
+\setcounter{page}{0}
+\renewcommand{\thepage}{\ThaiAlph{\value{page}}}
+
+\begin{abstractTH}
+\input{progress_abstractTH}
+\end{abstractTH}
+
+\begin{abstractEN}
+\input{progress_abstractEN}
+\end{abstractEN}
+
+\begin{acknowledgement}
+\input{progress_acknowledgement}
+\end{acknowledgement}
+
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+\clearpage
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\chapter{บทนำ}
+\input{progress_chapter1}
+\chapter{ทฤษฎีและงานวิจัยที่เกี่ยวข้อง}
+\input{progress_chapter2}
+\chapter{วิธีการดำเนินโครงงาน}
+\input{progress_chapter3}
+\chapter{การวิเคราะห์ ออกแบบและพัฒนาระบบ}
+\input{progress_chapter4}
+\chapter{สรุปผลการดำเนินงาน}
+\input{progress_chapter5}
+
+\clearpage
+\addcontentsline{toc}{chapter}{เอกสารอ้างอิง}
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+% แสดงรายการแหล่งข้อมูลในบรรณานุกรมโดยไม่แทรกหมายเลขอ้างอิงในเนื้อหา
+\nocite{*}
+\bibliographystyle{ieeetr}
+\bibliography{progress_references}
+
+\input{progress_appendices}
+
+\begin{biography}
+\input{progress_biography}
+\end{biography}
+
+\end{document}
