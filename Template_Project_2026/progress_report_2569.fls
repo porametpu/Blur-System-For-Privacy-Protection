@@ -1,6 +1,6 @@
-PWD d:\Blur system project\Blur-System-For-Privacy-Protection\Template_Project_2026
+PWD D:\Blur system project\Blur-System-For-Privacy-Protection\Template_Project_2026
 INPUT C:\Users\ACER\AppData\Local\MiKTeX\miktex\data\le\xetex\xelatex.fmt
-INPUT d:\Blur system project\Blur-System-For-Privacy-Protection\Template_Project_2026\progress_report_2569.tex
+INPUT progress_report_2569.tex
 OUTPUT progress_report_2569.log
 INPUT .\cskkuproject.cls
 INPUT cskkuproject.cls
@@ -315,6 +315,8 @@ INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex\generic\uniquecounter\uniq
 INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex\generic\uniquecounter\uniquecounter.sty
 INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex\latex\tools\longtable.sty
 INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex\latex\tools\longtable.sty
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex\latex\multirow\multirow.sty
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex\latex\multirow\multirow.sty
 INPUT .\progress_report_2569.aux
 INPUT .\progress_report_2569.aux
 INPUT progress_report_2569.aux
@@ -332,6 +334,7 @@ OUTPUT progress_report_2569.out
 INPUT .\theme\kku-logo.png
 INPUT .\theme\kku-logo.png
 INPUT .\theme\kku-logo.png
+OUTPUT progress_report_2569.xdv
 INPUT .\progress_abstractTH.tex
 INPUT .\progress_abstractTH.tex
 INPUT .\progress_abstractTH.tex
@@ -481,6 +484,9 @@ INPUT .\images-progress\ภาพ demo หน้าจอแสดงจำน�
 INPUT .\images-progress\ภาพ demo เมนู Manual Control.jpg
 INPUT .\images-progress\ภาพ demo เมนู Manual Control.jpg
 INPUT .\images-progress\ภาพ demo เมนู Manual Control.jpg
+INPUT .\images-progress\PreviewAI-AutoBlur.jpg
+INPUT .\images-progress\PreviewAI-AutoBlur.jpg
+INPUT .\images-progress\PreviewAI-AutoBlur.jpg
 INPUT .\images-progress\ภาพ หน้า Preview Result.jpg
 INPUT .\images-progress\ภาพ หน้า Preview Result.jpg
 INPUT .\images-progress\ภาพ หน้า Preview Result.jpg
@@ -489,9 +495,12 @@ INPUT .\progress_chapter5.tex
 INPUT .\progress_chapter5.tex
 INPUT .\progress_chapter5.tex
 INPUT progress_chapter5.tex
-INPUT .\images-progress\ภาพผลทดสอบ YOLOv8n-face with widerface (Lindevs).jpg
-INPUT .\images-progress\ภาพผลทดสอบ YOLOv8n-face with widerface (Lindevs).jpg
-INPUT .\images-progress\ภาพผลทดสอบ YOLOv8n-face with widerface (Lindevs).jpg
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi10.tfm
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmex10.tfm
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr10.tfm
 INPUT .\progress_report_2569.bbl
 INPUT .\progress_report_2569.bbl
 INPUT progress_report_2569.bbl

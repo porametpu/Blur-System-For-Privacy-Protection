@@ -7,8 +7,9 @@
 \contentsline {table}{\numberline {3}{\ignorespaces ความต้องการเชิงฟังก์ชันของระบบ}}{28}{table.caption.27}%
 \contentsline {table}{\numberline {4}{\ignorespaces โครงสร้างข้อมูลหลักของระบบ}}{29}{table.caption.28}%
 \contentsline {table}{\numberline {5}{\ignorespaces ความก้าวหน้าของระบบในรอบปัจจุบัน}}{34}{table.caption.36}%
-\contentsline {table}{\numberline {6}{\ignorespaces ผลการตรวจสอบระบบในรอบจัดทำรายงาน}}{35}{table.caption.37}%
+\contentsline {table}{\numberline {6}{\ignorespaces การตรวจสอบระบบเบื้องต้น}}{35}{table.caption.37}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {7}{\ignorespaces สรุปผลเทียบกับวัตถุประสงค์}}{37}{table.caption.39}%
-\contentsline {table}{\numberline {8}{\ignorespaces ปัญหา อุปสรรค และแนวทางแก้ไข}}{38}{table.caption.40}%
-\contentsline {table}{\numberline {9}{\ignorespaces รายการ API หลักของ Blur System}}{42}{table.caption.42}%
+\contentsline {table}{\numberline {7}{\ignorespaces เปรียบเทียบประสิทธิภาพของโมเดลตรวจจับใบหน้า YOLOv26n, YuNet, RetinaFace และ MTCNN บนชุดข้อมูล WIDER FACE โดยใช้ตัวชี้วัด AP (Average Precision) และ Latency (เวลาในการประมวลผลต่อภาพ) ที่ความละเอียด 320x320 และ 640x640 ที่ทำงานบน ONNX}}{36}{table.caption.38}%
+\contentsline {table}{\numberline {8}{\ignorespaces สรุปผลเทียบกับวัตถุประสงค์}}{37}{table.caption.39}%
+\contentsline {table}{\numberline {9}{\ignorespaces ปัญหา อุปสรรค และแนวทางแก้ไข}}{38}{table.caption.40}%
+\contentsline {table}{\numberline {10}{\ignorespaces รายการ API หลักของ Blur System}}{42}{table.caption.42}%

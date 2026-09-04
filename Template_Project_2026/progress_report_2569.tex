@@ -1,4 +1,5 @@
 \documentclass{cskkuproject}
+\usepackage{multirow}
 
 % รายงานฉบับนี้แยกจาก main.tex เพื่อไม่กระทบไฟล์ตัวอย่างของเทมเพลต
 \titleTH{ระบบเบลออัตโนมัติเพื่อความเป็นส่วนตัว}
@@ -51,6 +52,14 @@
     \setlength{\rightskip}{0pt}%
     \setlength{\parfillskip}{0pt plus 1fil}%
     \textbf{คำอธิบายภาพที่ \ref{#1}:} #2
+  \end{minipage}%
+}
+
+% แหล่งที่มาของภาพ แยกระหว่างภาพจากภายนอกและภาพที่ผู้จัดทำสร้างขึ้นเอง
+\newcommand{\figuresource}[1]{%
+  \par\smallskip
+  \begin{minipage}{0.94\textwidth}%
+    \centering\small\textbf{ที่มา:} #1
   \end{minipage}%
 }
 
