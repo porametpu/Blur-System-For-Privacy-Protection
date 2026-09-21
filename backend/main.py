@@ -5,7 +5,7 @@ import cv2
 import uuid
 import base64
 import json
-from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Depends, BackgroundTasks
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Depends, BackgroundTasks, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -15,11 +15,12 @@ from dotenv import load_dotenv
 
 from pydantic import BaseModel
 from database import init_db, get_db
-from models import Video, PreviewFrame, Identity, DetectedFace, BlurSelection, TimelineEntry, ManualBlurBox
+from models import Video, PreviewFrame, Identity, DetectedFace, BlurSelection, TimelineEntry, ManualBlurBox, User
 from services.detection import FaceDetectionService
 from services.recognition import FaceRecognitionService
 from services.tracking import SimpleTracker
 from services.rendering import RenderingService
+from services.auth import hash_password, verify_password, create_access_token, decode_access_token
 import numpy as np
 
 load_dotenv()
@@ -53,6 +54,141 @@ def sanitize_filename(filename: str | None) -> str:
     base = re.sub(r'[^\w.\-]', '_', base)
     return base or "upload.bin"
 
+# Auth Schemas & Dependencies
+class RegisterRequest(BaseModel):
+    email: str
+    password: str
+    full_name: str | None = None
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+class GoogleLoginRequest(BaseModel):
+    token: str | None = None
+    email: str
+    full_name: str | None = None
+    google_id: str
+    avatar_url: str | None = None
+
+def get_current_user_optional(authorization: str | None = Header(None), db: Session = Depends(get_db)) -> User | None:
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    token = authorization.split(" ")[1]
+    payload = decode_access_token(token)
+    if not payload or "sub" not in payload:
+        return None
+    return db.query(User).filter(User.id == int(payload["sub"])).first()
+
+def get_current_user(user: User | None = Depends(get_current_user_optional)) -> User:
+    if not user:
+        raise HTTPException(401, "Not authenticated")
+    return user
+
+# Auth API Endpoints
+@app.post("/api/auth/register")
+async def register_user(req: RegisterRequest, db: Session = Depends(get_db)):
+    existing = db.query(User).filter(User.email == req.email.lower().strip()).first()
+    if existing:
+        raise HTTPException(400, "Email already registered")
+    
+    pw_hash = hash_password(req.password)
+    user = User(
+        email=req.email.lower().strip(),
+        password_hash=pw_hash,
+        full_name=req.full_name or req.email.split('@')[0],
+        avatar_url=f"https://api.dicebear.com/7.x/bottts/svg?seed={req.email}"
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    token = create_access_token({"sub": str(user.id), "email": user.email})
+    return {
+        "access_token": token,
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "avatar_url": user.avatar_url
+        }
+    }
+
+@app.post("/api/auth/login")
+async def login_user(req: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == req.email.lower().strip()).first()
+    if not user or not user.password_hash or not verify_password(req.password, user.password_hash):
+        raise HTTPException(401, "Invalid email or password")
+
+    token = create_access_token({"sub": str(user.id), "email": user.email})
+    return {
+        "access_token": token,
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "avatar_url": user.avatar_url
+        }
+    }
+
+@app.post("/api/auth/google")
+async def google_login(req: GoogleLoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter((User.google_id == req.google_id) | (User.email == req.email.lower().strip())).first()
+    if user:
+        if not user.google_id:
+            user.google_id = req.google_id
+        if req.avatar_url and not user.avatar_url:
+            user.avatar_url = req.avatar_url
+        db.commit()
+    else:
+        user = User(
+            email=req.email.lower().strip(),
+            full_name=req.full_name or "Google User",
+            google_id=req.google_id,
+            avatar_url=req.avatar_url or f"https://api.dicebear.com/7.x/bottts/svg?seed={req.email}"
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    token = create_access_token({"sub": str(user.id), "email": user.email})
+    return {
+        "access_token": token,
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "avatar_url": user.avatar_url
+        }
+    }
+
+@app.get("/api/auth/me")
+async def get_me(user: User = Depends(get_current_user)):
+    return {
+        "id": user.id,
+        "email": user.email,
+        "full_name": user.full_name,
+        "avatar_url": user.avatar_url
+    }
+
+@app.get("/api/history")
+async def get_history(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    videos = db.query(Video).filter(Video.user_id == user.id).order_by(Video.created_at.desc()).all()
+    result = []
+    for v in videos:
+        ext = v.original_path.split('.')[-1].lower() if v.original_path else 'mp4'
+        is_img = ext in ALLOWED_IMAGE_EXT
+        result.append({
+            "id": v.id,
+            "filename": v.filename,
+            "status": v.status,
+            "is_image": is_img,
+            "created_at": v.created_at.isoformat() if v.created_at else None,
+            "download_url": f"/api/serve-video/{v.id}/export",
+            "preview_url": f"/api/serve-video/{v.id}/preview" if os.path.exists(f"temp/previews/{v.id}/preview_blur.{ext}") else None,
+        })
+    return result
+
 # Globals for services
 detection_service = None
 recognition_service = None
@@ -77,7 +213,11 @@ def ndarray_to_base64(img):
     return base64.b64encode(buffer).decode('utf-8')
 
 @app.post("/api/upload")
-async def upload_video(file: UploadFile = File(...), db: Session = Depends(get_db)):
+async def upload_video(
+    file: UploadFile = File(...), 
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_current_user_optional)
+):
     try:
         ext = file.filename.split('.')[-1].lower()
         is_image = ext in ['jpg', 'jpeg', 'png', 'webp']
@@ -108,6 +248,7 @@ async def upload_video(file: UploadFile = File(...), db: Session = Depends(get_d
             cap.release()
         
         video = Video(
+            user_id=current_user.id if current_user else None,
             filename=file.filename,
             original_path=file_path,
             fps=fps,
@@ -436,7 +577,7 @@ async def get_timeline(video_id: int, identity_id: int, db: Session = Depends(ge
     ]
 
 @app.post("/api/render-preview/{video_id}")
-async def render_preview(video_id: int, blur_type: str = Form("gaussian"), blur_strength: int = Form(31), db: Session = Depends(get_db)):
+async def render_preview(video_id: int, blur_type: str = Form("gaussian"), blur_strength: int = Form(31), sticker_image: str = Form(None), db: Session = Depends(get_db)):
     video = db.query(Video).filter(Video.id == video_id).first()
     if not video:
         raise HTTPException(404, "Video not found")
@@ -465,7 +606,8 @@ async def render_preview(video_id: int, blur_type: str = Form("gaussian"), blur_
     # We could scale down the video for faster preview, but let's just render
     success = RenderingService.render_video(
         video.original_path, out_path, identity_blur_map, face_data, 
-        manual_boxes=manual_boxes, blur_type=blur_type, blur_strength=blur_strength
+        manual_boxes=manual_boxes, blur_type=blur_type, blur_strength=blur_strength,
+        sticker_image_b64=sticker_image
     )
     
     if not success:
@@ -494,7 +636,7 @@ async def serve_video(video_id: int, v_type: str, db: Session = Depends(get_db))
     return FileResponse(path, media_type=media_type)
 
 @app.post("/api/export-video/{video_id}")
-async def export_video(video_id: int, blur_type: str = Form("gaussian"), blur_strength: int = Form(51), db: Session = Depends(get_db)):
+async def export_video(video_id: int, blur_type: str = Form("gaussian"), blur_strength: int = Form(51), sticker_image: str = Form(None), db: Session = Depends(get_db)):
     video = db.query(Video).filter(Video.id == video_id).first()
     if not video:
         raise HTTPException(404, "Video not found")
@@ -523,7 +665,8 @@ async def export_video(video_id: int, blur_type: str = Form("gaussian"), blur_st
     
     success = RenderingService.render_video(
         video.original_path, out_path, identity_blur_map, face_data, 
-        manual_boxes=manual_boxes, blur_type=blur_type, blur_strength=blur_strength
+        manual_boxes=manual_boxes, blur_type=blur_type, blur_strength=blur_strength,
+        sticker_image_b64=sticker_image
     )
     
     if not success:
