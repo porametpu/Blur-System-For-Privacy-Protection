@@ -15,6 +15,17 @@ def get_db():
     finally:
         db.close()
 
+from sqlalchemy import text
+
 def init_db():
     from models import Base as ModelsBase
     ModelsBase.metadata.create_all(bind=engine)
+    with engine.begin() as conn:
+        try:
+            conn.execute(text("ALTER TABLE manual_blur_boxes ADD COLUMN end_frame_number INTEGER"))
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE manual_blur_boxes ADD COLUMN engine_preset VARCHAR"))
+        except Exception:
+            pass

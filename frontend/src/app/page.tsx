@@ -17,11 +17,14 @@ import ImageManualRedaction from '../components/ImageManualRedaction';
 import { SkeletonCard, SkeletonGrid } from '../components/SkeletonLoader';
 import HistoryView from '../components/HistoryView';
 import AuthView from '../components/AuthView';
+
+import SettingsView from '../components/SettingsView';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 import { AppStep, Video, PreviewFrame, DetectedPerson, TimelineEntry, BlurType } from '../lib/types';
 import * as api from '../lib/api';
+import { loadClientModel, runVideoDetection } from '../lib/clientOnnxInference';
 
 import { Shield, ArrowRight, ArrowLeft, RefreshCcw, Scan, Sparkles, Maximize, PenTool, UserX, CreditCard } from 'lucide-react';
 
@@ -58,6 +61,15 @@ function BlurApp() {
   const [detectionProgress, setDetectionProgress] = useState({ progress: 0, status: '' });
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
+  // Client-side ONNX state — persisted in localStorage via SettingsView
+  const [localVideoFile, setLocalVideoFile] = useState<File | null>(null);
+  const [isClientOnnxMode, setIsClientOnnxMode] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('blur_onnx_client_mode') === 'true';
+    }
+    return false;
+  });
+
   // Set Theme
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -66,6 +78,7 @@ function BlurApp() {
   // Handlers
   const handleUpload = async (file: File) => {
     setIsLoading(true);
+    setLocalVideoFile(file);   // Keep local reference for client-side inference
     try {
       const vid = await api.uploadVideo(file);
       setVideoId(vid.video_id);
@@ -111,14 +124,31 @@ function BlurApp() {
     if (!videoId) return;
     setIsLoading(true);
 
-    // Automatically use all preview frames as keyframes
     const framesToUse = previewFrames.map(f => f.frame_number);
     setSelectedKeyframes(new Set(framesToUse));
     setStep('face_map');
 
     try {
       await api.selectKeyframes(videoId, framesToUse);
-      startDetection(framesToUse);
+
+      if (isClientOnnxMode && localVideoFile && videoInfo) {
+        // --- Client-side ONNX inference ---
+        setDetectionProgress({ progress: 0, status: 'Loading model to your browser…' });
+        await loadClientModel('/api/model-file');
+        setDetectionProgress({ progress: 0, status: 'Detecting faces on your GPU…' });
+
+        const frameResults = await runVideoDetection(
+          localVideoFile, videoInfo.fps, videoInfo.total_frames, 5, 0.25,
+          (pct) => setDetectionProgress({ progress: pct, status: `Detecting on your GPU… ${pct}%` }),
+        );
+
+        setDetectionProgress({ progress: 100, status: 'Sending to server for recognition…' });
+        await api.submitClientDetections(videoId, frameResults);
+        fetchResults();
+      } else {
+        // --- Server-side detection (original flow) ---
+        startDetection(framesToUse);
+      }
     } catch (err: any) {
       addToast(err.message, 'error');
       setIsLoading(false);
@@ -136,37 +166,73 @@ function BlurApp() {
 
     try {
       await api.selectKeyframes(videoId, framesToUse);
-      await api.startDetection(videoId, framesToUse);
 
-      const interval = setInterval(async () => {
-        try {
-          const status = await api.checkStatus(videoId);
-          setDetectionProgress({
-            progress: status.progress || 0,
-            status: status.status === 'processing' ? 'Auto-Blurring...' : 'Finalizing...'
-          });
+      if (isClientOnnxMode && localVideoFile && videoInfo) {
+        // --- Client-side ONNX inference ---
+        setDetectionProgress({ progress: 0, status: 'Loading model to your browser…' });
+        await loadClientModel('/api/model-file');
+        setDetectionProgress({ progress: 0, status: 'Detecting faces on your GPU…' });
 
-          if (status.status === 'completed') {
-            clearInterval(interval);
-            const persons = await api.getRecognizedPersons(videoId);
-            setDetectedPersons(persons);
+        const frameResults = await runVideoDetection(
+          localVideoFile, videoInfo.fps, videoInfo.total_frames, 5, 0.25,
+          (pct) => setDetectionProgress({ progress: pct, status: `Detecting on your GPU… ${pct}%` }),
+        );
 
-            // Auto blur all
-            const payload = persons.map(p => ({ identity_id: p.id, should_blur: true }));
-            await api.updateBlurSelections(videoId, payload);
+        setDetectionProgress({ progress: 100, status: 'Sending to server for recognition…' });
+        await api.submitClientDetections(videoId, frameResults);
 
-            setStep('preview_blur');
-            generatePreviewVideo();
-          } else if (status.status === 'error') {
-            clearInterval(interval);
-            addToast(`Detection error: ${status.error}`, 'error');
-            setStep('tools_selection');
-            setIsLoading(false);
-          }
-        } catch (e) {
-          // ignore
-        }
-      }, 2000);
+        // Poll server until recognition pipeline finishes
+        const interval = setInterval(async () => {
+          try {
+            const status = await api.checkStatus(videoId);
+            setDetectionProgress({
+              progress: status.progress || 100,
+              status: status.status === 'processing' ? 'Running recognition on server…' : 'Finalizing…',
+            });
+            if (status.status === 'completed') {
+              clearInterval(interval);
+              const persons = await api.getRecognizedPersons(videoId);
+              setDetectedPersons(persons);
+              const payload = persons.map(p => ({ identity_id: p.id, should_blur: true }));
+              await api.updateBlurSelections(videoId, payload);
+              setStep('preview_blur');
+              generatePreviewVideo();
+            } else if (status.status === 'error') {
+              clearInterval(interval);
+              addToast(`Detection error: ${status.error}`, 'error');
+              setStep('tools_selection');
+              setIsLoading(false);
+            }
+          } catch { /* ignore */ }
+        }, 2000);
+      } else {
+        // --- Server-side detection (original flow) ---
+        await api.startDetection(videoId, framesToUse);
+
+        const serverInterval = setInterval(async () => {
+          try {
+            const status = await api.checkStatus(videoId);
+            setDetectionProgress({
+              progress: status.progress || 0,
+              status: status.status === 'processing' ? 'Auto-Blurring...' : 'Finalizing...'
+            });
+            if (status.status === 'completed') {
+              clearInterval(serverInterval);
+              const persons = await api.getRecognizedPersons(videoId);
+              setDetectedPersons(persons);
+              const payload = persons.map(p => ({ identity_id: p.id, should_blur: true }));
+              await api.updateBlurSelections(videoId, payload);
+              setStep('preview_blur');
+              generatePreviewVideo();
+            } else if (status.status === 'error') {
+              clearInterval(serverInterval);
+              addToast(`Detection error: ${status.error}`, 'error');
+              setStep('tools_selection');
+              setIsLoading(false);
+            }
+          } catch { /* ignore */ }
+        }, 2000);
+      }
     } catch (err: any) {
       addToast(err.message, 'error');
       setIsLoading(false);
@@ -272,7 +338,7 @@ function BlurApp() {
     setPreviewVideoUrl(null);
     try {
       const res = await api.renderPreview(videoId, blurType, blurStrength, blurType === 'sticker' ? (stickerImage ?? undefined) : undefined);
-      setPreviewVideoUrl(res.preview_url);
+      setPreviewVideoUrl(`${res.preview_url}?t=${Date.now()}`);
     } catch (err: any) {
       addToast(err.message, 'error');
       setStep('blur_manager');
@@ -324,12 +390,12 @@ function BlurApp() {
                 <span className="text-gradient">Privacy Protection</span>
               </h1>
               <p className="text-slate-400 mt-6 text-sm md:text-lg font-bold tracking-widest uppercase">
-                Blur your information .................
+                Blur your information
               </p>
               <div className="w-full mt-12 px-4 relative z-10">
                 <VideoUpload onUpload={handleUpload} isLoading={isLoading} />
               </div>
-              
+
               {/* Features Section */}
               <div className="w-full max-w-[1200px] mt-32 px-4 pb-20">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -422,6 +488,8 @@ function BlurApp() {
                         <span className="w-4 h-4 bg-slate-800 rounded-sm"></span> BLACK BOX
                       </button>
                     </div>
+
+                    {/* Inference Backend moved to Settings page (?tab=settings) */}
                   </div>
                 </div>
 
@@ -493,6 +561,7 @@ function BlurApp() {
             ) : (
               <ManualControl
                 videoId={videoId}
+                videoInfo={videoInfo}
                 previewFrames={previewFrames}
                 onSave={() => {
                   setStep('preview_blur');
@@ -599,15 +668,13 @@ function BlurApp() {
                         {/* Sticker / Custom Image option */}
                         <button
                           onClick={() => setBlurType('sticker')}
-                          className={`w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-transform ${
-                            blurType === 'sticker'
+                          className={`w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-transform ${blurType === 'sticker'
                               ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20'
                               : 'border border-slate-100 bg-white text-slate-500 hover:bg-slate-50'
-                          }`}
+                            }`}
                         >
-                          <div className={`w-6 h-6 rounded-md flex items-center justify-center overflow-hidden ${
-                            blurType === 'sticker' ? 'bg-white' : 'border border-slate-200'
-                          }`}>
+                          <div className={`w-6 h-6 rounded-md flex items-center justify-center overflow-hidden ${blurType === 'sticker' ? 'bg-white' : 'border border-slate-200'
+                            }`}>
                             {stickerImage
                               ? <img src={`data:image/png;base64,${stickerImage}`} className="w-full h-full object-cover" alt="sticker" />
                               : <span className="text-base leading-none">{blurType === 'sticker' ? '✅' : '🖼️'}</span>
@@ -684,11 +751,10 @@ function BlurApp() {
                             {/* Upload zone */}
                             <label
                               htmlFor="sticker-upload"
-                              className={`flex flex-col items-center justify-center gap-2 w-full p-3 rounded-xl border-2 border-dashed cursor-pointer transition-colors ${
-                                stickerImage
+                              className={`flex flex-col items-center justify-center gap-2 w-full p-3 rounded-xl border-2 border-dashed cursor-pointer transition-colors ${stickerImage
                                   ? 'border-purple-400 bg-purple-50'
                                   : 'border-slate-200 hover:border-purple-400 hover:bg-purple-50'
-                              }`}
+                                }`}
                             >
                               {stickerImage ? (
                                 <>
@@ -738,6 +804,8 @@ function BlurApp() {
                         )}
                       </div>
                     </div>
+
+                    {/* Inference Backend moved to Settings page (?tab=settings) */}
 
                     <div>
                       <div className="flex justify-between items-center mb-4">
@@ -882,7 +950,11 @@ function MainContent() {
   if (tab === 'history') {
     return <HistoryView />;
   }
-  
+
+  if (tab === 'settings') {
+    return <SettingsView />;
+  }
+
   if (tab === 'login') {
     return <AuthView />;
   }

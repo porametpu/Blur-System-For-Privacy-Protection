@@ -119,10 +119,12 @@ class ManualBlurBox(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     video_id = Column(Integer, ForeignKey("videos.id"))
     start_frame_number = Column(Integer)
+    end_frame_number = Column(Integer, nullable=True)
     x = Column(Integer)
     y = Column(Integer)
     width = Column(Integer)
     height = Column(Integer)
     is_tracking = Column(Boolean, default=True)
+    engine_preset = Column(String, nullable=True, default="gaussian")
 
     video = relationship("Video", back_populates="manual_blur_boxes")

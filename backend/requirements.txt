@@ -10,4 +10,5 @@ scipy
 aiofiles
 insightface
 onnxruntime
+onnxruntime-gpu
 cloudinary

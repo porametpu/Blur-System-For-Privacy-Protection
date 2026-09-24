@@ -65,7 +65,7 @@ export default function HistoryView() {
     <div className="max-w-6xl mx-auto w-full fade-slide-in pb-20 pt-8">
       <div className="flex items-end justify-between mb-8">
         <div>
-          <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight mb-2">Your History</h2>
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight mb-2">Your History</h2>
           <p className="text-slate-500 font-medium text-sm">Past processed media linked to your account.</p>
         </div>
       </div>
@@ -82,7 +82,7 @@ export default function HistoryView() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {history.map(item => (
             <div key={item.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col">
-              
+
               {/* Media Preview Area */}
               <div className="relative aspect-video bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden border-b border-slate-100 dark:border-slate-800">
                 {item.preview_url ? (
@@ -102,7 +102,7 @@ export default function HistoryView() {
                     <span className="text-[10px] font-bold uppercase tracking-widest">No Preview</span>
                   </div>
                 )}
-                
+
                 {/* Type Badge */}
                 <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg text-white flex items-center gap-1.5 border border-white/10 shadow-sm">
                   {item.is_image ? <ImageIcon className="w-3 h-3" /> : <Film className="w-3 h-3" />}
@@ -118,7 +118,7 @@ export default function HistoryView() {
                   </h4>
                   <p className="text-xs text-slate-400 font-medium mt-1">
                     {item.created_at ? new Date(item.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'
+                      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
                     }) : 'Unknown date'}
                   </p>
                 </div>

@@ -13,6 +13,7 @@ import cloudinary
 import cloudinary.uploader
 from dotenv import load_dotenv
 
+from typing import Optional
 from pydantic import BaseModel
 from database import init_db, get_db
 from models import Video, PreviewFrame, Identity, DetectedFace, BlurSelection, TimelineEntry, ManualBlurBox, User
@@ -53,6 +54,28 @@ def sanitize_filename(filename: str | None) -> str:
     base = os.path.basename(filename)
     base = re.sub(r'[^\w.\-]', '_', base)
     return base or "upload.bin"
+
+# Model Backend Schema
+class ModelBackendRequest(BaseModel):
+    backend: str  # "pytorch" | "torchscript" | "onnx" | "tensorrt"
+
+# Client Detection Schemas
+class BBoxInput(BaseModel):
+    x1: int
+    y1: int
+    x2: int
+    y2: int
+
+class ClientFaceDetection(BaseModel):
+    bbox: BBoxInput
+    confidence: float
+
+class FrameDetectionInput(BaseModel):
+    frame_number: int
+    detections: list[ClientFaceDetection]
+
+class ClientDetectionsRequest(BaseModel):
+    frame_detections: list[FrameDetectionInput]
 
 # Auth Schemas & Dependencies
 class RegisterRequest(BaseModel):
@@ -292,9 +315,13 @@ async def get_preview_frames(video_id: int, db: Session = Depends(get_db)):
     
     result = []
     for frame_num, ts_ms, img in extracted:
-        thumb = cv2.resize(img, (320, int(320 * (video.height / video.width))))
+        max_w = min(1920, video.width)
+        if video.width > max_w:
+            thumb = cv2.resize(img, (max_w, int(max_w * (video.height / video.width))), interpolation=cv2.INTER_AREA)
+        else:
+            thumb = img
         thumb_path = os.path.join(frames_dir, f"frame_{frame_num}.jpg")
-        cv2.imwrite(thumb_path, thumb)
+        cv2.imwrite(thumb_path, thumb, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
         
         pf = PreviewFrame(video_id=video_id, frame_number=frame_num, timestamp_ms=ts_ms, thumbnail_path=thumb_path)
         db.add(pf)
@@ -324,11 +351,13 @@ async def select_keyframes(video_id: int = Form(...), keyframe_indices: str = Fo
 
 class ManualBoxInput(BaseModel):
     start_frame_number: int
+    end_frame_number: Optional[int] = None
     x: int
     y: int
     width: int
     height: int
     is_tracking: bool = True
+    engine_preset: Optional[str] = "gaussian"
 
 class ManualBlurRequest(BaseModel):
     boxes: list[ManualBoxInput]
@@ -336,7 +365,7 @@ class ManualBlurRequest(BaseModel):
 @app.get("/api/manual-blur/{video_id}")
 async def get_manual_blur(video_id: int, db: Session = Depends(get_db)):
     boxes = db.query(ManualBlurBox).filter(ManualBlurBox.video_id == video_id).all()
-    return {"boxes": [{"id": b.id, "start_frame_number": b.start_frame_number, "x": b.x, "y": b.y, "width": b.width, "height": b.height, "is_tracking": b.is_tracking} for b in boxes]}
+    return {"boxes": [{"id": b.id, "start_frame_number": b.start_frame_number, "end_frame_number": b.end_frame_number, "x": b.x, "y": b.y, "width": b.width, "height": b.height, "is_tracking": b.is_tracking, "engine_preset": b.engine_preset} for b in boxes]}
 
 @app.post("/api/manual-blur/{video_id}")
 async def save_manual_blur(video_id: int, req: ManualBlurRequest, db: Session = Depends(get_db)):
@@ -345,11 +374,13 @@ async def save_manual_blur(video_id: int, req: ManualBlurRequest, db: Session = 
         db.add(ManualBlurBox(
             video_id=video_id,
             start_frame_number=box.start_frame_number,
+            end_frame_number=box.end_frame_number,
             x=box.x,
             y=box.y,
             width=box.width,
             height=box.height,
-            is_tracking=box.is_tracking
+            is_tracking=box.is_tracking,
+            engine_preset=box.engine_preset
         ))
     db.commit()
     return {"status": "ok"}
@@ -532,6 +563,209 @@ async def get_status(video_id: int):
     status = processing_status.get(video_id, {"status": "unknown", "progress": 0})
     return status
 
+# ---------------------------------------------------------------------------
+# Model Backend Selection
+# ---------------------------------------------------------------------------
+
+@app.get("/api/model-backend")
+async def get_model_backend():
+    """Return current backend info and per-backend export states."""
+    if detection_service is None:
+        raise HTTPException(503, "Detection service not initialized")
+    return detection_service.get_status()
+
+@app.post("/api/model-backend")
+async def set_model_backend(req: ModelBackendRequest):
+    """Switch the active inference backend.  If the engine file doesn't exist
+    yet, export runs in the background — poll GET /api/model-backend for status."""
+    if detection_service is None:
+        raise HTTPException(503, "Detection service not initialized")
+    result = detection_service.switch_backend(req.backend)
+    if not result.get("success"):
+        raise HTTPException(400, result.get("error", "Failed to switch backend"))
+    return result
+
+# ---------------------------------------------------------------------------
+# Client-Side ONNX: serve model file + accept client-detected bounding boxes
+# ---------------------------------------------------------------------------
+
+@app.get("/api/model-file/onnx")
+async def serve_onnx_model_file():
+    """Serve the ONNX model file so browsers can download it for client-side inference.
+    Auto-exports from .pt if the .onnx file doesn't exist yet."""
+    onnx_path = "yolo26n-face.onnx"
+    if not os.path.exists(onnx_path):
+        try:
+            from ultralytics import YOLO as _YOLO
+            _m = _YOLO("yolo26n-face.pt")
+            _m.export(format="onnx", simplify=True, verbose=False)
+        except Exception as e:
+            raise HTTPException(500, f"Could not export ONNX model: {e}")
+    if not os.path.exists(onnx_path):
+        raise HTTPException(404, "ONNX model file not available")
+    return FileResponse(
+        onnx_path,
+        media_type="application/octet-stream",
+        filename="yolo26n-face.onnx",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
+
+def _recognition_pipeline_from_client(video_id: int, frame_detections: list[dict]):
+    """Background task: run InsightFace recognition on client-submitted bboxes.
+    Skips YOLO detection — bboxes come from the browser's ONNX inference."""
+    global processing_status
+    processing_status[video_id] = {"status": "processing", "progress": 0}
+
+    db = next(get_db())
+    try:
+        video = db.query(Video).filter(Video.id == video_id).first()
+        if not video:
+            return
+
+        # Clear any previous detection data
+        db.query(DetectedFace).filter(DetectedFace.video_id == video_id).delete()
+        db.query(Identity).filter(Identity.video_id == video_id).delete()
+        db.commit()
+
+        cap = cv2.VideoCapture(video.original_path)
+        identities: list[dict] = []
+        next_identity_id = 1
+        total = len(frame_detections)
+
+        for idx, frame_data in enumerate(frame_detections):
+            processing_status[video_id]["progress"] = int((idx / max(total, 1)) * 100)
+
+            frame_number = frame_data["frame_number"]
+            detections   = frame_data["detections"]   # list of {bbox, confidence}
+
+            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
+            ret, frame = cap.read()
+            if not ret:
+                continue
+
+            for det in detections:
+                bbox = det["bbox"]
+                x1, y1, x2, y2 = bbox["x1"], bbox["y1"], bbox["x2"], bbox["y2"]
+
+                # Padded crop for InsightFace
+                w, h = x2 - x1, y2 - y1
+                px1 = max(0, int(x1 - w * 0.5))
+                py1 = max(0, int(y1 - h * 0.5))
+                px2 = min(frame.shape[1], int(x2 + w * 0.5))
+                py2 = min(frame.shape[0], int(y2 + h * 0.5))
+                crop = frame[py1:py2, px1:px2]
+
+                emb = recognition_service.extract_embedding(crop)
+                identity_id = None
+
+                if emb is not None:
+                    matched_id = recognition_service.match_identity(emb, identities, threshold=0.45)
+                    if matched_id is not None:
+                        identity_id = matched_id
+                        for i, ident in enumerate(identities):
+                            if ident["identity_id"] == identity_id:
+                                cnt = identities[i]["count"]
+                                identities[i]["avg_embedding"] = (ident["avg_embedding"] * cnt + emb) / (cnt + 1)
+                                identities[i]["avg_embedding"] /= np.linalg.norm(identities[i]["avg_embedding"])
+                                identities[i]["conf"] = (ident["conf"] * cnt + det["confidence"]) / (cnt + 1)
+                                identities[i]["count"] += 1
+                                break
+                    else:
+                        identity_id = next_identity_id
+                        next_identity_id += 1
+                        thumb = ndarray_to_base64(cv2.resize(crop, (112, 112))) if crop.size > 0 else None
+                        identities.append({
+                            "identity_id": identity_id,
+                            "avg_embedding": emb,
+                            "thumbnail": thumb,
+                            "count": 1,
+                            "conf": det["confidence"],
+                        })
+
+                if identity_id is not None:
+                    db.add(DetectedFace(
+                        video_id=video_id,
+                        frame_number=frame_number,
+                        bbox_x1=x1, bbox_y1=y1, bbox_x2=x2, bbox_y2=y2,
+                        confidence=det["confidence"],
+                        identity_id=identity_id,  # temp id — remapped below
+                    ))
+
+            if idx % 50 == 0:
+                db.commit()
+
+        cap.release()
+        db.commit()
+
+        # --- Persist Identities & remap temp IDs ---
+        id_map: dict[int, int] = {}
+        for tmp in identities:
+            db_ident = Identity(
+                video_id=video_id,
+                label=f"Person {chr(64 + tmp['identity_id']) if tmp['identity_id'] <= 26 else tmp['identity_id']}",
+                representative_thumbnail=tmp["thumbnail"],
+                avg_embedding=tmp["avg_embedding"].tobytes() if tmp["avg_embedding"] is not None else None,
+                appearance_count=tmp["count"],
+                avg_confidence=tmp["conf"],
+            )
+            db.add(db_ident)
+            db.commit()
+            db.refresh(db_ident)
+            id_map[tmp["identity_id"]] = db_ident.id
+            db.add(BlurSelection(video_id=video_id, identity_id=db_ident.id, should_blur=True))
+
+        db.commit()
+
+        for tmp_id, real_id in id_map.items():
+            db.query(DetectedFace).filter(
+                DetectedFace.video_id == video_id,
+                DetectedFace.identity_id == tmp_id,
+            ).update({"identity_id": real_id})
+
+        fps = video.fps
+        for real_id in id_map.values():
+            faces = db.query(DetectedFace).filter(DetectedFace.identity_id == real_id).order_by(DetectedFace.frame_number).all()
+            for face in faces:
+                ts = (face.frame_number / fps) * 1000
+                db.add(TimelineEntry(identity_id=real_id, frame_number=face.frame_number, timestamp_ms=ts))
+
+        db.commit()
+        video.status = "detection_complete"
+        db.commit()
+        processing_status[video_id] = {"status": "completed", "progress": 100}
+
+    except Exception as e:
+        processing_status[video_id] = {"status": "error", "error": str(e)}
+        print(f"[ClientRecognition] Error: {e}")
+    finally:
+        db.close()
+
+@app.post("/api/submit-detections/{video_id}")
+async def submit_client_detections(
+    video_id: int,
+    req: ClientDetectionsRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
+    """Accept bounding boxes detected client-side (browser ONNX) and run
+    server-side face recognition + identity matching as a background task."""
+    video = db.query(Video).filter(Video.id == video_id).first()
+    if not video:
+        raise HTTPException(404, "Video not found")
+
+    frame_dets = [
+        {
+            "frame_number": fd.frame_number,
+            "detections": [
+                {"bbox": {"x1": d.bbox.x1, "y1": d.bbox.y1, "x2": d.bbox.x2, "y2": d.bbox.y2}, "confidence": d.confidence}
+                for d in fd.detections
+            ],
+        }
+        for fd in req.frame_detections
+    ]
+    background_tasks.add_task(_recognition_pipeline_from_client, video_id, frame_dets)
+    return {"status": "processing"}
+
 @app.get("/api/recognized-persons/{video_id}")
 async def get_recognized_persons(video_id: int, db: Session = Depends(get_db)):
     identities = db.query(Identity).filter(Identity.video_id == video_id).all()
@@ -596,7 +830,7 @@ async def render_preview(video_id: int, blur_type: str = Form("gaussian"), blur_
         })
         
     manual_boxes_db = db.query(ManualBlurBox).filter(ManualBlurBox.video_id == video_id).all()
-    manual_boxes = [{"start_frame_number": b.start_frame_number, "x": b.x, "y": b.y, "width": b.width, "height": b.height, "is_tracking": b.is_tracking} for b in manual_boxes_db]
+    manual_boxes = [{"start_frame_number": b.start_frame_number, "end_frame_number": b.end_frame_number, "x": b.x, "y": b.y, "width": b.width, "height": b.height, "is_tracking": b.is_tracking, "engine_preset": b.engine_preset or "gaussian"} for b in manual_boxes_db]
         
     ext = video.original_path.split('.')[-1].lower() if video.original_path else "mp4"
     is_image = ext in ALLOWED_IMAGE_EXT
@@ -633,7 +867,7 @@ async def serve_video(video_id: int, v_type: str, db: Session = Depends(get_db))
     ext = path.split('.')[-1].lower()
     is_image = ext in ALLOWED_IMAGE_EXT
     media_type = f"image/{ext}" if is_image else "video/mp4"
-    return FileResponse(path, media_type=media_type)
+    return FileResponse(path, media_type=media_type, headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"})
 
 @app.post("/api/export-video/{video_id}")
 async def export_video(video_id: int, blur_type: str = Form("gaussian"), blur_strength: int = Form(51), sticker_image: str = Form(None), db: Session = Depends(get_db)):
@@ -655,7 +889,7 @@ async def export_video(video_id: int, blur_type: str = Form("gaussian"), blur_st
         })
         
     manual_boxes_db = db.query(ManualBlurBox).filter(ManualBlurBox.video_id == video_id).all()
-    manual_boxes = [{"start_frame_number": b.start_frame_number, "x": b.x, "y": b.y, "width": b.width, "height": b.height, "is_tracking": b.is_tracking} for b in manual_boxes_db]
+    manual_boxes = [{"start_frame_number": b.start_frame_number, "end_frame_number": b.end_frame_number, "x": b.x, "y": b.y, "width": b.width, "height": b.height, "is_tracking": b.is_tracking, "engine_preset": b.engine_preset or "gaussian"} for b in manual_boxes_db]
         
     ext = video.original_path.split('.')[-1].lower() if video.original_path else "mp4"
     is_image = ext in ALLOWED_IMAGE_EXT

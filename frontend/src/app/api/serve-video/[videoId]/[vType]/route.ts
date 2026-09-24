@@ -5,35 +5,40 @@ const API_URL = process.env.FASTAPI_URL || 'http://localhost:8000';
 export async function GET(req: NextRequest, { params }: { params: Promise<{ videoId: string, vType: string }> }) {
     try {
         const { videoId, vType } = await params;
-        
-        // Fetch the video from the backend
-        const res = await fetch(`${API_URL}/api/serve-video/${videoId}/${vType}`);
-        
-        if (!res.ok) {
+
+        // Forward Range header for video seeking support
+        const rangeHeader = req.headers.get('range');
+        const fetchHeaders: Record<string, string> = {};
+        if (rangeHeader) {
+            fetchHeaders['Range'] = rangeHeader;
+        }
+
+        const res = await fetch(`${API_URL}/api/serve-video/${videoId}/${vType}`, {
+            headers: fetchHeaders,
+        });
+
+        if (!res.ok && res.status !== 206) {
             return new NextResponse('Video not found', { status: res.status });
         }
-        
-        // Forward the backend response stream to the client
+
+        const contentType = res.headers.get('Content-Type') || 'video/mp4';
         const headers = new Headers();
-        headers.set('Content-Type', res.headers.get('Content-Type') || 'video/mp4');
-        headers.set('Content-Length', res.headers.get('Content-Length') || '');
-        if (res.headers.has('Accept-Ranges')) {
-            headers.set('Accept-Ranges', res.headers.get('Accept-Ranges')!);
+        headers.set('Content-Type', contentType);
+
+        // Copy range-related headers for proper video streaming
+        const forwardHeaders = ['Content-Length', 'Content-Range', 'Accept-Ranges'];
+        for (const h of forwardHeaders) {
+            const val = res.headers.get(h);
+            if (val) headers.set(h, val);
         }
-        if (res.headers.has('Content-Range')) {
-            headers.set('Content-Range', res.headers.get('Content-Range')!);
-        }
-        if (res.headers.has('content-disposition')) {
-            headers.set('Content-Disposition', res.headers.get('content-disposition')!);
-        } else {
-            const ext = res.headers.get('Content-Type')?.includes('image') ? 'jpg' : 'mp4';
-            headers.set('Content-Disposition', `attachment; filename="blurred_${videoId}.${ext}"`);
-        }
+
+        // Always inline — never force download for video playback
+        headers.set('Content-Disposition', 'inline');
+        headers.set('Cache-Control', 'no-store');
 
         return new NextResponse(res.body, {
             status: res.status,
-            statusText: res.statusText,
-            headers: headers,
+            headers,
         });
     } catch (e: any) {
         return new NextResponse(e.message, { status: 500 });
