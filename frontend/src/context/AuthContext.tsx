@@ -17,8 +17,8 @@ interface AuthContextType {
   isAuthModalOpen: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
-  login: (email: str, password: str) => Promise<void>;
-  register: (email: str, password: str, fullName?: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, fullName?: string) => Promise<void>;
   googleLogin: (googleData: { email: string; google_id: string; full_name?: string; avatar_url?: string }) => Promise<void>;
   logout: () => void;
 }
@@ -54,12 +54,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsAuthModalOpen(false);
   };
 
-  const login = async (email: str, password: str) => {
+  const login = async (email: string, password: string) => {
     const res = await api.loginUser({ email, password });
     handleAuthSuccess(res);
   };
 
-  const register = async (email: str, password: str, fullName?: string) => {
+  const register = async (email: string, password: string, fullName?: string) => {
     const res = await api.registerUser({ email, password, full_name: fullName });
     handleAuthSuccess(res);
   };
