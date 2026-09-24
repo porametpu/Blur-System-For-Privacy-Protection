@@ -79,7 +79,21 @@ export default function VideoPreviewPlayer({ src, isLoading = false }: VideoPrev
     }
   };
   
+  // Reload the video element whenever the src changes.
+  // The browser <video> element does NOT automatically pick up src attribute
+  // changes after mount — we must call .load() explicitly.
+  useEffect(() => {
+    if (videoRef.current && src) {
+      videoRef.current.load();
+      setIsPlaying(false);
+      setProgress(0);
+      setCurrentTime('00:00');
+      setDuration('00:00');
+    }
+  }, [src]);
+
   const handleEnded = () => setIsPlaying(false);
+
 
   return (
     <div className="relative rounded-3xl overflow-hidden bg-black border-4 border-slate-800 aspect-video shadow-2xl group w-full max-w-4xl mx-auto fade-slide-in">

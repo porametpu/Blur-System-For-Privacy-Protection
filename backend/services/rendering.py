@@ -37,7 +37,9 @@ class RenderingService:
             if roi.size == 0:
                 continue
                 
-            if blur_type == "gaussian":
+            r_type = r.get("blur_type") or blur_type
+
+            if r_type == "gaussian":
                 # Ensure kernel size isn't larger than ROI
                 actual_k_size = min(k_size, min(roi.shape[0], roi.shape[1]))
                 if actual_k_size % 2 == 0:
@@ -45,17 +47,25 @@ class RenderingService:
                 if actual_k_size >= 3:
                     roi = cv2.GaussianBlur(roi, (actual_k_size, actual_k_size), 0)
             
-            elif blur_type == "pixelate":
+            elif r_type == "pixelate":
                 rh, rw = roi.shape[:2]
                 div = max(2, int(blur_strength / 4))
                 sm_w, sm_h = max(1, rw // div), max(1, rh // div)
                 sm = cv2.resize(roi, (sm_w, sm_h), interpolation=cv2.INTER_LINEAR)
                 roi = cv2.resize(sm, (rw, rh), interpolation=cv2.INTER_NEAREST)
                 
-            elif blur_type == "black":
+            elif r_type == "black":
                 roi = np.zeros_like(roi)
 
-            elif blur_type == "sticker" and sticker_img is not None:
+            elif r_type == "frosted":
+                actual_k_size = min(k_size + 10, min(roi.shape[0], roi.shape[1]))
+                if actual_k_size % 2 == 0:
+                    actual_k_size -= 1
+                if actual_k_size >= 3:
+                    blurred = cv2.GaussianBlur(roi, (actual_k_size, actual_k_size), 0)
+                    roi = cv2.addWeighted(blurred, 0.75, np.full_like(blurred, 255), 0.25, 0)
+
+            elif r_type == "sticker" and sticker_img is not None:
                 rh, rw = roi.shape[:2]
                 # Resize sticker to fit region
                 sticker_resized = cv2.resize(sticker_img, (rw, rh), interpolation=cv2.INTER_AREA)
@@ -201,7 +211,8 @@ class RenderingService:
         
         frame_idx = 0
         manual_boxes = manual_boxes or []
-        active_trackers = [] # list of cv2.Tracker
+        active_trackers: list[tuple[int, any]] = []  # list of (box_index, cv2.Tracker)
+        initialized_tracker_indices: set[int] = set()  # which manual_boxes already have a tracker
 
         # Check if legacy tracker exists (opencv-contrib) or standard
         def create_tracker():
@@ -233,40 +244,75 @@ class RenderingService:
                 if should_blur and "bbox" in face:
                     regions_to_blur.append(face["bbox"])
                     
-            # Apply static boxes that have started
-            for mb in manual_boxes:
-                # If it's a static box (is_tracking == False) and we are past its start frame
-                if not mb.get("is_tracking", True) and frame_idx >= mb.get("start_frame_number", 0):
+            # Process manual boxes for current frame
+            for i, mb in enumerate(manual_boxes):
+                start_frame = mb.get("start_frame_number", 0)
+                end_frame   = mb.get("end_frame_number")
+                is_tracking = mb.get("is_tracking", False)
+                box_effect  = mb.get("engine_preset") or blur_type
+
+                if frame_idx < start_frame or (end_frame is not None and frame_idx > end_frame):
+                    continue
+
+                if not is_tracking:
                     regions_to_blur.append({
-                        "x1": mb["x"], "y1": mb["y"], 
-                        "x2": mb["x"] + mb["width"], "y2": mb["y"] + mb["height"]
+                        "x1": mb["x"], "y1": mb["y"],
+                        "x2": mb["x"] + mb["width"], "y2": mb["y"] + mb["height"],
+                        "blur_type": box_effect
                     })
-                    
-            # Initialize new manual trackers starting at this frame
-            for mb in manual_boxes:
-                if mb.get("is_tracking", True) and mb.get("start_frame_number") == frame_idx:
+                elif is_tracking and i not in initialized_tracker_indices:
                     tracker = create_tracker()
                     if tracker is not None:
-                        # Tracker expects (x, y, w, h)
                         bbox = (mb["x"], mb["y"], mb["width"], mb["height"])
-                        tracker.init(frame, bbox)
-                        active_trackers.append(tracker)
-                    else:
-                        # Fallback to static box if no tracker
-                        regions_to_blur.append({
-                            "x1": mb["x"], "y1": mb["y"], 
-                            "x2": mb["x"] + mb["width"], "y2": mb["y"] + mb["height"]
-                        })
-            
+                        try:
+                            if tracker.init(frame, bbox):
+                                active_trackers.append((i, tracker))
+                                initialized_tracker_indices.add(i)
+                        except Exception:
+                            pass
+                    # Always render current box position on init / fallback
+                    regions_to_blur.append({
+                        "x1": mb["x"], "y1": mb["y"],
+                        "x2": mb["x"] + mb["width"], "y2": mb["y"] + mb["height"],
+                        "blur_type": box_effect
+                    })
+
             # Update active trackers
             retained_trackers = []
-            for tracker in active_trackers:
-                success, box = tracker.update(frame)
+            for (box_idx, tracker) in active_trackers:
+                mb = manual_boxes[box_idx]
+                start_frame = mb.get("start_frame_number", 0)
+                end_frame   = mb.get("end_frame_number")
+                box_effect  = mb.get("engine_preset") or blur_type
+
+                if frame_idx <= start_frame:
+                    retained_trackers.append((box_idx, tracker))
+                    continue
+
+                if end_frame is not None and frame_idx > end_frame:
+                    continue  # Range expired
+
+                success = False
+                try:
+                    success, box = tracker.update(frame)
+                except Exception:
+                    success = False
+
                 if success:
                     x, y, w, h = [int(v) for v in box]
-                    regions_to_blur.append({"x1": x, "y1": y, "x2": x + w, "y2": y + h})
-                    retained_trackers.append(tracker)
+                    regions_to_blur.append({"x1": x, "y1": y, "x2": x + w, "y2": y + h, "blur_type": box_effect})
+                    retained_trackers.append((box_idx, tracker))
+                else:
+                    # Fallback to static coordinates if tracker loses target
+                    regions_to_blur.append({
+                        "x1": mb["x"], "y1": mb["y"],
+                        "x2": mb["x"] + mb["width"], "y2": mb["y"] + mb["height"],
+                        "blur_type": box_effect
+                    })
+                    retained_trackers.append((box_idx, tracker))
+
             active_trackers = retained_trackers
+
 
             if regions_to_blur:
                 frame = RenderingService.apply_effect_to_frame(frame, regions_to_blur, blur_type, blur_strength, sticker_img)

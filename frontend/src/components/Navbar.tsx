@@ -62,8 +62,11 @@ export default function Navbar() {
             History
           </Link>
           <Link
-            href="#"
-            className="text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-slate-300 transition-colors"
+            href="/?tab=settings"
+            className={`text-sm font-bold transition-colors ${currentTab === 'settings'
+              ? 'text-blue-500'
+              : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-300'
+              }`}
           >
             Settings
           </Link>
@@ -87,9 +90,9 @@ export default function Navbar() {
               </button>
 
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 py-2 z-50">
-                  <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800 mb-2">
-                    <p className="text-sm font-black text-slate-800 dark:text-slate-200 truncate">{user.full_name || 'User'}</p>
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50">
+                  <div className="px-4 py-2 border-b border-slate-100 mb-2">
+                    <p className="text-sm font-black text-slate-800 truncate">{user.full_name || 'User'}</p>
                     <p className="text-xs font-medium text-slate-500 truncate">{user.email}</p>
                   </div>
                   <button
