@@ -39,12 +39,16 @@ export type AppStep = 'upload' | 'tools_selection' | 'face_map' | 'preview' | 'k
 
 export type BlurType = 'gaussian' | 'pixelate' | 'black' | 'sticker';
 
+export type EnginePreset = 'gaussian' | 'pixelate' | 'black' | 'frosted';
+
 export interface ManualBlurBox {
   id?: number;
   start_frame_number: number;
+  end_frame_number?: number;   // undefined = until end of video
   x: number;
   y: number;
   width: number;
   height: number;
   is_tracking?: boolean;
+  engine_preset?: EnginePreset;
 }
