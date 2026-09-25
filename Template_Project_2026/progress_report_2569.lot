@@ -1,15 +1,17 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {1}{\ignorespaces แนวคิดที่เกี่ยวข้องและการนำไปใช้ในระบบ}}{10}{table.caption.9}%
+\contentsline {table}{\numberline {1}{\ignorespaces ผลเปรียบเทียบ RetinaFace และ SCRFD ภายใต้โปรโตคอลเดียวกัน}}{5}{table.caption.5}%
+\contentsline {table}{\numberline {2}{\ignorespaces การเปรียบเทียบ YOLO26, RetinaFace และ SCRFD สำหรับงานปกปิดใบหน้า}}{6}{table.2.2}%
+\contentsline {table}{\numberline {3}{\ignorespaces แนวคิดที่เกี่ยวข้องและการนำไปใช้ในระบบ}}{14}{table.caption.10}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {2}{\ignorespaces ซอฟต์แวร์และไลบรารีหลักที่ใช้ในโครงงาน}}{27}{table.caption.26}%
+\contentsline {table}{\numberline {4}{\ignorespaces ซอฟต์แวร์และไลบรารีหลักที่ใช้ในโครงงาน}}{31}{table.caption.27}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3}{\ignorespaces ความต้องการเชิงฟังก์ชันของระบบ}}{28}{table.caption.27}%
-\contentsline {table}{\numberline {4}{\ignorespaces โครงสร้างข้อมูลหลักของระบบ}}{29}{table.caption.28}%
-\contentsline {table}{\numberline {5}{\ignorespaces ความก้าวหน้าของระบบในรอบปัจจุบัน}}{34}{table.caption.36}%
-\contentsline {table}{\numberline {6}{\ignorespaces การตรวจสอบระบบเบื้องต้น}}{35}{table.caption.37}%
+\contentsline {table}{\numberline {5}{\ignorespaces ความต้องการเชิงฟังก์ชันของระบบ}}{32}{table.caption.28}%
+\contentsline {table}{\numberline {6}{\ignorespaces โครงสร้างข้อมูลหลักของระบบ}}{33}{table.caption.29}%
+\contentsline {table}{\numberline {7}{\ignorespaces ความก้าวหน้าของระบบในรอบปัจจุบัน}}{38}{table.caption.37}%
+\contentsline {table}{\numberline {8}{\ignorespaces การตรวจสอบระบบเบื้องต้น}}{39}{table.caption.38}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {7}{\ignorespaces เปรียบเทียบประสิทธิภาพของโมเดลตรวจจับใบหน้า YOLOv26n, YuNet, RetinaFace และ MTCNN บนชุดข้อมูล WIDER FACE โดยใช้ตัวชี้วัด AP (Average Precision) และ Latency (เวลาในการประมวลผลต่อภาพ) ที่ความละเอียด 320x320 และ 640x640 ที่ทำงานบน ONNX}}{36}{table.caption.38}%
-\contentsline {table}{\numberline {8}{\ignorespaces สรุปผลเทียบกับวัตถุประสงค์}}{37}{table.caption.39}%
-\contentsline {table}{\numberline {9}{\ignorespaces ปัญหา อุปสรรค และแนวทางแก้ไข}}{38}{table.caption.40}%
-\contentsline {table}{\numberline {10}{\ignorespaces รายการ API หลักของ Blur System}}{42}{table.caption.42}%
+\contentsline {table}{\numberline {9}{\ignorespaces เปรียบเทียบประสิทธิภาพของโมเดลตรวจจับใบหน้า YOLOv26n, YuNet, RetinaFace และ MTCNN บนชุดข้อมูล WIDER FACE โดยใช้ตัวชี้วัด AP (Average Precision) และ Latency (เวลาในการประมวลผลต่อภาพ) ที่ความละเอียด 320x320 และ 640x640 ที่ทำงานบน ONNX}}{40}{table.caption.39}%
+\contentsline {table}{\numberline {10}{\ignorespaces สรุปผลเทียบกับวัตถุประสงค์}}{41}{table.caption.40}%
+\contentsline {table}{\numberline {11}{\ignorespaces ปัญหา อุปสรรค และแนวทางแก้ไข}}{42}{table.caption.41}%
+\contentsline {table}{\numberline {12}{\ignorespaces รายการ API หลักของ Blur System}}{47}{table.caption.43}%

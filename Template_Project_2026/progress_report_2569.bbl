@@ -5,14 +5,81 @@ J.~Redmon, S.~Divvala, R.~Girshick, and A.~Farhadi, ``You only look once:
   Unified, real-time object detection,'' in {\em Proceedings of the IEEE
   Conference on Computer Vision and Pattern Recognition}, pp.~779--788, 2016.
 
+\bibitem{jocher2026yolo26}
+G.~Jocher, J.~Qiu, M.~Liu, S.~Lyu, F.~C. Akyon, and M.~E. Kalfaoglu,
+  ``Ultralytics {YOLO26}: Unified real-time end-to-end vision models.''
+  \url{https://arxiv.org/abs/2606.03748}, 2026.
+
+\bibitem{deng2020retinaface}
+J.~Deng, J.~Guo, E.~Ververas, I.~Kotsia, and S.~Zafeiriou, ``Retinaface:
+  Single-shot multi-level face localisation in the wild,'' in {\em Proceedings
+  of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pp.~5203--5212, 2020.
+
+\bibitem{guo2021scrfd}
+J.~Guo, J.~Deng, A.~Lattas, and S.~Zafeiriou, ``Sample and computation
+  redistribution for efficient face detection.''
+  \url{https://arxiv.org/abs/2105.04714}, 2021.
+
 \bibitem{deng2019arcface}
 J.~Deng, J.~Guo, N.~Xue, and S.~Zafeiriou, ``Arcface: Additive angular margin
   loss for deep face recognition,'' in {\em Proceedings of the IEEE/CVF
   Conference on Computer Vision and Pattern Recognition}, pp.~4690--4699, 2019.
 
+\bibitem{bewley2016sort}
+A.~Bewley, Z.~Ge, L.~Ott, F.~Ramos, and B.~Upcroft, ``Simple online and
+  realtime tracking,'' in {\em 2016 IEEE International Conference on Image
+  Processing}, pp.~3464--3468, IEEE, 2016.
+
 \bibitem{bradski2000opencv}
 G.~Bradski, ``The opencv library,'' {\em Dr. Dobb's Journal of Software Tools},
   vol.~25, no.~11, pp.~120--126, 2000.
+
+\bibitem{fastapi}
+{FastAPI}, ``Fastapi documentation.'' \url{https://fastapi.tiangolo.com/}.
+
+\bibitem{iiieta_anpr}
+{IIETA}, ``A comprehensive literature review of vehicle license plate detection
+  methods.'' \url{https://doi.org/10.18280/ts.410304}.
+\newblock Accessed from the source list in the attached Word document.
+
+\bibitem{biagioni2005}
+E.~Biagioni, S.~Olariu, and A.~Wadaa, ``Minitrack summary: Wireless sensor
+  networks,'' in {\em Proceedings of the 38th Annual Hawaii International
+  Conference on System Sciences}, pp.~323--323, 2005.
+
+\bibitem{mdpi_anpr}
+``Enhanced {YOLOv8}-based system for automatic number plate recognition.''
+  \url{https://www.mdpi.com/2227-7080/12/9/164}.
+\newblock Retrieved January 9, 2026, as recorded in the attached Word document.
+
+\bibitem{pii_label}
+``Privacy preserving personal identifiable information ({PII}) label detection
+  using machine learning.''
+  \url{https://www.researchgate.net/publication/375880997_Privacy_Preserving_Personal_Identifiable_Information_PII_Label_Detection_Using_Machine_Learning}.
+\newblock Retrieved January 9, 2026, as recorded in the attached Word document.
+
+\bibitem{anpr_dataset}
+``Using {ANPR} data to create an anonymized linked open dataset on urban
+  bustle.''
+  \url{https://www.researchgate.net/publication/360161980_Using_ANPR_data_to_create_an_anonymized_linked_open_dataset_on_urban_bustle}.
+\newblock Retrieved January 9, 2026, as recorded in the attached Word document.
+
+\bibitem{rot2022}
+P.~Rot, P.~Peer, and V.~Struc, ``Privacyprober: Assessment and detection of
+  soft-biometric privacy-enhancing techniques.''
+  \url{https://doi.org/10.48550/arXiv.2211.08864}, 2022.
+
+\bibitem{sindagi2017}
+V.~A. Sindagi and V.~M. Patel, ``{CNN}-based cascaded multi-task learning of
+  high-level prior and density estimation for crowd counting,'' in {\em 2017
+  IEEE 14th International Conference on Advanced Video and Signal Based
+  Surveillance}, pp.~1--6, 2017.
+
+\bibitem{sun2025}
+Z.~Sun and J.~Liu, ``Ensuring privacy in face recognition: A survey on data
+  generation, inference and storage,'' {\em Discover Applied Sciences}, vol.~7,
+  no.~441, 2025.
 
 \bibitem{viola2001}
 P.~Viola and M.~Jones, ``Rapid object detection using a boosted cascade of
@@ -20,17 +87,23 @@ P.~Viola and M.~Jones, ``Rapid object detection using a boosted cascade of
   Conference on Computer Vision and Pattern Recognition}, vol.~1,
   pp.~I--511--I--518, 2001.
 
+\bibitem{vizcarra2024}
+C.~Vizcarra, A.~Alahmed, A.~Algosaibi, M.~Alnaeem, A.~Aldalbahi, N.~Aljaafari,
+  A.~Sawalmeh, M.~Nazzal, A.~Khreishah, A.~Alhumam, and M.~Anam, ``Deep
+  learning adversarial attacks and defenses on license plate recognition
+  system,'' {\em Cluster Computing}, vol.~80, no.~8, pp.~11627--11644, 2024.
+
+\bibitem{lindevs_yolov8}
+{Ultralytics}, ``{YOLOv26n}-face training results with the {WIDER FACE}
+  dataset.'' \url{https://platform.ultralytics.com/ultralytics/yolo26}.
+\newblock Image source recorded in the attached Word document.
+
 \bibitem{opencv_haar_features}
 {OpenCV Development Team}, ``Face detection using haar cascades.''
   \url{https://docs.opencv.org/3.0-alpha/doc/py_tutorials/py_objdetect/py_face_detection/py_face_detection.html}.
 \newblock
   แหล่งที่มาของภาพคุณลักษณะ
   Haar; สืบค้นเมื่อ 4 กันยายน 2026.
-
-\bibitem{sun2025}
-Z.~Sun and J.~Liu, ``Ensuring privacy in face recognition: A survey on data
-  generation, inference and storage,'' {\em Discover Applied Sciences}, vol.~7,
-  no.~441, 2025.
 
 \bibitem{geeksforgeeks2021eigenfaces}
 {GeeksforGeeks}, ``Face recognition using eigenfaces ({PCA} algorithm).''
@@ -49,62 +122,5 @@ Z.~Sun and J.~Liu, ``Ensuring privacy in face recognition: A survey on data
 A.~Albiol, D.~Monzo, A.~Martin, J.~Sastre, and A.~Albiol, ``Face recognition
   using {HOG--EBGM},'' {\em Pattern Recognition Letters}, vol.~29, no.~10,
   pp.~1537--1543, 2008.
-
-\bibitem{bewley2016sort}
-A.~Bewley, Z.~Ge, L.~Ott, F.~Ramos, and B.~Upcroft, ``Simple online and
-  realtime tracking,'' in {\em 2016 IEEE International Conference on Image
-  Processing}, pp.~3464--3468, IEEE, 2016.
-
-\bibitem{fastapi}
-{FastAPI}, ``Fastapi documentation.'' \url{https://fastapi.tiangolo.com/}.
-
-\bibitem{rot2022}
-P.~Rot, P.~Peer, and V.~Struc, ``Privacyprober: Assessment and detection of
-  soft-biometric privacy-enhancing techniques.''
-  \url{https://doi.org/10.48550/arXiv.2211.08864}, 2022.
-
-\bibitem{iiieta_anpr}
-{IIETA}, ``A comprehensive literature review of vehicle license plate detection
-  methods.'' \url{https://doi.org/10.18280/ts.410304}.
-\newblock Accessed from the source list in the attached Word document.
-
-\bibitem{mdpi_anpr}
-``Enhanced {YOLOv8}-based system for automatic number plate recognition.''
-  \url{https://www.mdpi.com/2227-7080/12/9/164}.
-\newblock Retrieved January 9, 2026, as recorded in the attached Word document.
-
-\bibitem{vizcarra2024}
-C.~Vizcarra, A.~Alahmed, A.~Algosaibi, M.~Alnaeem, A.~Aldalbahi, N.~Aljaafari,
-  A.~Sawalmeh, M.~Nazzal, A.~Khreishah, A.~Alhumam, and M.~Anam, ``Deep
-  learning adversarial attacks and defenses on license plate recognition
-  system,'' {\em Cluster Computing}, vol.~80, no.~8, pp.~11627--11644, 2024.
-
-\bibitem{anpr_dataset}
-``Using {ANPR} data to create an anonymized linked open dataset on urban
-  bustle.''
-  \url{https://www.researchgate.net/publication/360161980_Using_ANPR_data_to_create_an_anonymized_linked_open_dataset_on_urban_bustle}.
-\newblock Retrieved January 9, 2026, as recorded in the attached Word document.
-
-\bibitem{biagioni2005}
-E.~Biagioni, S.~Olariu, and A.~Wadaa, ``Minitrack summary: Wireless sensor
-  networks,'' in {\em Proceedings of the 38th Annual Hawaii International
-  Conference on System Sciences}, pp.~323--323, 2005.
-
-\bibitem{pii_label}
-``Privacy preserving personal identifiable information ({PII}) label detection
-  using machine learning.''
-  \url{https://www.researchgate.net/publication/375880997_Privacy_Preserving_Personal_Identifiable_Information_PII_Label_Detection_Using_Machine_Learning}.
-\newblock Retrieved January 9, 2026, as recorded in the attached Word document.
-
-\bibitem{sindagi2017}
-V.~A. Sindagi and V.~M. Patel, ``{CNN}-based cascaded multi-task learning of
-  high-level prior and density estimation for crowd counting,'' in {\em 2017
-  IEEE 14th International Conference on Advanced Video and Signal Based
-  Surveillance}, pp.~1--6, 2017.
-
-\bibitem{lindevs_yolov8}
-{Ultralytics}, ``{YOLOv26n}-face training results with the {WIDER FACE}
-  dataset.'' \url{https://platform.ultralytics.com/ultralytics/yolo26}.
-\newblock Image source recorded in the attached Word document.
 
 \end{thebibliography}

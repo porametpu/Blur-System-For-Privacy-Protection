@@ -1,6 +1,6 @@
-PWD D:\Blur system project\Blur-System-For-Privacy-Protection\Template_Project_2026
+PWD d:\Blur system project\Blur-System-For-Privacy-Protection\Template_Project_2026
 INPUT C:\Users\ACER\AppData\Local\MiKTeX\miktex\data\le\xetex\xelatex.fmt
-INPUT progress_report_2569.tex
+INPUT d:\Blur system project\Blur-System-For-Privacy-Protection\Template_Project_2026\progress_report_2569.tex
 OUTPUT progress_report_2569.log
 INPUT .\cskkuproject.cls
 INPUT cskkuproject.cls
@@ -334,7 +334,6 @@ OUTPUT progress_report_2569.out
 INPUT .\theme\kku-logo.png
 INPUT .\theme\kku-logo.png
 INPUT .\theme\kku-logo.png
-OUTPUT progress_report_2569.xdv
 INPUT .\progress_abstractTH.tex
 INPUT .\progress_abstractTH.tex
 INPUT .\progress_abstractTH.tex
@@ -405,6 +404,12 @@ INPUT .\progress_chapter2.tex
 INPUT .\progress_chapter2.tex
 INPUT .\progress_chapter2.tex
 INPUT progress_chapter2.tex
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi10.tfm
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmex10.tfm
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
+INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr10.tfm
 INPUT .\images-progress\Haar feature.jpg
 INPUT .\images-progress\Haar feature.jpg
 INPUT .\images-progress\Haar feature.jpg
@@ -495,12 +500,6 @@ INPUT .\progress_chapter5.tex
 INPUT .\progress_chapter5.tex
 INPUT .\progress_chapter5.tex
 INPUT progress_chapter5.tex
-INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi10.tfm
-INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm
-INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmex10.tfm
-INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
-INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
-INPUT C:\Users\ACER\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr10.tfm
 INPUT .\progress_report_2569.bbl
 INPUT .\progress_report_2569.bbl
 INPUT progress_report_2569.bbl

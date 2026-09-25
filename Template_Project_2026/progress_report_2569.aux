@@ -16,8 +16,6 @@
 \@writefile{toc}{\contentsline {chapter}{สารบัญภาพ}{ฉ}{chapter*.3}\protected@file@percent }
 \HyPL@Entry{7<</P(\376\377\016\012)>>}
 \@writefile{toc}{\contentsline {chapter}{สารบัญตาราง}{ช}{chapter*.4}\protected@file@percent }
-\citation{redmon2016yolo}
-\citation{deng2019arcface}
 \HyPL@Entry{8<</S/D>>}
 \@writefile{toc}{\contentsline {chapter}{\numberline {1}บทนำ}{1}{chapter.1}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
@@ -28,173 +26,176 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.3.1}ขอบเขต}{1}{subsection.1.3.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.3.2}ข้อจำกัดของโครงงาน}{2}{subsection.1.3.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {1.4}ประโยชน์ที่คาดว่าจะได้รับ}{2}{section.1.4}\protected@file@percent }
-\citation{bradski2000opencv}
-\citation{redmon2016yolo}
-\citation{viola2001}
 \@writefile{toc}{\contentsline {chapter}{\numberline {2}ทฤษฎีและงานวิจัยที่เกี่ยวข้อง}{3}{chapter.2}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{toc}{\contentsline {section}{\numberline {2.1}ทฤษฎีที่เกี่ยวข้อง}{3}{section.2.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1.1}การปกปิดข้อมูลในภาพและวิดีโอ}{3}{subsection.2.1.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1.2}Convolutional Neural Network(CNN)}{3}{subsection.2.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.3}การตรวจจับใบหน้าหรือวัตถุด้วย YOLO}{3}{subsection.2.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.4}วิธีตรวจจับใบหน้าแบบ Haar Cascade}{3}{subsection.2.1.4}\protected@file@percent }
-\citation{opencv_haar_features}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces ตัวอย่างคุณลักษณะ Haar แบบขอบ แบบเส้น และแบบสี่สี่เหลี่ยมที่ใช้ในตัวจำแนกแบบ Cascade}}{4}{figure.caption.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.3}การตรวจจับใบหน้าด้วย YOLO26}{3}{subsection.2.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.4}การศึกษาเปรียบเทียบแบบจำลองตรวจจับใบหน้า}{4}{subsection.2.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(1)}YOLO26}{4}{subsubsection.2.1.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(2)}RetinaFace}{4}{subsubsection.2.1.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(3)}SCRFD}{5}{subsubsection.2.1.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(4)}หลักฐานเชิงปริมาณภายใต้เงื่อนไขเดียวกัน}{5}{subsubsection.2.1.4.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces ผลเปรียบเทียบ RetinaFace และ SCRFD ภายใต้โปรโตคอลเดียวกัน}}{5}{table.caption.5}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig:haar-features}{{1}{4}{ตัวอย่างคุณลักษณะ Haar แบบขอบ แบบเส้น และแบบสี่สี่เหลี่ยมที่ใช้ในตัวจำแนกแบบ Cascade}{figure.caption.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.5}Support Vector Machine(SVM)}{4}{subsection.2.1.5}\protected@file@percent }
-\citation{sun2025}
-\citation{geeksforgeeks2021eigenfaces}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.6}การรู้จำใบหน้าและการแทนลักษณะ}{5}{subsection.2.1.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {(1)}Principal Component Analysis และ Eigenfaces}{5}{subsubsection.2.1.6.1}\protected@file@percent }
-\citation{scholarpedia_fisherfaces}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces ตัวอย่างใบหน้าไอเกนจากกระบวนการ PCA}}{6}{figure.caption.6}\protected@file@percent }
-\newlabel{fig:pca-eigenfaces}{{2}{6}{ตัวอย่างใบหน้าไอเกนจากกระบวนการ PCA}{figure.caption.6}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {(2)}Linear Discriminant Analysis และ Fisherfaces}{6}{subsubsection.2.1.6.2}\protected@file@percent }
-\citation{albiol2008hogebgm}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces ตัวอย่างใบหน้า Fisherfaces จากกระบวนการ LDA}}{7}{figure.caption.7}\protected@file@percent }
-\newlabel{fig:lda-fisherfaces}{{3}{7}{ตัวอย่างใบหน้า Fisherfaces จากกระบวนการ LDA}{figure.caption.7}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {(3)}Elastic Bunch Graph Matching}{7}{subsubsection.2.1.6.3}\protected@file@percent }
-\citation{deng2019arcface}
-\citation{bewley2016sort}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces การเปรียบเทียบจุดสำคัญที่กำหนดด้วยมือและตรวจจับอัตโนมัติด้วย Gabor-EBGM และ HOG-EBGM}}{8}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:ebgm-landmarks}{{4}{8}{การเปรียบเทียบจุดสำคัญที่กำหนดด้วยมือและตรวจจับอัตโนมัติด้วย Gabor-EBGM และ HOG-EBGM}{figure.caption.8}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {(4)}ArcFace และการจัดกลุ่มบุคคล}{8}{subsubsection.2.1.6.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.7}การติดตามกรอบวัตถุ}{8}{subsection.2.1.7}\protected@file@percent }
-\citation{fastapi}
-\citation{rot2022}
-\citation{iiieta_anpr}
-\citation{mdpi_anpr}
-\citation{vizcarra2024}
-\citation{anpr_dataset}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.8}การตรวจจับข้อความและข้อมูลส่วนบุคคลจากข้อความ}{9}{subsection.2.1.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.9}สถาปัตยกรรมเว็บแอปพลิเคชัน}{9}{subsection.2.1.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2.2}งานวิจัยและงานที่เกี่ยวข้อง}{9}{section.2.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces แนวคิดที่เกี่ยวข้องและการนำไปใช้ในระบบ}}{10}{table.caption.9}\protected@file@percent }
-\newlabel{tab:related-approach}{{1}{10}{แนวคิดที่เกี่ยวข้องและการนำไปใช้ในระบบ}{table.caption.9}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {3}วิธีการดำเนินโครงงาน}{11}{chapter.3}\protected@file@percent }
+\newlabel{tab:face-detector-fair-benchmark}{{1}{5}{ผลเปรียบเทียบ RetinaFace และ SCRFD ภายใต้โปรโตคอลเดียวกัน}{table.caption.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(5)}ตารางเปรียบเทียบเชิงคุณภาพ}{5}{subsubsection.2.1.4.5}\protected@file@percent }
+\gdef \LT@i {\LT@entry 
+    {1}{83.66081pt}\LT@entry 
+    {1}{104.10373pt}\LT@entry 
+    {1}{104.10373pt}\LT@entry 
+    {1}{104.10373pt}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces การเปรียบเทียบ YOLO26, RetinaFace และ SCRFD สำหรับงานปกปิดใบหน้า}}{6}{table.2.2}\protected@file@percent }
+\newlabel{tab:face-detector-comparison}{{2}{6}{การเปรียบเทียบ YOLO26, RetinaFace และ SCRFD สำหรับงานปกปิดใบหน้า}{table.2.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(6)}เหตุผลในการเลือกแบบจำลองสำหรับระบบ}{7}{subsubsection.2.1.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.5}วิธีตรวจจับใบหน้าแบบ Haar Cascade}{7}{subsection.2.1.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces ตัวอย่างคุณลักษณะ Haar แบบขอบ แบบเส้น และแบบสี่สี่เหลี่ยมที่ใช้ในตัวจำแนกแบบ Cascade}}{8}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:haar-features}{{1}{8}{ตัวอย่างคุณลักษณะ Haar แบบขอบ แบบเส้น และแบบสี่สี่เหลี่ยมที่ใช้ในตัวจำแนกแบบ Cascade}{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.6}Support Vector Machine(SVM)}{8}{subsection.2.1.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.7}การรู้จำใบหน้าและการแทนลักษณะ}{9}{subsection.2.1.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(1)}Principal Component Analysis และ Eigenfaces}{9}{subsubsection.2.1.7.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces ตัวอย่างใบหน้าไอเกนจากกระบวนการ PCA}}{10}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:pca-eigenfaces}{{2}{10}{ตัวอย่างใบหน้าไอเกนจากกระบวนการ PCA}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(2)}Linear Discriminant Analysis และ Fisherfaces}{10}{subsubsection.2.1.7.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces ตัวอย่างใบหน้า Fisherfaces จากกระบวนการ LDA}}{11}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:lda-fisherfaces}{{3}{11}{ตัวอย่างใบหน้า Fisherfaces จากกระบวนการ LDA}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(3)}Elastic Bunch Graph Matching}{11}{subsubsection.2.1.7.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces การเปรียบเทียบจุดสำคัญที่กำหนดด้วยมือและตรวจจับอัตโนมัติด้วย Gabor-EBGM และ HOG-EBGM}}{12}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:ebgm-landmarks}{{4}{12}{การเปรียบเทียบจุดสำคัญที่กำหนดด้วยมือและตรวจจับอัตโนมัติด้วย Gabor-EBGM และ HOG-EBGM}{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {(4)}ArcFace และการจัดกลุ่มบุคคล}{12}{subsubsection.2.1.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.8}การติดตามกรอบวัตถุ}{12}{subsection.2.1.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.9}การตรวจจับข้อความและข้อมูลส่วนบุคคลจากข้อความ}{13}{subsection.2.1.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.10}สถาปัตยกรรมเว็บแอปพลิเคชัน}{13}{subsection.2.1.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.2}งานวิจัยและงานที่เกี่ยวข้อง}{13}{section.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces แนวคิดที่เกี่ยวข้องและการนำไปใช้ในระบบ}}{14}{table.caption.10}\protected@file@percent }
+\newlabel{tab:related-approach}{{3}{14}{แนวคิดที่เกี่ยวข้องและการนำไปใช้ในระบบ}{table.caption.10}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {3}วิธีการดำเนินโครงงาน}{15}{chapter.3}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {3.1}ขั้นตอนการดำเนินงาน}{11}{section.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.2}สถาปัตยกรรมของระบบ}{11}{section.3.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces สถาปัตยกรรมของระบบ Blur System}}{11}{figure.caption.10}\protected@file@percent }
-\newlabel{fig:architecture}{{5}{11}{สถาปัตยกรรมของระบบ Blur System}{figure.caption.10}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.3}ลำดับการประมวลผลสื่อ}{12}{section.3.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces ลำดับการประมวลผลภาพและวิดีโอ}}{12}{figure.caption.11}\protected@file@percent }
-\newlabel{fig:workflow}{{6}{12}{ลำดับการประมวลผลภาพและวิดีโอ}{figure.caption.11}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.4}แผนภาพการทำงานของระบบ}{13}{section.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Activity Diagram}{13}{subsection.3.4.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Activity Diagram การอัปโหลดสื่อเข้าสู่ระบบ}}{13}{figure.caption.12}\protected@file@percent }
-\newlabel{fig:activity-upload}{{7}{13}{Activity Diagram การอัปโหลดสื่อเข้าสู่ระบบ}{figure.caption.12}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Activity Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}}{14}{figure.caption.13}\protected@file@percent }
-\newlabel{fig:activity-auto-blur}{{8}{14}{Activity Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}{figure.caption.13}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Activity Diagram การตรวจจับและเลือกบุคคลที่ต้องการปกปิด}}{15}{figure.caption.14}\protected@file@percent }
-\newlabel{fig:activity-detect-select}{{9}{15}{Activity Diagram การตรวจจับและเลือกบุคคลที่ต้องการปกปิด}{figure.caption.14}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Activity Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}}{16}{figure.caption.15}\protected@file@percent }
-\newlabel{fig:activity-manual-control}{{10}{16}{Activity Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}{figure.caption.15}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Activity Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}}{17}{figure.caption.16}\protected@file@percent }
-\newlabel{fig:activity-image-redaction}{{11}{17}{Activity Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}{figure.caption.16}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Activity Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}}{18}{figure.caption.17}\protected@file@percent }
-\newlabel{fig:activity-preview-export}{{12}{18}{Activity Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}{figure.caption.17}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}Use Case Diagram}{19}{subsection.3.4.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Use Case Diagram ภาพรวมการใช้งานระบบ Blur System}}{19}{figure.caption.18}\protected@file@percent }
-\newlabel{fig:use-case}{{13}{19}{Use Case Diagram ภาพรวมการใช้งานระบบ Blur System}{figure.caption.18}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.3}System Sequence Diagram}{19}{subsection.3.4.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces System Sequence Diagram การอัปโหลดสื่อเข้าสู่ระบบ}}{20}{figure.caption.19}\protected@file@percent }
-\newlabel{fig:ssd-upload}{{14}{20}{System Sequence Diagram การอัปโหลดสื่อเข้าสู่ระบบ}{figure.caption.19}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces System Sequence Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}}{21}{figure.caption.20}\protected@file@percent }
-\newlabel{fig:ssd-auto-blur}{{15}{21}{System Sequence Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}{figure.caption.20}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces System Sequence Diagram การตรวจจับและจัดกลุ่มใบหน้า}}{22}{figure.caption.21}\protected@file@percent }
-\newlabel{fig:ssd-face-detection}{{16}{22}{System Sequence Diagram การตรวจจับและจัดกลุ่มใบหน้า}{figure.caption.21}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces System Sequence Diagram การเลือกบุคคลและการปกปิดแบบรายบุคคล}}{23}{figure.caption.22}\protected@file@percent }
-\newlabel{fig:ssd-selective-blur}{{17}{23}{System Sequence Diagram การเลือกบุคคลและการปกปิดแบบรายบุคคล}{figure.caption.22}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces System Sequence Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}}{24}{figure.caption.23}\protected@file@percent }
-\newlabel{fig:ssd-manual-control}{{18}{24}{System Sequence Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}{figure.caption.23}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces System Sequence Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}}{25}{figure.caption.24}\protected@file@percent }
-\newlabel{fig:ssd-image-redaction}{{19}{25}{System Sequence Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}{figure.caption.24}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces System Sequence Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}}{26}{figure.caption.25}\protected@file@percent }
-\newlabel{fig:ssd-preview-export}{{20}{26}{System Sequence Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}{figure.caption.25}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.5}เครื่องมือที่ใช้ในการดำเนินงาน}{27}{section.3.5}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces ซอฟต์แวร์และไลบรารีหลักที่ใช้ในโครงงาน}}{27}{table.caption.26}\protected@file@percent }
-\newlabel{tab:tools}{{2}{27}{ซอฟต์แวร์และไลบรารีหลักที่ใช้ในโครงงาน}{table.caption.26}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.6}แผนการทดสอบและเกณฑ์การประเมิน}{27}{section.3.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}การวิเคราะห์ ออกแบบและพัฒนาระบบ}{28}{chapter.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}ขั้นตอนการดำเนินงาน}{15}{section.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}สถาปัตยกรรมของระบบ}{15}{section.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces สถาปัตยกรรมของระบบ Blur System}}{15}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:architecture}{{5}{15}{สถาปัตยกรรมของระบบ Blur System}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}ลำดับการประมวลผลสื่อ}{16}{section.3.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces ลำดับการประมวลผลภาพและวิดีโอ}}{16}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:workflow}{{6}{16}{ลำดับการประมวลผลภาพและวิดีโอ}{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}แผนภาพการทำงานของระบบ}{17}{section.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Activity Diagram}{17}{subsection.3.4.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Activity Diagram การอัปโหลดสื่อเข้าสู่ระบบ}}{17}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:activity-upload}{{7}{17}{Activity Diagram การอัปโหลดสื่อเข้าสู่ระบบ}{figure.caption.13}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Activity Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}}{18}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:activity-auto-blur}{{8}{18}{Activity Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}{figure.caption.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Activity Diagram การตรวจจับและเลือกบุคคลที่ต้องการปกปิด}}{19}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:activity-detect-select}{{9}{19}{Activity Diagram การตรวจจับและเลือกบุคคลที่ต้องการปกปิด}{figure.caption.15}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Activity Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}}{20}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:activity-manual-control}{{10}{20}{Activity Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}{figure.caption.16}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Activity Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}}{21}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:activity-image-redaction}{{11}{21}{Activity Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}{figure.caption.17}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Activity Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}}{22}{figure.caption.18}\protected@file@percent }
+\newlabel{fig:activity-preview-export}{{12}{22}{Activity Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}{figure.caption.18}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}Use Case Diagram}{23}{subsection.3.4.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Use Case Diagram ภาพรวมการใช้งานระบบ Blur System}}{23}{figure.caption.19}\protected@file@percent }
+\newlabel{fig:use-case}{{13}{23}{Use Case Diagram ภาพรวมการใช้งานระบบ Blur System}{figure.caption.19}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.3}System Sequence Diagram}{23}{subsection.3.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces System Sequence Diagram การอัปโหลดสื่อเข้าสู่ระบบ}}{24}{figure.caption.20}\protected@file@percent }
+\newlabel{fig:ssd-upload}{{14}{24}{System Sequence Diagram การอัปโหลดสื่อเข้าสู่ระบบ}{figure.caption.20}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces System Sequence Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}}{25}{figure.caption.21}\protected@file@percent }
+\newlabel{fig:ssd-auto-blur}{{15}{25}{System Sequence Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}{figure.caption.21}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces System Sequence Diagram การตรวจจับและจัดกลุ่มใบหน้า}}{26}{figure.caption.22}\protected@file@percent }
+\newlabel{fig:ssd-face-detection}{{16}{26}{System Sequence Diagram การตรวจจับและจัดกลุ่มใบหน้า}{figure.caption.22}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces System Sequence Diagram การเลือกบุคคลและการปกปิดแบบรายบุคคล}}{27}{figure.caption.23}\protected@file@percent }
+\newlabel{fig:ssd-selective-blur}{{17}{27}{System Sequence Diagram การเลือกบุคคลและการปกปิดแบบรายบุคคล}{figure.caption.23}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces System Sequence Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}}{28}{figure.caption.24}\protected@file@percent }
+\newlabel{fig:ssd-manual-control}{{18}{28}{System Sequence Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}{figure.caption.24}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces System Sequence Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}}{29}{figure.caption.25}\protected@file@percent }
+\newlabel{fig:ssd-image-redaction}{{19}{29}{System Sequence Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}{figure.caption.25}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces System Sequence Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}}{30}{figure.caption.26}\protected@file@percent }
+\newlabel{fig:ssd-preview-export}{{20}{30}{System Sequence Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}{figure.caption.26}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.5}เครื่องมือที่ใช้ในการดำเนินงาน}{31}{section.3.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces ซอฟต์แวร์และไลบรารีหลักที่ใช้ในโครงงาน}}{31}{table.caption.27}\protected@file@percent }
+\newlabel{tab:tools}{{4}{31}{ซอฟต์แวร์และไลบรารีหลักที่ใช้ในโครงงาน}{table.caption.27}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}แผนการทดสอบและเกณฑ์การประเมิน}{31}{section.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}การวิเคราะห์ ออกแบบและพัฒนาระบบ}{32}{chapter.4}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}การวิเคราะห์ระบบ}{28}{section.4.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces ความต้องการเชิงฟังก์ชันของระบบ}}{28}{table.caption.27}\protected@file@percent }
-\newlabel{tab:functional-requirements}{{3}{28}{ความต้องการเชิงฟังก์ชันของระบบ}{table.caption.27}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}การออกแบบข้อมูลและส่วนประกอบ}{29}{section.4.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces โครงสร้างข้อมูลหลักของระบบ}}{29}{table.caption.28}\protected@file@percent }
-\newlabel{tab:data-model}{{4}{29}{โครงสร้างข้อมูลหลักของระบบ}{table.caption.28}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}การออกแบบส่วนติดต่อผู้ใช้}{29}{section.4.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces หน้าจอหลักและส่วนอัปโหลดไฟล์}}{30}{figure.caption.29}\protected@file@percent }
-\newlabel{fig:demo-home}{{21}{30}{หน้าจอหลักและส่วนอัปโหลดไฟล์}{figure.caption.29}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces หน้าจอเลือกเครื่องมือและตั้งค่าการประมวลผล}}{30}{figure.caption.30}\protected@file@percent }
-\newlabel{fig:demo-tools}{{22}{30}{หน้าจอเลือกเครื่องมือและตั้งค่าการประมวลผล}{figure.caption.30}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces หน้าจอการตรวจจับและเลือกบุคคลที่ต้องการปกปิด}}{31}{figure.caption.31}\protected@file@percent }
-\newlabel{fig:demo-detect-select}{{23}{31}{หน้าจอการตรวจจับและเลือกบุคคลที่ต้องการปกปิด}{figure.caption.31}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces หน้าจอรายการคีย์เฟรมและช่วงเวลาที่ตรวจพบบุคคล}}{32}{figure.caption.32}\protected@file@percent }
-\newlabel{fig:demo-timeline}{{24}{32}{หน้าจอรายการคีย์เฟรมและช่วงเวลาที่ตรวจพบบุคคล}{figure.caption.32}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {25}{\ignorespaces หน้าจอควบคุมและกำหนดพื้นที่ปกปิดด้วยตนเอง Manual Control}}{32}{figure.caption.33}\protected@file@percent }
-\newlabel{fig:demo-manual-control}{{25}{32}{หน้าจอควบคุมและกำหนดพื้นที่ปกปิดด้วยตนเอง Manual Control}{figure.caption.33}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {26}{\ignorespaces หน้าจอการทำงานของโหมด AI Auto-Blur}}{33}{figure.caption.34}\protected@file@percent }
-\newlabel{fig:demo-auto-blur}{{26}{33}{หน้าจอการทำงานของโหมด AI Auto-Blur}{figure.caption.34}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {27}{\ignorespaces หน้าจอตรวจสอบผลลัพธ์หลังประมวลผลก่อนส่งออกไฟล์}}{33}{figure.caption.35}\protected@file@percent }
-\newlabel{fig:demo-preview}{{27}{33}{หน้าจอตรวจสอบผลลัพธ์หลังประมวลผลก่อนส่งออกไฟล์}{figure.caption.35}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}การพัฒนาและการปรับปรุงจากภาคการศึกษาก่อนหน้า}{34}{section.4.4}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces ความก้าวหน้าของระบบในรอบปัจจุบัน}}{34}{table.caption.36}\protected@file@percent }
-\newlabel{tab:progress-update}{{5}{34}{ความก้าวหน้าของระบบในรอบปัจจุบัน}{table.caption.36}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}การตรวจจับและสร้าง Face Map}{34}{subsection.4.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}การปกปิดแบบเลือกได้และการสร้างผลลัพธ์}{34}{subsection.4.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}การปกปิดด้วยตนเองและการติดตาม}{35}{subsection.4.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.5}การตรวจสอบระบบเบื้องต้น}{35}{section.4.5}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces การตรวจสอบระบบเบื้องต้น}}{35}{table.caption.37}\protected@file@percent }
-\newlabel{tab:inspection-result}{{6}{35}{การตรวจสอบระบบเบื้องต้น}{table.caption.37}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {5}สรุปผลการดำเนินงาน}{36}{chapter.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}การวิเคราะห์ระบบ}{32}{section.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces ความต้องการเชิงฟังก์ชันของระบบ}}{32}{table.caption.28}\protected@file@percent }
+\newlabel{tab:functional-requirements}{{5}{32}{ความต้องการเชิงฟังก์ชันของระบบ}{table.caption.28}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}การออกแบบข้อมูลและส่วนประกอบ}{33}{section.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces โครงสร้างข้อมูลหลักของระบบ}}{33}{table.caption.29}\protected@file@percent }
+\newlabel{tab:data-model}{{6}{33}{โครงสร้างข้อมูลหลักของระบบ}{table.caption.29}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}การออกแบบส่วนติดต่อผู้ใช้}{33}{section.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces หน้าจอหลักและส่วนอัปโหลดไฟล์}}{34}{figure.caption.30}\protected@file@percent }
+\newlabel{fig:demo-home}{{21}{34}{หน้าจอหลักและส่วนอัปโหลดไฟล์}{figure.caption.30}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces หน้าจอเลือกเครื่องมือและตั้งค่าการประมวลผล}}{34}{figure.caption.31}\protected@file@percent }
+\newlabel{fig:demo-tools}{{22}{34}{หน้าจอเลือกเครื่องมือและตั้งค่าการประมวลผล}{figure.caption.31}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces หน้าจอการตรวจจับและเลือกบุคคลที่ต้องการปกปิด}}{35}{figure.caption.32}\protected@file@percent }
+\newlabel{fig:demo-detect-select}{{23}{35}{หน้าจอการตรวจจับและเลือกบุคคลที่ต้องการปกปิด}{figure.caption.32}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces หน้าจอรายการคีย์เฟรมและช่วงเวลาที่ตรวจพบบุคคล}}{36}{figure.caption.33}\protected@file@percent }
+\newlabel{fig:demo-timeline}{{24}{36}{หน้าจอรายการคีย์เฟรมและช่วงเวลาที่ตรวจพบบุคคล}{figure.caption.33}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {25}{\ignorespaces หน้าจอควบคุมและกำหนดพื้นที่ปกปิดด้วยตนเอง Manual Control}}{36}{figure.caption.34}\protected@file@percent }
+\newlabel{fig:demo-manual-control}{{25}{36}{หน้าจอควบคุมและกำหนดพื้นที่ปกปิดด้วยตนเอง Manual Control}{figure.caption.34}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {26}{\ignorespaces หน้าจอการทำงานของโหมด AI Auto-Blur}}{37}{figure.caption.35}\protected@file@percent }
+\newlabel{fig:demo-auto-blur}{{26}{37}{หน้าจอการทำงานของโหมด AI Auto-Blur}{figure.caption.35}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {27}{\ignorespaces หน้าจอตรวจสอบผลลัพธ์หลังประมวลผลก่อนส่งออกไฟล์}}{37}{figure.caption.36}\protected@file@percent }
+\newlabel{fig:demo-preview}{{27}{37}{หน้าจอตรวจสอบผลลัพธ์หลังประมวลผลก่อนส่งออกไฟล์}{figure.caption.36}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}การพัฒนาและการปรับปรุงจากภาคการศึกษาก่อนหน้า}{38}{section.4.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces ความก้าวหน้าของระบบในรอบปัจจุบัน}}{38}{table.caption.37}\protected@file@percent }
+\newlabel{tab:progress-update}{{7}{38}{ความก้าวหน้าของระบบในรอบปัจจุบัน}{table.caption.37}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}การตรวจจับและสร้าง Face Map}{38}{subsection.4.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}การปกปิดแบบเลือกได้และการสร้างผลลัพธ์}{38}{subsection.4.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}การปกปิดด้วยตนเองและการติดตาม}{39}{subsection.4.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}การตรวจสอบระบบเบื้องต้น}{39}{section.4.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces การตรวจสอบระบบเบื้องต้น}}{39}{table.caption.38}\protected@file@percent }
+\newlabel{tab:inspection-result}{{8}{39}{การตรวจสอบระบบเบื้องต้น}{table.caption.38}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}สรุปผลการดำเนินงาน}{40}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {5.1}ผลเปรียบเทียบ}{36}{section.5.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces เปรียบเทียบประสิทธิภาพของโมเดลตรวจจับใบหน้า YOLOv26n, YuNet, RetinaFace และ MTCNN บนชุดข้อมูล WIDER FACE โดยใช้ตัวชี้วัด AP (Average Precision) และ Latency (เวลาในการประมวลผลต่อภาพ) ที่ความละเอียด 320x320 และ 640x640 ที่ทำงานบน ONNX}}{36}{table.caption.38}\protected@file@percent }
-\newlabel{tab:yunet_comparison}{{7}{36}{เปรียบเทียบประสิทธิภาพของโมเดลตรวจจับใบหน้า YOLOv26n, YuNet, RetinaFace และ MTCNN บนชุดข้อมูล WIDER FACE โดยใช้ตัวชี้วัด AP (Average Precision) และ Latency (เวลาในการประมวลผลต่อภาพ) ที่ความละเอียด 320x320 และ 640x640 ที่ทำงานบน ONNX}{table.caption.38}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.2}สรุปผลการดำเนินโครงงาน}{36}{section.5.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces สรุปผลเทียบกับวัตถุประสงค์}}{37}{table.caption.39}\protected@file@percent }
-\newlabel{tab:objective-summary}{{8}{37}{สรุปผลเทียบกับวัตถุประสงค์}{table.caption.39}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.3}ข้อจำกัดของระบบ}{37}{section.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}ข้อจำกัดด้านการทำงาน}{37}{subsection.5.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5.4}ปัญหา อุปสรรค และแนวทางแก้ไข}{38}{section.5.4}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces ปัญหา อุปสรรค และแนวทางแก้ไข}}{38}{table.caption.40}\protected@file@percent }
-\newlabel{tab:problems}{{9}{38}{ปัญหา อุปสรรค และแนวทางแก้ไข}{table.caption.40}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.5}ข้อเสนอแนะในการพัฒนาต่อไป}{38}{section.5.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.1}การปรับปรุงฟังก์ชันการทำงาน}{38}{subsection.5.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.2}แนวทางการวิจัยต่อยอด}{38}{subsection.5.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}ผลเปรียบเทียบ}{40}{section.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces เปรียบเทียบประสิทธิภาพของโมเดลตรวจจับใบหน้า YOLOv26n, YuNet, RetinaFace และ MTCNN บนชุดข้อมูล WIDER FACE โดยใช้ตัวชี้วัด AP (Average Precision) และ Latency (เวลาในการประมวลผลต่อภาพ) ที่ความละเอียด 320x320 และ 640x640 ที่ทำงานบน ONNX}}{40}{table.caption.39}\protected@file@percent }
+\newlabel{tab:yunet_comparison}{{9}{40}{เปรียบเทียบประสิทธิภาพของโมเดลตรวจจับใบหน้า YOLOv26n, YuNet, RetinaFace และ MTCNN บนชุดข้อมูล WIDER FACE โดยใช้ตัวชี้วัด AP (Average Precision) และ Latency (เวลาในการประมวลผลต่อภาพ) ที่ความละเอียด 320x320 และ 640x640 ที่ทำงานบน ONNX}{table.caption.39}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}สรุปผลการดำเนินโครงงาน}{40}{section.5.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces สรุปผลเทียบกับวัตถุประสงค์}}{41}{table.caption.40}\protected@file@percent }
+\newlabel{tab:objective-summary}{{10}{41}{สรุปผลเทียบกับวัตถุประสงค์}{table.caption.40}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.3}ข้อจำกัดของระบบ}{41}{section.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}ข้อจำกัดด้านการทำงาน}{41}{subsection.5.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.4}ปัญหา อุปสรรค และแนวทางแก้ไข}{42}{section.5.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces ปัญหา อุปสรรค และแนวทางแก้ไข}}{42}{table.caption.41}\protected@file@percent }
+\newlabel{tab:problems}{{11}{42}{ปัญหา อุปสรรค และแนวทางแก้ไข}{table.caption.41}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.5}ข้อเสนอแนะในการพัฒนาต่อไป}{42}{section.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.1}การปรับปรุงฟังก์ชันการทำงาน}{42}{subsection.5.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.2}แนวทางการวิจัยต่อยอด}{42}{subsection.5.5.2}\protected@file@percent }
 \citation{*}
 \bibstyle{ieeetr}
 \bibdata{progress_references}
 \bibcite{redmon2016yolo}{1}
-\bibcite{deng2019arcface}{2}
-\bibcite{bradski2000opencv}{3}
-\bibcite{viola2001}{4}
-\bibcite{opencv_haar_features}{5}
-\bibcite{sun2025}{6}
-\bibcite{geeksforgeeks2021eigenfaces}{7}
-\bibcite{scholarpedia_fisherfaces}{8}
-\bibcite{albiol2008hogebgm}{9}
-\bibcite{bewley2016sort}{10}
-\bibcite{fastapi}{11}
-\bibcite{rot2022}{12}
-\@writefile{toc}{\contentsline {chapter}{เอกสารอ้างอิง}{39}{subsection.5.5.2}\protected@file@percent }
-\bibcite{iiieta_anpr}{13}
-\bibcite{mdpi_anpr}{14}
-\bibcite{vizcarra2024}{15}
-\bibcite{anpr_dataset}{16}
-\bibcite{biagioni2005}{17}
-\bibcite{pii_label}{18}
-\bibcite{sindagi2017}{19}
-\bibcite{lindevs_yolov8}{20}
-\@writefile{toc}{\contentsline {chapter}{ภาคผนวก~\relax ก: รายการ API หลักของระบบ}{42}{chapter.0}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces รายการ API หลักของ Blur System}}{42}{table.caption.42}\protected@file@percent }
-\newlabel{tab:api-list}{{10}{42}{รายการ API หลักของ Blur System}{table.caption.42}{}}
-\@writefile{toc}{\contentsline {chapter}{ประวัติผู้เขียน}{43}{appendix*.43}\protected@file@percent }
-\gdef \@abspage@last{51}
+\bibcite{jocher2026yolo26}{2}
+\bibcite{deng2020retinaface}{3}
+\bibcite{guo2021scrfd}{4}
+\bibcite{deng2019arcface}{5}
+\bibcite{bewley2016sort}{6}
+\bibcite{bradski2000opencv}{7}
+\bibcite{fastapi}{8}
+\bibcite{iiieta_anpr}{9}
+\bibcite{biagioni2005}{10}
+\bibcite{mdpi_anpr}{11}
+\bibcite{pii_label}{12}
+\@writefile{toc}{\contentsline {chapter}{เอกสารอ้างอิง}{43}{subsection.5.5.2}\protected@file@percent }
+\bibcite{anpr_dataset}{13}
+\bibcite{rot2022}{14}
+\bibcite{sindagi2017}{15}
+\bibcite{sun2025}{16}
+\bibcite{viola2001}{17}
+\bibcite{vizcarra2024}{18}
+\bibcite{lindevs_yolov8}{19}
+\bibcite{opencv_haar_features}{20}
+\bibcite{geeksforgeeks2021eigenfaces}{21}
+\bibcite{scholarpedia_fisherfaces}{22}
+\bibcite{albiol2008hogebgm}{23}
+\@writefile{toc}{\contentsline {chapter}{ภาคผนวก~\relax ก: รายการ API หลักของระบบ}{47}{chapter.0}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces รายการ API หลักของ Blur System}}{47}{table.caption.43}\protected@file@percent }
+\newlabel{tab:api-list}{{12}{47}{รายการ API หลักของ Blur System}{table.caption.43}{}}
+\@writefile{toc}{\contentsline {chapter}{ประวัติผู้เขียน}{48}{appendix*.44}\protected@file@percent }
+\gdef \@abspage@last{56}
