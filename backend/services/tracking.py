@@ -85,8 +85,12 @@ class SimpleTracker:
                 new_cx = (detections[c]["bbox"]["x1"] + detections[c]["bbox"]["x2"]) / 2
                 new_cy = (detections[c]["bbox"]["y1"] + detections[c]["bbox"]["y2"]) / 2
                 
-                self.tracks[r]["vx"] = new_cx - old_cx
-                self.tracks[r]["vy"] = new_cy - old_cy
+                # The displacement is measured across all frames since the
+                # last successful match. Store per-frame velocity because it
+                # is applied once for each skipped frame.
+                elapsed_frames = max(1, self.tracks[r]["age"] + 1)
+                self.tracks[r]["vx"] = (new_cx - old_cx) / elapsed_frames
+                self.tracks[r]["vy"] = (new_cy - old_cy) / elapsed_frames
                 self.tracks[r]["bbox"] = detections[c]["bbox"]
                 self.tracks[r]["age"] = 0
                 self.tracks[r]["hits"] += 1

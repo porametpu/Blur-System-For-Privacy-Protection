@@ -5,6 +5,7 @@ import cv2
 import uuid
 import base64
 import json
+import time
 from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Depends, BackgroundTasks, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -58,6 +59,13 @@ def sanitize_filename(filename: str | None) -> str:
 # Model Backend Schema
 class ModelBackendRequest(BaseModel):
     backend: str  # "pytorch" | "torchscript" | "onnx" | "tensorrt"
+
+class ModelSelectionRequest(BaseModel):
+    model: str
+
+class WebcamFrameRequest(BaseModel):
+    image: str
+    model: str | None = None
 
 # Client Detection Schemas
 class BBoxInput(BaseModel):
@@ -235,6 +243,109 @@ def ndarray_to_base64(img):
     _, buffer = cv2.imencode('.jpg', img)
     return base64.b64encode(buffer).decode('utf-8')
 
+
+# Recognition tuning values. These should be calibrated against representative
+# frames from the application's real videos.
+RECOGNITION_THRESHOLD = 0.50
+IDENTITY_MERGE_THRESHOLD = 0.58
+# Occluded/partial singleton crops can have a much lower ArcFace similarity.
+# This relaxed value is used only when attaching a one-sample group to an
+# established identity; normal identity matching remains at 0.50.
+SINGLETON_MERGE_THRESHOLD = 0.25
+MAX_IDENTITY_EMBEDDINGS = 8
+
+
+def _identity_similarity(a: dict, b: dict) -> float:
+    """Return the strongest similarity between two identities' samples."""
+    samples_a = a.get("embeddings") or [a.get("avg_embedding")]
+    samples_b = b.get("embeddings") or [b.get("avg_embedding")]
+    best = -1.0
+    for emb_a in samples_a:
+        for emb_b in samples_b:
+            if emb_a is not None and emb_b is not None:
+                best = max(best, recognition_service.compute_similarity(emb_a, emb_b))
+    return best
+
+
+def _merge_similar_identities(identities: list[dict]) -> dict[int, int]:
+    """Merge duplicate temporary groups and return old-id -> surviving-id map."""
+    parent = {item["identity_id"]: item["identity_id"] for item in identities}
+
+    def find(value):
+        while parent[value] != value:
+            parent[value] = parent[parent[value]]
+            value = parent[value]
+        return value
+
+    def union(left, right):
+        left, right = find(left), find(right)
+        if left != right:
+            parent[right] = left
+
+    for i, left in enumerate(identities):
+        for right in identities[i + 1:]:
+            similarity = _identity_similarity(left, right)
+            # YuNet can produce a single low-quality/occluded face crop that
+            # falls below the normal threshold. Prefer attaching such sparse
+            # groups to a well-established identity when similarity is still
+            # meaningful, instead of exposing a duplicate Person card.
+            # A newly appearing/partially occluded face can form a singleton
+            # group before it gets enough recognition samples. Compare that
+            # singleton against established groups with the relaxed threshold;
+            # requiring at least two samples in the larger group avoids making
+            # two one-off detections merge too easily.
+            is_sparse_pair = min(left["count"], right["count"]) <= 1 and max(left["count"], right["count"]) >= 2
+            merge_threshold = SINGLETON_MERGE_THRESHOLD if is_sparse_pair else IDENTITY_MERGE_THRESHOLD
+            if similarity >= merge_threshold:
+                union(left["identity_id"], right["identity_id"])
+
+    groups = {}
+    for item in identities:
+        groups.setdefault(find(item["identity_id"]), []).append(item)
+
+    remap = {}
+    for survivor, members in groups.items():
+        for member in members:
+            remap[member["identity_id"]] = survivor
+        if len(members) > 1:
+            merged = [emb for member in members for emb in (member.get("embeddings") or [])]
+            survivor_item = next(member for member in members if member["identity_id"] == survivor)
+            survivor_item["embeddings"] = merged[-MAX_IDENTITY_EMBEDDINGS:]
+            survivor_item["count"] = sum(member["count"] for member in members)
+            avg = np.mean(merged, axis=0)
+            survivor_item["avg_embedding"] = avg / max(np.linalg.norm(avg), 1e-6)
+    return remap
+
+
+def _add_embedding_to_identity(identity: dict, embedding: np.ndarray, confidence: float):
+    identity["count"] += 1
+    identity.setdefault("embeddings", []).append(embedding)
+    identity["embeddings"] = identity["embeddings"][-MAX_IDENTITY_EMBEDDINGS:]
+    avg = np.mean(identity["embeddings"], axis=0)
+    identity["avg_embedding"] = avg / max(np.linalg.norm(avg), 1e-6)
+    identity["conf"] = (identity["conf"] * (identity["count"] - 1) + confidence) / identity["count"]
+
+
+def _match_stable_identity(embedding: np.ndarray, identities: list[dict]) -> int | None:
+    """Recover a low-quality sample when one established identity is clearly best."""
+    candidates = []
+    for identity in identities:
+        if identity.get("count", 0) < 2:
+            continue
+        samples = identity.get("embeddings") or [identity.get("avg_embedding")]
+        score = max(
+            (recognition_service.compute_similarity(embedding, sample) for sample in samples if sample is not None),
+            default=-1.0,
+        )
+        candidates.append((score, identity["identity_id"]))
+
+    candidates.sort(reverse=True)
+    if not candidates or candidates[0][0] < SINGLETON_MERGE_THRESHOLD:
+        return None
+    if len(candidates) > 1 and candidates[0][0] - candidates[1][0] < 0.06:
+        return None
+    return candidates[0][1]
+
 @app.post("/api/upload")
 async def upload_video(
     file: UploadFile = File(...), 
@@ -387,6 +498,7 @@ async def save_manual_blur(video_id: int, req: ManualBlurRequest, db: Session = 
 
 def detection_pipeline(video_id: int, keyframe_indices: list[int], skip_frames: int):
     global processing_status
+    skip_frames = max(1, int(skip_frames))
     processing_status[video_id] = {"status": "processing", "progress": 0}
     
     db = next(get_db())
@@ -396,7 +508,10 @@ def detection_pipeline(video_id: int, keyframe_indices: list[int], skip_frames: 
             return
             
         cap = cv2.VideoCapture(video.original_path)
-        tracker = SimpleTracker(max_age=30, min_iou=0.3)
+        # Keep tracks alive across skipped frames and allow faster-moving
+        # faces to associate after their predicted box has shifted. This does
+        # not add inference cost because it only changes tracker matching.
+        tracker = SimpleTracker(max_age=max(30, skip_frames * 8), min_iou=0.15)
         
         identities = [] # list of dicts: {"identity_id": int, "avg_embedding": np.ndarray, "thumbnail": str, "count": 1, "conf": float}
         next_identity_id = 1
@@ -408,6 +523,7 @@ def detection_pipeline(video_id: int, keyframe_indices: list[int], skip_frames: 
         
         frame_idx = 0
         total_frames = video.total_frames
+        keyframe_set = set(keyframe_indices)
         
         while True:
             ret, frame = cap.read()
@@ -417,37 +533,41 @@ def detection_pipeline(video_id: int, keyframe_indices: list[int], skip_frames: 
             processing_status[video_id]["progress"] = int((frame_idx / total_frames) * 100)
             
             # Detect on keyframes or interval
-            if frame_idx in keyframe_indices or frame_idx % skip_frames == 0:
+            is_keyframe = frame_idx in keyframe_set
+            if is_keyframe or frame_idx % skip_frames == 0:
                 detections = detection_service.detect_faces(frame)
                 
-                # Recognition
+                # Run the expensive face-recognition embedding step only on
+                # selected keyframes. Intermediate detector refreshes still
+                # update tracking, while existing identity assignments remain
+                # attached to matched tracker tracks.
                 tracker_input = []
                 for det in detections:
                     bbox = det["bbox"]
                     x1, y1, x2, y2 = bbox["x1"], bbox["y1"], bbox["x2"], bbox["y2"]
                     
-                    # Add generous padding for recognition (InsightFace needs context)
+                    # Use moderate context while avoiding background/neighboring faces.
                     w, h = x2 - x1, y2 - y1
-                    px1, py1 = max(0, int(x1 - w*0.5)), max(0, int(y1 - h*0.5))
-                    px2, py2 = min(frame.shape[1], int(x2 + w*0.5)), min(frame.shape[0], int(y2 + h*0.5))
+                    if w < 32 or h < 32 or det["confidence"] < 0.30:
+                        continue
+                    px1, py1 = max(0, int(x1 - w*0.25)), max(0, int(y1 - h*0.25))
+                    px2, py2 = min(frame.shape[1], int(x2 + w*0.25)), min(frame.shape[0], int(y2 + h*0.25))
                     crop = frame[py1:py2, px1:px2]
                     
-                    emb = recognition_service.extract_embedding(crop)
+                    emb = recognition_service.extract_embedding(crop) if is_keyframe else None
                     identity_id = None
                     
                     if emb is not None:
                         # Match identity
-                        matched_id = recognition_service.match_identity(emb, identities, threshold=0.45)
+                        matched_id = recognition_service.match_identity(emb, identities, threshold=RECOGNITION_THRESHOLD)
+                        if matched_id is None:
+                            matched_id = _match_stable_identity(emb, identities)
                         if matched_id is not None:
                             identity_id = matched_id
                             # Update existing
                             for idx, identity in enumerate(identities):
                                 if identity["identity_id"] == identity_id:
-                                    identities[idx]["count"] += 1
-                                    # Running average of embedding
-                                    identities[idx]["avg_embedding"] = (identities[idx]["avg_embedding"] * (identities[idx]["count"]-1) + emb) / identities[idx]["count"]
-                                    identities[idx]["avg_embedding"] /= np.linalg.norm(identities[idx]["avg_embedding"])
-                                    identities[idx]["conf"] = (identities[idx]["conf"] * (identities[idx]["count"]-1) + det["confidence"]) / identities[idx]["count"]
+                                    _add_embedding_to_identity(identities[idx], emb, det["confidence"])
                                     break
                         else:
                             # New identity
@@ -456,6 +576,7 @@ def detection_pipeline(video_id: int, keyframe_indices: list[int], skip_frames: 
                             identities.append({
                                 "identity_id": identity_id,
                                 "avg_embedding": emb,
+                                "embeddings": [emb],
                                 "thumbnail": ndarray_to_base64(cv2.resize(crop, (112, 112)) if crop.size > 0 else None),
                                 "count": 1,
                                 "conf": det["confidence"]
@@ -471,14 +592,10 @@ def detection_pipeline(video_id: int, keyframe_indices: list[int], skip_frames: 
                 # Tracking
                 tracks = tracker.update(tracker_input)
             else:
-                # Track without detection
-                # In a real system, we'd use optical flow or KCF for skipped frames.
-                # For ByteTrack IoU, we need detections. If we just skip, we can reuse last known locations,
-                # but to be accurate we'll just run detection if not skipping.
-                # To simplify: we'll actually run detection on EVERY frame, but only do recognition on intervals/keyframes to save time.
-                detections = detection_service.detect_faces(frame)
-                tracker_input = [{"bbox": d["bbox"]} for d in detections]
-                tracks = tracker.update(tracker_input)
+                # Do not run YOLO on skipped frames. Let the tracker advance
+                # existing identities using their last velocity until the next
+                # scheduled detection refreshes their positions.
+                tracks = tracker.update([])
                 
             # Save detections to DB
             for track in tracks:
@@ -500,6 +617,46 @@ def detection_pipeline(video_id: int, keyframe_indices: list[int], skip_frames: 
                 
         cap.release()
         db.commit()
+
+        # Fill short internal gaps between confirmed boxes. This is much
+        # cheaper than another detector pass and prevents brief tracker misses
+        # from becoming visible holes in the rendered blur.
+        max_interpolation_gap = max(6, min(15, skip_frames * 4))
+        faces_by_identity = {}
+        saved_faces = db.query(DetectedFace).filter(
+            DetectedFace.video_id == video_id
+        ).order_by(DetectedFace.identity_id, DetectedFace.frame_number).all()
+        for face in saved_faces:
+            faces_by_identity.setdefault(face.identity_id, []).append(face)
+
+        for identity_faces in faces_by_identity.values():
+            for previous, following in zip(identity_faces, identity_faces[1:]):
+                gap = following.frame_number - previous.frame_number - 1
+                if gap <= 0 or gap > max_interpolation_gap:
+                    continue
+                for step in range(1, gap + 1):
+                    ratio = step / (gap + 1)
+                    db.add(DetectedFace(
+                        video_id=video_id,
+                        frame_number=previous.frame_number + step,
+                        bbox_x1=round(previous.bbox_x1 + (following.bbox_x1 - previous.bbox_x1) * ratio),
+                        bbox_y1=round(previous.bbox_y1 + (following.bbox_y1 - previous.bbox_y1) * ratio),
+                        bbox_x2=round(previous.bbox_x2 + (following.bbox_x2 - previous.bbox_x2) * ratio),
+                        bbox_y2=round(previous.bbox_y2 + (following.bbox_y2 - previous.bbox_y2) * ratio),
+                        confidence=min(previous.confidence, following.confidence),
+                        identity_id=previous.identity_id,
+                    ))
+        db.commit()
+
+        temp_id_remap = _merge_similar_identities(identities)
+        if temp_id_remap:
+            for old_id, new_id in temp_id_remap.items():
+                if old_id != new_id:
+                    db.query(DetectedFace).filter(
+                        DetectedFace.video_id == video_id,
+                        DetectedFace.identity_id == old_id,
+                    ).update({"identity_id": new_id})
+            identities = [item for item in identities if item["identity_id"] == temp_id_remap[item["identity_id"]]]
         
         # Create Identity records
         id_map = {} # temp_id -> db_id
@@ -549,7 +706,7 @@ def detection_pipeline(video_id: int, keyframe_indices: list[int], skip_frames: 
         db.close()
 
 @app.post("/api/start-detection/{video_id}")
-async def start_detection(video_id: int, background_tasks: BackgroundTasks, keyframe_indices: str = Form(...), skip_frames: int = Form(5), db: Session = Depends(get_db)):
+async def start_detection(video_id: int, background_tasks: BackgroundTasks, keyframe_indices: str = Form(...), skip_frames: int = Form(3), db: Session = Depends(get_db)):
     video = db.query(Video).filter(Video.id == video_id).first()
     if not video:
         raise HTTPException(404, "Video not found")
@@ -584,6 +741,49 @@ async def set_model_backend(req: ModelBackendRequest):
     if not result.get("success"):
         raise HTTPException(400, result.get("error", "Failed to switch backend"))
     return result
+
+@app.get("/api/models")
+async def get_models():
+    if detection_service is None:
+        raise HTTPException(503, "Detection service not initialized")
+    return {
+        "current_model": detection_service.current_model,
+        "models": detection_service.list_models(),
+    }
+
+@app.post("/api/models")
+async def set_model(req: ModelSelectionRequest):
+    if detection_service is None:
+        raise HTTPException(503, "Detection service not initialized")
+    result = detection_service.switch_model(req.model)
+    if not result.get("success"):
+        raise HTTPException(400, result.get("error", "Failed to switch model"))
+    return result
+
+@app.post("/api/webcam-detect")
+async def webcam_detect(req: WebcamFrameRequest):
+    if detection_service is None:
+        raise HTTPException(503, "Detection service not initialized")
+    try:
+        started = time.perf_counter()
+        encoded = req.image.split(",", 1)[1] if "," in req.image else req.image
+        image = cv2.imdecode(np.frombuffer(base64.b64decode(encoded), dtype=np.uint8), cv2.IMREAD_COLOR)
+        if image is None:
+            raise HTTPException(400, "Invalid webcam frame")
+        if req.model and req.model != detection_service.current_model:
+            result = detection_service.switch_model(req.model)
+            if not result.get("success"):
+                raise HTTPException(400, result.get("error", "Failed to load selected model"))
+        detections = detection_service.detect_faces(image, conf_threshold=0.35)
+        return {
+            "detections": detections,
+            "model": detection_service.current_model,
+            "latency_ms": round((time.perf_counter() - started) * 1000, 1),
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(500, f"Webcam detection failed: {e}")
 
 # ---------------------------------------------------------------------------
 # Client-Side ONNX: serve model file + accept client-detected bounding boxes
@@ -647,28 +847,28 @@ def _recognition_pipeline_from_client(video_id: int, frame_detections: list[dict
                 bbox = det["bbox"]
                 x1, y1, x2, y2 = bbox["x1"], bbox["y1"], bbox["x2"], bbox["y2"]
 
-                # Padded crop for InsightFace
+                # Use moderate context while avoiding background/neighboring faces.
                 w, h = x2 - x1, y2 - y1
-                px1 = max(0, int(x1 - w * 0.5))
-                py1 = max(0, int(y1 - h * 0.5))
-                px2 = min(frame.shape[1], int(x2 + w * 0.5))
-                py2 = min(frame.shape[0], int(y2 + h * 0.5))
+                if w < 32 or h < 32 or det["confidence"] < 0.30:
+                    continue
+                px1 = max(0, int(x1 - w * 0.25))
+                py1 = max(0, int(y1 - h * 0.25))
+                px2 = min(frame.shape[1], int(x2 + w * 0.25))
+                py2 = min(frame.shape[0], int(y2 + h * 0.25))
                 crop = frame[py1:py2, px1:px2]
 
                 emb = recognition_service.extract_embedding(crop)
                 identity_id = None
 
                 if emb is not None:
-                    matched_id = recognition_service.match_identity(emb, identities, threshold=0.45)
+                    matched_id = recognition_service.match_identity(emb, identities, threshold=RECOGNITION_THRESHOLD)
+                    if matched_id is None:
+                        matched_id = _match_stable_identity(emb, identities)
                     if matched_id is not None:
                         identity_id = matched_id
                         for i, ident in enumerate(identities):
                             if ident["identity_id"] == identity_id:
-                                cnt = identities[i]["count"]
-                                identities[i]["avg_embedding"] = (ident["avg_embedding"] * cnt + emb) / (cnt + 1)
-                                identities[i]["avg_embedding"] /= np.linalg.norm(identities[i]["avg_embedding"])
-                                identities[i]["conf"] = (ident["conf"] * cnt + det["confidence"]) / (cnt + 1)
-                                identities[i]["count"] += 1
+                                _add_embedding_to_identity(identities[i], emb, det["confidence"])
                                 break
                     else:
                         identity_id = next_identity_id
@@ -677,6 +877,7 @@ def _recognition_pipeline_from_client(video_id: int, frame_detections: list[dict
                         identities.append({
                             "identity_id": identity_id,
                             "avg_embedding": emb,
+                            "embeddings": [emb],
                             "thumbnail": thumb,
                             "count": 1,
                             "conf": det["confidence"],
@@ -696,6 +897,15 @@ def _recognition_pipeline_from_client(video_id: int, frame_detections: list[dict
 
         cap.release()
         db.commit()
+
+        temp_id_remap = _merge_similar_identities(identities)
+        for old_id, new_id in temp_id_remap.items():
+            if old_id != new_id:
+                db.query(DetectedFace).filter(
+                    DetectedFace.video_id == video_id,
+                    DetectedFace.identity_id == old_id,
+                ).update({"identity_id": new_id})
+        identities = [item for item in identities if item["identity_id"] == temp_id_remap[item["identity_id"]]]
 
         # --- Persist Identities & remap temp IDs ---
         id_map: dict[int, int] = {}

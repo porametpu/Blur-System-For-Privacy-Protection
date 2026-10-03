@@ -70,6 +70,15 @@ export default function Navbar() {
           >
             Settings
           </Link>
+          <Link
+            href="/?tab=webcam"
+            className={`text-sm font-bold transition-colors ${currentTab === 'webcam'
+              ? 'text-blue-500'
+              : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-300'
+              }`}
+          >
+            Webcam Test
+          </Link>
         </div>
 
         {/* Right Actions */}

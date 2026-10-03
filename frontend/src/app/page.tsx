@@ -19,6 +19,7 @@ import HistoryView from '../components/HistoryView';
 import AuthView from '../components/AuthView';
 
 import SettingsView from '../components/SettingsView';
+import WebcamTest from '../components/WebcamTest';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
@@ -85,7 +86,7 @@ function BlurApp() {
       setVideoInfo(vid);
       addToast('Video uploaded successfully', 'success');
       setStep('tools_selection');
-      fetchPreviewFrames(vid.video_id);
+      await fetchPreviewFrames(vid.video_id);
     } catch (err: any) {
       addToast(err.message || 'Upload failed', 'error');
     } finally {
@@ -953,6 +954,10 @@ function MainContent() {
 
   if (tab === 'settings') {
     return <SettingsView />;
+  }
+
+  if (tab === 'webcam') {
+    return <WebcamTest />;
   }
 
   if (tab === 'login') {

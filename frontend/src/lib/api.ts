@@ -25,11 +25,19 @@ const handleResponseError = async (res: Response, defaultMsg: string): Promise<n
 export const uploadVideo = async (file: File): Promise<Video> => {
     const fd = new FormData();
     fd.append('file', file);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 120_000);
     const res = await fetch('/api/upload', {
         method: 'POST',
         headers: getAuthHeader(),
-        body: fd
-    });
+        body: fd,
+        signal: controller.signal,
+    }).catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+            throw new Error('Upload timed out after 2 minutes. Check that the backend server is running.');
+        }
+        throw error;
+    }).finally(() => window.clearTimeout(timeout));
     if (!res.ok) await handleResponseError(res, 'Upload failed');
     return res.json();
 };
@@ -49,7 +57,7 @@ export const selectKeyframes = async (videoId: number, keyframeIndices: number[]
     if (!res.ok) await handleResponseError(res, 'Failed to select keyframes');
 };
 
-export const startDetection = async (videoId: number, keyframeIndices: number[], skipFrames: number = 5): Promise<any> => {
+export const startDetection = async (videoId: number, keyframeIndices: number[], skipFrames: number = 3): Promise<any> => {
     const fd = new FormData();
     fd.append('keyframe_indices', JSON.stringify(keyframeIndices));
     fd.append('skip_frames', skipFrames.toString());
@@ -169,6 +177,8 @@ export const getUserHistory = async () => {
 
 export const getModelBackend = async (): Promise<{
     current: string;
+    current_model: string | null;
+    models: { key: string; label: string; family: string; description: string; available: boolean; weights_kind: string; recommended_backends: string[] }[];
     available: string[];
     export_status: Record<string, string>;
     export_errors: Record<string, string>;
@@ -192,6 +202,16 @@ export const setModelBackend = async (backend: string): Promise<{
         body: JSON.stringify({ backend }),
     });
     if (!res.ok) await handleResponseError(res, 'Failed to switch backend');
+    return res.json();
+};
+
+export const setDetectionModel = async (model: string): Promise<{ success: boolean; model: string; status: string }> => {
+    const res = await fetch('/api/models', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model }),
+    });
+    if (!res.ok) await handleResponseError(res, 'Failed to switch detection model');
     return res.json();
 };
 

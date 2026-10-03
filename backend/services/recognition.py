@@ -57,7 +57,18 @@ class FaceRecognitionService:
                 
                 faces = self.app.get(padded)
                 if faces and len(faces) > 0:
-                    emb = faces[0].normed_embedding
+                    # Select the face closest to the crop center, preferring
+                    # larger/high-confidence faces over arbitrary detector order.
+                    center = np.array([padded.shape[1] / 2, padded.shape[0] / 2])
+                    def face_rank(face):
+                        bbox = getattr(face, "bbox", [0, 0, 0, 0])
+                        area = max(0.0, float(bbox[2] - bbox[0])) * max(0.0, float(bbox[3] - bbox[1]))
+                        face_center = np.array([(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2])
+                        distance = np.linalg.norm(face_center - center)
+                        score = float(getattr(face, "det_score", 0.0) or 0.0)
+                        return area * (0.5 + score) / (1.0 + distance)
+                    best_face = max(faces, key=face_rank)
+                    emb = best_face.normed_embedding
                     return emb
                     
                 # Fallback: try with the recognition model directly (skip detection)
@@ -110,7 +121,7 @@ class FaceRecognitionService:
         # Since embeddings should be L2 normalized, dot product = cosine similarity
         return float(np.dot(emb1, emb2))
 
-    def match_identity(self, embedding: np.ndarray, known_identities: list[dict], threshold: float = 0.45) -> int | None:
+    def match_identity(self, embedding: np.ndarray, known_identities: list[dict], threshold: float = 0.50) -> int | None:
         """
         Match embedding against known identities.
         known_identities is a list of dicts: {"identity_id": int, "avg_embedding": np.ndarray}
@@ -121,14 +132,26 @@ class FaceRecognitionService:
             
         best_match_id = None
         best_sim = -1.0
+        identity_scores = []
         
         for identity in known_identities:
-            known_emb = identity.get("avg_embedding")
-            if known_emb is not None:
-                sim = self.compute_similarity(embedding, known_emb)
-                if sim > best_sim:
-                    best_sim = sim
-                    best_match_id = identity.get("identity_id")
+            identity_best = -1.0
+            candidates = identity.get("embeddings") or [identity.get("avg_embedding")]
+            for known_emb in candidates:
+                if known_emb is not None:
+                    sim = self.compute_similarity(embedding, known_emb)
+                    identity_best = max(identity_best, sim)
+            if identity_best >= 0:
+                identity_scores.append((identity_best, identity.get("identity_id")))
+
+        identity_scores.sort(reverse=True)
+        if identity_scores:
+            best_sim, best_match_id = identity_scores[0]
+            second_sim = identity_scores[1][0] if len(identity_scores) > 1 else -1.0
+            # Avoid assigning an ambiguous frame to the wrong person. The
+            # post-processing merge can still reunite duplicate groups later.
+            if len(identity_scores) > 1 and best_sim - second_sim < 0.025:
+                return None
                     
         if best_sim >= threshold:
             return best_match_id

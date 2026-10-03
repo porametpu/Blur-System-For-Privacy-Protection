@@ -2,6 +2,7 @@ import os
 import threading
 import torch
 import numpy as np
+import cv2
 from ultralytics import YOLO
 
 # ---------------------------------------------------------------------------
@@ -16,6 +17,15 @@ BACKEND_FORMATS = {
 
 BASE_MODEL_STEM = "yolo26n-face"   # stem without extension
 FALLBACK_PT     = "yolov8n.pt"     # fallback if primary .pt missing
+MODEL_DIR       = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "model"))
+
+MODEL_CATALOG = {
+    **{f"yolov8{size}": {"family": "YOLOv8", "label": f"YOLOv8{size.upper()} Face", "stem": f"yolov8{size}-face", "description": "Reliable general-purpose face detector; n is fastest, x is most accurate."} for size in "nsmlx"},
+    **{f"yolo11{size}": {"family": "YOLO11", "label": f"YOLO11{size.upper()} Face", "stem": f"yolo11{size}-face", "description": "Modern accuracy/speed balance; s/m are strong defaults for video."} for size in "nsmlx"},
+    **{f"yolo26{size}": {"family": "YOLO26", "label": f"YOLO26{size.upper()} Face", "stem": f"yolo26{size}-face", "description": "Efficient current YOLO family; n/s suit CPU and ONNX, m/l/x suit GPU."} for size in "nsmlx"},
+    "yunet": {"family": "YuNet", "label": "YuNet", "stem": "face_detection_yunet_2023mar", "description": "Very lightweight CPU detector; best for real-time and low-power devices."},
+    "retinaface": {"family": "RetinaFace", "label": "RetinaFace", "stem": "retinaface", "description": "High recall with landmarks; best for small, angled, or crowded faces."},
+}
 
 
 class FaceDetectionService:
@@ -26,10 +36,12 @@ class FaceDetectionService:
     one-time background export.  Poll ``get_status()`` to track progress.
     """
 
-    def __init__(self, backend: str = "pytorch"):
+    def __init__(self, backend: str = "pytorch", model_key: str = "yolo26n"):
         self.device: str = "cuda" if torch.cuda.is_available() else "cpu"
         self.use_fp16: bool = self.device == "cuda"
         self.is_face_model: bool = True
+        self.current_model: str | None = None
+        self.model_key = model_key if model_key in MODEL_CATALOG else "yolo26n"
 
         self.model: YOLO | None = None
         self.current_backend: str | None = None
@@ -69,6 +81,9 @@ class FaceDetectionService:
         if os.path.exists(model_path):
             return self._load_backend_sync(backend)
 
+        if not MODEL_CATALOG[self.model_key]["family"].startswith("YOLO"):
+            return {"success": False, "error": f"{MODEL_CATALOG[self.model_key]['label']} does not support automatic export to {backend}."}
+
         # PyTorch .pt should always exist
         if backend == "pytorch":
             return self._load_backend_sync(backend)
@@ -76,10 +91,41 @@ class FaceDetectionService:
         # Need to export first — run in background
         return self._start_export_async(backend)
 
+    def list_models(self) -> list[dict]:
+        result = []
+        for key, meta in MODEL_CATALOG.items():
+            pytorch_path = self._model_path("pytorch", key)
+            onnx_path = self._model_path("onnx", key)
+            available = self._model_available(key, "pytorch") or self._model_available(key, "onnx")
+            weights_kind = "face-trained" if "-face" in os.path.basename(pytorch_path) or "-face" in os.path.basename(onnx_path) else "general-object"
+            result.append({**meta, "key": key, "available": available,
+                           "weights_kind": weights_kind,
+                           "recommended_backends": ["pytorch", "onnx"] if meta["family"].startswith("YOLO") else ["onnx", "pytorch"]})
+        return result
+
+    def switch_model(self, model_key: str) -> dict:
+        if model_key not in MODEL_CATALOG:
+            return {"success": False, "error": f"Unknown model: '{model_key}'"}
+        backend = self.current_backend or "pytorch"
+        if not self._model_available(model_key, backend):
+            if self._model_available(model_key, "onnx"):
+                backend = "onnx"
+            elif MODEL_CATALOG[model_key]["family"] == "YuNet":
+                backend = "pytorch"
+            else:
+                return {"success": False, "error": f"Model weights are not installed for {MODEL_CATALOG[model_key]['label']}"}
+        if model_key == "yunet":
+            backend = "pytorch"
+        if not self._model_available(model_key, backend):
+            return {"success": False, "error": f"Model weights are not installed for {MODEL_CATALOG[model_key]['label']}"}
+        return self._load_backend_sync(backend, model_key)
+
     def get_status(self) -> dict:
         """Return current backend info and per-backend export states."""
         return {
             "current":       self.current_backend,
+            "current_model": self.current_model,
+            "models":         self.list_models(),
             "available":     list(BACKEND_FORMATS.keys()),
             "export_status": {**self.export_status},
             "export_errors": {**self.export_errors},
@@ -95,6 +141,24 @@ class FaceDetectionService:
         if self.model is None or frame is None:
             return []
         try:
+            if self.current_model == "yunet":
+                h, w = frame.shape[:2]
+                self.model.setInputSize((w, h))
+                _, faces = self.model.detect(frame)
+                detections = []
+                for face in faces if faces is not None else []:
+                    score = float(face[-1])
+                    if score >= conf_threshold:
+                        detections.append({"bbox": {"x1": int(face[0]), "y1": int(face[1]), "x2": int(face[0] + face[2]), "y2": int(face[1] + face[3])}, "confidence": score})
+                return detections
+            if self.current_model == "retinaface":
+                result = self.model.detect_faces(frame, threshold=conf_threshold)
+                detections = []
+                for face in result.values():
+                    area = face.get("facial_area", [])
+                    if len(area) == 4:
+                        detections.append({"bbox": {"x1": int(area[0]), "y1": int(area[1]), "x2": int(area[2]), "y2": int(area[3])}, "confidence": float(face.get("score", 0.0))})
+                return detections
             results = self.model.predict(
                 frame,
                 verbose=False,
@@ -127,24 +191,64 @@ class FaceDetectionService:
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _model_path(self, backend: str) -> str:
+    def _model_path(self, backend: str, model_key: str | None = None) -> str:
+        model_key = model_key or self.model_key
+        meta = MODEL_CATALOG[model_key]
+        if meta["family"] == "YuNet":
+            return os.path.join(MODEL_DIR, f"{meta['stem']}.onnx")
+        if meta["family"] == "RetinaFace":
+            return f"{meta['stem']}.onnx"
+        if meta["family"].startswith("YOLO"):
+            size = model_key[-1]
+            if meta["family"] == "YOLOv8":
+                generic_stem = f"yolov8{size}"
+            else:
+                generic_stem = f"{meta['family'].lower()}{size}"
+            candidates = [
+                os.path.abspath(os.path.join(os.path.dirname(__file__), "..", f"{meta['stem']}{BACKEND_FORMATS[backend]['ext'] if backend != 'pytorch' else '.pt'}")),
+                os.path.join(MODEL_DIR, f"{meta['stem']}{BACKEND_FORMATS[backend]['ext'] if backend != 'pytorch' else '.pt'}"),
+                os.path.join(MODEL_DIR, f"{generic_stem}{BACKEND_FORMATS[backend]['ext'] if backend != 'pytorch' else '.pt'}"),
+            ]
+            for candidate in candidates:
+                if os.path.exists(candidate):
+                    return candidate
+            return candidates[0]
         if backend == "pytorch":
-            return f"{BASE_MODEL_STEM}.pt"
-        return f"{BASE_MODEL_STEM}{BACKEND_FORMATS[backend]['ext']}"
+            return f"{meta['stem']}.pt"
+        return f"{meta['stem']}{BACKEND_FORMATS[backend]['ext']}"
 
-    def _load_backend_sync(self, backend: str) -> dict:
+    def _model_available(self, model_key: str, backend: str) -> bool:
+        if MODEL_CATALOG[model_key]["family"] == "RetinaFace":
+            try:
+                import retinaface  # noqa: F401
+                return True
+            except Exception:
+                return False
+        return os.path.exists(self._model_path(backend, model_key))
+
+    def _load_backend_sync(self, backend: str, model_key: str | None = None) -> dict:
         """Load model synchronously.  Returns success dict."""
-        model_path = self._model_path(backend)
+        model_key = model_key or self.model_key
+        model_path = self._model_path(backend, model_key)
 
         with self._lock:
             try:
-                new_model = YOLO(model_path)
+                meta = MODEL_CATALOG[model_key]
+                if meta["family"] == "YuNet":
+                    new_model = cv2.FaceDetectorYN.create(model_path, "", (320, 320), 0.6, 0.3, 500)
+                elif meta["family"] == "RetinaFace":
+                    from retinaface import RetinaFace
+                    new_model = RetinaFace
+                else:
+                    new_model = YOLO(model_path)
                 self.model = new_model
                 self.current_backend = backend
-                self.is_face_model = True
+                self.current_model = model_key
+                self.model_key = model_key
+                self.is_face_model = meta["family"] in {"YuNet", "RetinaFace"} or "-face" in os.path.basename(model_path)
                 self.export_status[backend] = "ready"
                 print(f"✅ [{backend.upper()}] Loaded from {model_path}")
-                return {"success": True, "backend": backend, "status": "ready"}
+                return {"success": True, "backend": backend, "model": model_key, "status": "ready"}
             except Exception as e:
                 # Try fallback to PyTorch
                 if backend == "pytorch":
@@ -191,7 +295,7 @@ class FaceDetectionService:
     def _export_and_load(self, backend: str) -> None:
         """Background thread: export the model then hot-swap it."""
         try:
-            pt_path = f"{BASE_MODEL_STEM}.pt"
+            pt_path = self._model_path("pytorch")
             fmt_info = BACKEND_FORMATS[backend]
 
             print(f"🔄 [{backend.upper()}] Exporting from {pt_path}...")
@@ -229,12 +333,14 @@ class FaceDetectionService:
                     continue
                 x1, y1, x2, y2 = box.xyxy[0].tolist()
 
-                # Person model heuristic: shrink to face region
+                # General YOLOv8/YOLO11 weights detect the whole person, not a
+                # face. Approximate the head region with a tighter crop so the
+                # webcam overlay does not cover the hair/background area.
                 if not self.is_face_model:
                     w, h = x2 - x1, y2 - y1
-                    y2  = y1 + h * 0.30
-                    x1  = x1 + w * 0.20
-                    x2  = x2 - w * 0.20
+                    x1  = x1 + w * 0.30
+                    x2  = x2 - w * 0.30
+                    y2  = y1 + h * 0.24
 
                 detections.append({
                     "bbox": {

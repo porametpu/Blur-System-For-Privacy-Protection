@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { getModelBackend, setModelBackend } from '../lib/api';
+import { getModelBackend, setModelBackend, setDetectionModel } from '../lib/api';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -24,6 +24,7 @@ export type OnnxMode = 'server' | 'client';
 interface Props {
   /** Called whenever the ONNX client/server sub-toggle changes */
   onClientModeChange?: (isClient: boolean) => void;
+  onModelChange?: (model: string) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -75,7 +76,7 @@ const POLL_MS = 2500;
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-export default function ModelBackendSelector({ onClientModeChange }: Props) {
+export default function ModelBackendSelector({ onClientModeChange, onModelChange }: Props) {
   const [current, setCurrent] = useState<BackendKey | null>(null);
   const [exportStatus, setExportStatus] = useState<Record<string, string>>({});
   const [exportErrors, setExportErrors] = useState<Record<string, string>>({});
@@ -84,6 +85,11 @@ export default function ModelBackendSelector({ onClientModeChange }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [onnxMode, setOnnxMode] = useState<OnnxMode>('server');
   const [webGpuSupported, setWebGpuSupported] = useState(false);
+  const [models, setModels] = useState<{ key: string; label: string; family: string; description: string; available: boolean; weights_kind: string; recommended_backends: string[] }[]>([]);
+  const [currentModel, setCurrentModel] = useState<string | null>(null);
+  const [modelSwitching, setModelSwitching] = useState(false);
+  const [selectedFamily, setSelectedFamily] = useState('YOLO26');
+  const [selectedSize, setSelectedSize] = useState('n');
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Detect WebGPU support on mount
@@ -100,6 +106,17 @@ export default function ModelBackendSelector({ onClientModeChange }: Props) {
     try {
       const data = await getModelBackend();
       setCurrent(data.current as BackendKey);
+      setCurrentModel(data.current_model);
+      setModels(data.models || []);
+      if (data.current_model) {
+        const match = (data.models || []).find(m => m.key === data.current_model);
+        if (match?.family.startsWith('YOLO')) {
+          setSelectedFamily(match.family);
+          setSelectedSize(data.current_model.slice(-1) || 'n');
+        } else if (match) {
+          setSelectedFamily(match.family);
+        }
+      }
       setExportStatus(data.export_status);
       setExportErrors(data.export_errors);
       setHasCuda(data.has_cuda);
@@ -107,6 +124,44 @@ export default function ModelBackendSelector({ onClientModeChange }: Props) {
   }, []);
 
   useEffect(() => { fetchStatus(); }, [fetchStatus]);
+
+  const handleModelSelect = async (key: string) => {
+    if (key === currentModel || modelSwitching) return;
+    setError(null);
+    setModelSwitching(true);
+    try {
+      await setDetectionModel(key);
+      setCurrentModel(key);
+      onModelChange?.(key);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setModelSwitching(false);
+    }
+  };
+
+  const familyOptions = ['YOLOv8', 'YOLO11', 'YOLO26', 'YuNet', 'RetinaFace'];
+  const sizeOptions = ['n', 's', 'm', 'l', 'x'];
+  const selectedModelKey = selectedFamily.startsWith('YOLO')
+    ? `${selectedFamily.toLowerCase().replace('yolov', 'yolo')}${selectedSize}`
+    : selectedFamily === 'YuNet' ? 'yunet' : 'retinaface';
+  const selectedModel = models.find(model => model.key === selectedModelKey);
+
+  const handleFamilyChange = (family: string) => {
+    setSelectedFamily(family);
+    if (family.startsWith('YOLO')) {
+      const key = `${family.toLowerCase().replace('yolov', 'yolo')}${selectedSize}`;
+      if (models.some(model => model.key === key && model.available)) handleModelSelect(key);
+    } else {
+      handleModelSelect(family === 'YuNet' ? 'yunet' : 'retinaface');
+    }
+  };
+
+  const handleSizeChange = (size: string) => {
+    setSelectedSize(size);
+    const key = `${selectedFamily.toLowerCase().replace('yolov', 'yolo')}${size}`;
+    if (models.some(model => model.key === key && model.available)) handleModelSelect(key);
+  };
 
   // Poll while exporting
   useEffect(() => {
@@ -185,6 +240,33 @@ export default function ModelBackendSelector({ onClientModeChange }: Props) {
 
   return (
     <div className="space-y-2">
+      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">FACE_DETECTION_MODEL</h4>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+        <label className="space-y-1">
+          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Model family</span>
+          <select value={selectedFamily} onChange={e => handleFamilyChange(e.target.value)} className="w-full rounded-xl border-2 border-slate-100 bg-white px-3 py-3 text-sm font-bold text-slate-700 outline-none focus:border-indigo-400">
+            {familyOptions.map(family => <option key={family} value={family}>{family}</option>)}
+          </select>
+        </label>
+        <label className={`space-y-1 ${!selectedFamily.startsWith('YOLO') ? 'opacity-50' : ''}`}>
+          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Model size</span>
+          <select value={selectedSize} disabled={!selectedFamily.startsWith('YOLO')} onChange={e => handleSizeChange(e.target.value)} className="w-full rounded-xl border-2 border-slate-100 bg-white px-3 py-3 text-sm font-bold text-slate-700 outline-none focus:border-indigo-400 disabled:cursor-not-allowed">
+            {sizeOptions.map(size => <option key={size} value={size}>{size.toUpperCase()} — {size === 'n' ? 'Fastest' : size === 'x' ? 'Most accurate' : 'Balanced'}</option>)}
+          </select>
+        </label>
+      </div>
+      {selectedModel && (
+        <div className={`mb-5 rounded-xl border-2 p-3 ${selectedModel.available ? 'border-indigo-100 bg-indigo-50' : 'border-amber-100 bg-amber-50'}`}>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-black text-slate-700">{selectedModel.label}</span>
+            <span className="text-[8px] font-black uppercase text-slate-400">{selectedModel.available ? 'Ready' : 'Weights missing'}</span>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-1">{selectedModel.description}</p>
+          <p className="text-[8px] font-bold text-slate-400 mt-1 uppercase">Weights: {selectedModel.weights_kind}</p>
+          <p className="text-[8px] font-bold text-indigo-400 mt-1 uppercase">Recommended: {selectedModel.recommended_backends.join(' · ')}</p>
+          {!selectedModel.available && <p className="text-[9px] font-bold text-amber-700 mt-2">Install the face-trained weights to enable this model.</p>}
+      </div>
+      )}
       <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
         INFERENCE_BACKEND
       </h4>
