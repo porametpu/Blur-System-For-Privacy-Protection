@@ -77,7 +77,7 @@ export default function Navbar() {
               : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-300'
               }`}
           >
-            Webcam Test
+            Livestream
           </Link>
         </div>
 

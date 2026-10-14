@@ -66,6 +66,7 @@ class ModelSelectionRequest(BaseModel):
 class WebcamFrameRequest(BaseModel):
     image: str
     model: str | None = None
+    session_id: str | None = None
 
 # Client Detection Schemas
 class BBoxInput(BaseModel):
@@ -225,6 +226,7 @@ detection_service = None
 recognition_service = None
 
 processing_status = {}
+webcam_sessions: dict[str, dict] = {}
 
 @app.on_event("startup")
 def startup_event():
@@ -760,6 +762,75 @@ async def set_model(req: ModelSelectionRequest):
         raise HTTPException(400, result.get("error", "Failed to switch model"))
     return result
 
+
+def _webcam_iou(left: dict, right: dict) -> float:
+    x1 = max(left["x1"], right["x1"])
+    y1 = max(left["y1"], right["y1"])
+    x2 = min(left["x2"], right["x2"])
+    y2 = min(left["y2"], right["y2"])
+    intersection = max(0, x2 - x1) * max(0, y2 - y1)
+    left_area = max(1, left["x2"] - left["x1"]) * max(1, left["y2"] - left["y1"])
+    right_area = max(1, right["x2"] - right["x1"]) * max(1, right["y2"] - right["y1"])
+    return intersection / max(1, left_area + right_area - intersection)
+
+
+def _webcam_embedding(image: np.ndarray, bbox: dict) -> np.ndarray | None:
+    x1, y1, x2, y2 = bbox["x1"], bbox["y1"], bbox["x2"], bbox["y2"]
+    width, height = x2 - x1, y2 - y1
+    if width < 32 or height < 32:
+        return None
+    px1, py1 = max(0, int(x1 - width * 0.25)), max(0, int(y1 - height * 0.25))
+    px2, py2 = min(image.shape[1], int(x2 + width * 0.25)), min(image.shape[0], int(y2 + height * 0.25))
+    return recognition_service.extract_embedding(image[py1:py2, px1:px2])
+
+
+def _assign_webcam_identities(session: dict, image: np.ndarray, detections: list[dict]) -> list[dict]:
+    previous_tracks = session["tracks"]
+    used_tracks = set()
+    matched = []
+
+    for detection in detections:
+        best_index, best_score = -1, 0.15
+        for index, track in enumerate(previous_tracks):
+            if index not in used_tracks:
+                score = _webcam_iou(track["bbox"], detection["bbox"])
+                if score > best_score:
+                    best_index, best_score = index, score
+        if best_index >= 0:
+            used_tracks.add(best_index)
+            track = previous_tracks[best_index]
+            track["bbox"] = detection["bbox"]
+            track["missed"] = 0
+            detection["person_id"] = track["person_id"]
+            matched.append(track)
+        else:
+            embedding = _webcam_embedding(image, detection["bbox"])
+            person_id = None
+            if embedding is not None:
+                candidates = []
+                for identity in session["identities"]:
+                    similarity = recognition_service.compute_similarity(embedding, identity["embedding"])
+                    candidates.append((similarity, identity["person_id"]))
+                candidates.sort(reverse=True)
+                if candidates and candidates[0][0] >= 0.45:
+                    person_id = candidates[0][1]
+            if person_id is None:
+                person_id = session["next_person_id"]
+                session["next_person_id"] += 1
+                if embedding is not None:
+                    session["identities"].append({"person_id": person_id, "embedding": embedding})
+            detection["person_id"] = person_id
+            matched.append({"bbox": detection["bbox"], "person_id": person_id, "missed": 0})
+
+    retained = []
+    for index, track in enumerate(previous_tracks):
+        if index not in used_tracks and track not in matched:
+            track["missed"] += 1
+            if track["missed"] <= 15:
+                retained.append(track)
+    session["tracks"] = matched + retained
+    return detections
+
 @app.post("/api/webcam-detect")
 async def webcam_detect(req: WebcamFrameRequest):
     if detection_service is None:
@@ -775,6 +846,12 @@ async def webcam_detect(req: WebcamFrameRequest):
             if not result.get("success"):
                 raise HTTPException(400, result.get("error", "Failed to load selected model"))
         detections = detection_service.detect_faces(image, conf_threshold=0.35)
+        if req.session_id and recognition_service.active:
+            if req.session_id not in webcam_sessions:
+                webcam_sessions[req.session_id] = {"tracks": [], "identities": [], "next_person_id": 1, "last_seen": time.time()}
+            session = webcam_sessions[req.session_id]
+            session["last_seen"] = time.time()
+            detections = _assign_webcam_identities(session, image, detections)
         return {
             "detections": detections,
             "model": detection_service.current_model,
