@@ -1,0 +1,32 @@
+% UML use cases: user goals, system boundary, undirected associations.
+% Model libraries and the browser are internal implementation components,
+% not additional external actors. File upload is not required by Livestream.
+\begin{tikzpicture}[
+  font=\normalfont\fontsize{14bp}{16bp}\selectfont,
+  usecase/.style={ellipse,draw,line width=0.65pt,align=center,
+    text width=5.8cm,minimum height=0.82cm,inner xsep=0.18cm,inner ysep=0pt},
+  association/.style={draw,line width=0.55pt}
+]
+\draw[rounded corners=4pt,line width=0.65pt] (0,0.85) rectangle (10,-13.85);
+\node[align=center] at (5,1.25) {ระบบ Blur System for Privacy Protection};
+\node[usecase] (upload) at (5,0) {อัปโหลดภาพหรือวิดีโอ};
+\node[usecase] (auto) at (5,-1.45) {ปกปิดใบหน้าทั้งหมดอัตโนมัติ\\(AI Auto-Blur)};
+\node[usecase] (select) at (5,-2.90) {ตรวจจับและเลือกบุคคลในไฟล์\\(Detect \& Select)};
+\node[usecase] (manual) at (5,-4.35) {กำหนดพื้นที่ปกปิดด้วยตนเอง\\(Manual Control)};
+\node[usecase] (effects) at (5,-5.80) {กำหนดรูปแบบและความเข้มการปกปิด};
+\node[usecase] (preview) at (5,-7.25) {ตรวจสอบตัวอย่างผลลัพธ์};
+\node[usecase] (export) at (5,-8.70) {ส่งออกและดาวน์โหลดภาพหรือวิดีโอ};
+\node[usecase] (live) at (5,-10.15) {เปิด--หยุด Livestream\\และปกปิดใบหน้าแบบเวลาจริง};
+\node[usecase] (model) at (5,-11.60) {เลือกตระกูลและขนาดโมเดล\\สำหรับ Livestream};
+\node[usecase] (privacy) at (5,-13.05) {เลือกบุคคลและโหมดปกปิด\\ใน Livestream};
+% Actor outside the system boundary.
+\draw[line width=0.65pt] (-1.75,-5.35) circle (0.21);
+\draw[line width=0.65pt] (-1.75,-5.56)--(-1.75,-6.12);
+\draw[line width=0.65pt] (-2.18,-5.81)--(-1.32,-5.81);
+\draw[line width=0.65pt] (-1.75,-6.12)--(-2.12,-6.60);
+\draw[line width=0.65pt] (-1.75,-6.12)--(-1.38,-6.60);
+\node at (-1.75,-6.92) {ผู้ใช้};
+\coordinate (actorlink) at (-1.27,-5.81);
+\foreach \target in {upload,auto,select,manual,effects,preview,export,live,model,privacy}
+  \draw[association] (actorlink)--(\target.west);
+\end{tikzpicture}

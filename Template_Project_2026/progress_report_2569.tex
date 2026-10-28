@@ -1,5 +1,16 @@
 \documentclass{cskkuproject}
 \usepackage{multirow}
+\input{progress_format_kku}
+
+% รองรับ longtable รุ่นเก่าที่ใช้ infinite shrink ใน output routine
+% ใช้ finite shrink ตามแนวทาง latex3/latex2e#1907 เฉพาะรายงานนี้
+% longtable รุ่นใหม่ไม่มี \vss ที่ต้องแก้ จึงคงคำสั่งเดิมไว้
+\makeatletter
+\AtBeginDocument{%
+  \patchcmd{\LT@output}{\vss}{\vskip 0pt plus \maxdimen minus \normalbaselineskip}{}{}%
+  \patchcmd{\LT@output}{\vss}{\vskip 0pt plus \maxdimen minus \normalbaselineskip}{}{}%
+}
+\makeatother
 
 % รายงานฉบับนี้แยกจาก main.tex เพื่อไม่กระทบไฟล์ตัวอย่างของเทมเพลต
 \titleTH{ระบบเบลออัตโนมัติเพื่อความเป็นส่วนตัว}
@@ -45,27 +56,29 @@
 
 % คำอธิบายเพิ่มเติมใต้ Caption ให้อยู่ใน figure เดียวกันและไม่แยกข้ามหน้า
 \newcommand{\figuredescription}[2]{%
-  \par\smallskip
-  \begin{minipage}{0.94\textwidth}%
+  \par\vspace{\baselineskip}
+  \begin{minipage}{\textwidth}%
     \setlength{\parindent}{0pt}%
     \setlength{\leftskip}{0pt}%
     \setlength{\rightskip}{0pt}%
     \setlength{\parfillskip}{0pt plus 1fil}%
-    \textbf{คำอธิบายภาพที่ \ref{#1}:} #2
+    จากภาพที่ \ref{#1} #2
   \end{minipage}%
 }
 
 % แหล่งที่มาของภาพ แยกระหว่างภาพจากภายนอกและภาพที่ผู้จัดทำสร้างขึ้นเอง
 \newcommand{\figuresource}[1]{%
-  \par\smallskip
-  \begin{minipage}{0.94\textwidth}%
+  \par\vspace{\baselineskip}
+  \begin{minipage}{\textwidth}%
     \centering\small\textbf{ที่มา:} #1
   \end{minipage}%
 }
 
 \begin{document}
 
-\makeprogresscover{1}
+% ปกนอก (ปกหนา) และปกใน (ปกบาง) ไม่ใส่เลขหน้า
+\makefinalcover
+\makefinalcover
 
 \pagenumbering{arabic}
 \setcounter{page}{0}
@@ -110,7 +123,7 @@
 \let\ps@plain\ps@empty
 \makeatother
 % แสดงรายการแหล่งข้อมูลในบรรณานุกรมโดยไม่แทรกหมายเลขอ้างอิงในเนื้อหา
-\nocite{*}
+% References are cited next to the supported text.
 \bibliographystyle{ieeetr}
 \bibliography{progress_references}
 

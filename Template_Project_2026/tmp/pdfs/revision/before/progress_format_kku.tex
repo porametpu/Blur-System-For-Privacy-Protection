@@ -1,0 +1,59 @@
+% Report-local corrections: KKU manual pp. 4-7, 12-13, 24-26.
+\setmainfont{THSarabunNew.ttf}[Path=theme/fonts/,BoldFont={THSarabunNew Bold.ttf},ItalicFont={THSarabunNew Italic.ttf},BoldItalicFont={THSarabunNew BoldItalic.ttf}]
+\setsansfont{THSarabunNew.ttf}[Path=theme/fonts/,BoldFont={THSarabunNew Bold.ttf},ItalicFont={THSarabunNew Italic.ttf},BoldItalicFont={THSarabunNew BoldItalic.ttf}]
+\setmonofont{THSarabunNew.ttf}[Path=theme/fonts/,BoldFont={THSarabunNew Bold.ttf},ItalicFont={THSarabunNew Italic.ttf},BoldItalicFont={THSarabunNew BoldItalic.ttf}]
+\makeatletter
+\renewcommand\normalsize{\@setfontsize\normalsize{14bp}{17bp}\abovedisplayskip=8bp\belowdisplayskip=8bp}
+\renewcommand\small{\normalsize}
+\renewcommand\footnotesize{\normalsize}
+\renewcommand\large{\@setfontsize\large{16bp}{19bp}}
+\renewcommand\Large{\@setfontsize\Large{18bp}{22bp}}
+\normalsize
+\makeatother
+\setlength{\firstindentlength}{1.27cm}
+\setlength{\secondindentlength}{2.0cm}
+\setlength{\thirdindentlength}{2.7cm}
+\setlength{\parindent}{\firstindentlength}
+\titleformat{\subsection}{\normalfont\normalsize}{\thesubsection}{0.45\firstindentlength}{}
+\titleformat{\subsubsection}{\normalfont\normalsize}{\thesubsubsection}{0.45\firstindentlength}{}
+\titleformat{name=\subsection,numberless}{\normalfont\normalsize}{}{0pt}{}
+\titleformat{name=\subsubsection,numberless}{\normalfont\normalsize}{}{0pt}{}
+\titlespacing*{\chapter}{0pt}{0pt}{2\baselineskip}
+\captionsetup{font=normalsize,format=hang}
+\captionsetup[figure]{skip=\baselineskip,labelfont=bf,textfont=normalfont,justification=raggedright,singlelinecheck=false}
+\captionsetup[table]{skip=\baselineskip,labelfont=bf,textfont=normalfont,justification=raggedright,singlelinecheck=false}
+\setlength{\textfloatsep}{\baselineskip}
+\setlength{\intextsep}{\baselineskip}
+\setlength{\headheight}{18bp}
+% Right page number baseline approximately 1 inch from the top edge.
+\setlength{\headsep}{19bp}
+\raggedbottom
+\makeatletter
+\renewcommand{\makeprogresscover}[1]{%
+ \begin{titlepage}\thispagestyle{empty}\centering
+ \includegraphics[height=2.7cm]{theme/kku-logo.png}\par\vspace{0.4cm}
+ {\fontsize{26bp}{30bp}\selectfont\bfseries\@projectGroup\par}
+ {\fontsize{20bp}{24bp}\selectfont\bfseries รายงานความก้าวหน้าโครงงาน ครั้งที่ #1\par}
+ \vfill
+ {\fontsize{20bp}{24bp}\selectfont\@titleTH\par\vspace{0.3cm}\MakeUppercase{\@titleEN}\par}
+ \vfill
+ {\fontsize{18bp}{22bp}\selectfont โดย\par
+ \@firstStudentID\quad\@firstStudentPrefixTH\@firstStudentNameTH\par
+ \@secondStudentID\quad\@secondStudentPrefixTH\@secondStudentNameTH\par
+ \vspace{0.7cm}อาจารย์ที่ปรึกษา : \@advisorTH\par}
+ \vfill
+ {\fontsize{16bp}{19bp}\selectfont
+ รายงานนี้เป็นส่วนหนึ่งของการศึกษาวิชา \@courseCode{} \@courseName\par
+ ภาคเรียนที่ \@semester{} ปีการศึกษา \@academicYearTH\par
+ สาขาวิชา\@majorTH{} วิทยาลัยการคอมพิวเตอร์\par มหาวิทยาลัยขอนแก่น\par}
+ \end{titlepage}}
+% Add a continuation title only when the contents actually spans another page.
+\newcommand{\reporttoccontinuation}{\par\noindent\hfill{\Large\bfseries สารบัญ (ต่อ)}\hfill\mbox{}\par\bigskip}
+\renewcommand{\tableofcontents}{%
+ \chapter*{สารบัญ}\addcontentsline{toc}{chapter}{สารบัญ}%
+ \begingroup
+ \let\reportoriginalnewpage\newpage
+ \def\newpage{\reportoriginalnewpage\reporttoccontinuation}%
+ \@starttoc{toc}\par
+ \endgroup}
+\makeatother

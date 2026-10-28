@@ -1,0 +1,17 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {1}{\ignorespaces ผลเปรียบเทียบ RetinaFace และ SCRFD ภายใต้โปรโตคอลเดียวกัน}}{5}{table.caption.5}%
+\contentsline {table}{\numberline {2}{\ignorespaces การเปรียบเทียบ YOLO26, RetinaFace และ SCRFD สำหรับงานปกปิดใบหน้า}}{6}{table.2.2}%
+\contentsline {table}{\numberline {3}{\ignorespaces แนวคิดที่เกี่ยวข้องและการนำไปใช้ในระบบ}}{15}{table.caption.10}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4}{\ignorespaces ซอฟต์แวร์และไลบรารีหลักที่ใช้ในโครงงาน}}{37}{table.caption.32}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5}{\ignorespaces ความต้องการเชิงฟังก์ชันของระบบ}}{39}{table.4.5}%
+\contentsline {table}{\numberline {6}{\ignorespaces โครงสร้างข้อมูลหลักของระบบ}}{41}{table.caption.33}%
+\contentsline {table}{\numberline {7}{\ignorespaces ความก้าวหน้าของระบบในรอบปัจจุบัน}}{49}{table.4.7}%
+\contentsline {table}{\numberline {8}{\ignorespaces ผลการเปรียบเทียบโมเดลตรวจจับใบหน้าและผลอ้างอิงแบบจำลอง YOLO ทุกขนาด}}{51}{table.caption.41}%
+\contentsline {table}{\numberline {9}{\ignorespaces ผลแบบจำลอง YOLO บน COCO ที่ความละเอียด 640 พิกเซล}}{52}{table.4.9}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {10}{\ignorespaces สรุปผลเทียบกับวัตถุประสงค์}}{53}{table.caption.42}%
+\contentsline {table}{\numberline {11}{\ignorespaces ปัญหา อุปสรรค และแนวทางแก้ไข}}{55}{table.caption.43}%
+\contentsline {table}{\numberline {12}{\ignorespaces รายการ API หลักของ Blur System}}{60}{table.caption.45}%

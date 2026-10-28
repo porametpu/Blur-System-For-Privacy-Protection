@@ -1,0 +1,698 @@
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LC_ALL = "C.UTF-8",
+	LC_CTYPE = "C.UTF-8",
+	LC_NUMERIC = (unset),
+	LC_COLLATE = (unset),
+	LC_TIME = (unset),
+	LC_MONETARY = (unset),
+	LANG = "C.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the system default locale ("Thai_Thailand.874").
+Initial Win CP for (console input, console output, system): (CP437, CP65001, CP1252)
+I changed them all to CP1252
+Rc files read (in order):
+  ./.latexmkrc
+Latexmk: This is Latexmk, John Collins, 9 March 2026. Version 4.88.
+Force everything to be remade.
+Latexmk: applying rule 'bibtex tmp/pdfs/bibliography-continuation/build/progress_report_2569'...
+Rule 'bibtex tmp/pdfs/bibliography-continuation/build/progress_report_2569':  Reasons for rerun
+Category 'other':
+  Rerun of 'bibtex tmp/pdfs/bibliography-continuation/build/progress_report_2569' forced or previously required:
+    Reason or flag: 'go_mode'
+
+------------
+Run number 1 of rule 'bibtex tmp/pdfs/bibliography-continuation/build/progress_report_2569'
+------------
+====== ENV{BIBINPUTS} changed to 'D:/Blur system project/Blur-System-Latest/Template_Project_2026;tmp/pdfs/bibliography-continuation/build;D:\Blur system project\Blur-System-Latest\Template_Project_2026\tmp\pdfs\bibliography-continuation\build;'
+Latexmk: Change directory to 'tmp/pdfs/bibliography-continuation/build/'.
+To assist finding of files in document directory, I set
+  BIBINPUTS='D:/Blur system project/Blur-System-Latest/Template_Project_2026;tmp/pdfs/bibliography-continuation/build;D:\Blur system project\Blur-System-Latest\Template_Project_2026\tmp\pdfs\bibliography-continuation\build;'
+  BSTINPUTS='D:/Blur system project/Blur-System-Latest/Template_Project_2026;'.
+------------
+Running 'bibtex  "progress_report_2569"'
+------------
+This is BibTeX, Version 0.99e (MiKTeX 25.12)
+The top-level auxiliary file: progress_report_2569.aux
+The style file: ieeetr.bst
+Database file #1: progress_references.bib
+Latexmk: Change directory back to 'D:/Blur system project/Blur-System-Latest/Template_Project_2026'
+Latexmk: applying rule 'xelatex'...
+Rule 'xelatex':  Reasons for rerun
+Category 'other':
+  Rerun of 'xelatex' forced or previously required:
+    Reason or flag: 'go_mode'
+
+------------
+Run number 1 of rule 'xelatex'
+------------
+------------
+Running 'xelatex -no-pdf -interaction=nonstopmode -file-line-error -recorder -output-directory="tmp/pdfs/bibliography-continuation/build"  "progress_report_2569.tex"'
+------------
+This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.12) (preloaded format=xelatex.fmt)
+ restricted \write18 enabled.
+entering extended mode
+(progress_report_2569.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-12-24>
+(cskkuproject.cls
+Document Class: cskkuproject 2025/05/08 CS KKU Project Class
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/base\report.cls
+Document Class: report 2025/01/22 v1.4n Standard LaTeX document class
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/base\size12.clo))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/tools\indentfirst.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifxetex.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/fontspec\fontspec.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/l3packages/xparse\xparse
+.sty (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/l3kernel\expl3.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-xete
+x.def)))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/fontspec\fontspec-xetex.
+sty (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/base\fontenc.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/fontspec\fontspec.cfg)))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/setspace\setspace.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cf
+g)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\xetex.def))
+) (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption3.sty))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/caption\subcaption.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/fancyhdr\fancyhdr.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/titlesec\titlesec.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/microtype\microtype.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/microtype\microtype-xete
+x.def)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/microtype\microtype.cfg)
+) (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/xurl\xurl.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/enumitem\enumitem.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstpatch.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstmisc.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.cfg))
+==> First Aid for listings.sty no longer applied!
+    Expected:
+        2024/09/23 1.10c (Carsten Heinz)
+    but found:
+        2025/11/14 1.11b (Carsten Heinz)
+    so I'm assuming it got fixed.
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
+For additional information on amsmath, use the `?' option.
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amstext.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\pifont.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\upzd.fd)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\upsy.fd))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/pgf/frontendlayer\tikz.s
+ty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgf.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfrcs.sty
+
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfutil-
+common.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfutil-
+latex.def)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfrcs.c
+ode.tex
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf\pgf.revision.tex))
+)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgfcore.s
+ty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/pgf/systemlayer\pgfsys.s
+ty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsys
+.code.tex
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys.
+code.tex
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeysl
+ibraryfiltered.code.tex))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgf.cf
+g)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsys
+-xetex.def
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsys
+-dvipdfmx.def
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsys
+-common-pdf.def))))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsys
+softpath.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsys
+protocol.code.tex))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx))
+
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+.code.tex
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.code.
+tex
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathutil.c
+ode.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathparser
+.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfuncti
+ons.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfuncti
+ons.basic.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfuncti
+ons.trigonometric.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfuncti
+ons.random.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfuncti
+ons.comparison.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfuncti
+ons.base.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfuncti
+ons.round.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfuncti
+ons.misc.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfuncti
+ons.integerarithmetics.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathcalc.c
+ode.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfloat.
+code.tex))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfint.code.t
+ex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+points.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+pathconstruct.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+pathusage.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+scopes.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+graphicstate.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+transformations.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+quick.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+objects.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+pathprocessing.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+arrows.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+shade.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+image.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+external.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+layers.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+transparency.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+patterns.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore
+rdf.code.tex)))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodules
+hapes.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodulep
+lot.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfcom
+p-version-0-65.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfcom
+p-version-1-18.sty))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgffor.sty
+
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfkeys.st
+y
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys.
+code.tex))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/pgf/math\pgfmath.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.code.
+tex))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgffor.c
+ode.tex))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz
+\tikz.code.tex
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflibra
+ryplothandlers.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodulem
+atrix.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz
+/libraries\tikzlibrarytopaths.code.tex)))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz
+/libraries\tikzlibraryshapes.geometric.code.tex
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries/shapes\p
+gflibraryshapes.geometric.code.tex))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflibra
+ryarrows.meta.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz
+/libraries\tikzlibrarypositioning.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz
+/libraries\tikzlibraryfit.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz
+/libraries\tikzlibrarybackgrounds.code.tex)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz
+/libraries\tikzlibrarycalc.code.tex) (mermaid.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/tools\shellesc.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/adjustbox\adjustbox.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/xkeyval\xkeyval.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/xkeyval\xkeyval.tex
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/xkeyval\xkvutils.tex))
+) (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/adjustbox\adjcalc.sty)
+ (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/adjustbox\trimclip.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/collectbox\collectbox.st
+y)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/adjustbox\tc-xetex.def))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/ifoddpage\ifoddpage.sty)
+ (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/varwidth\varwidth.sty)
+==> First Aid for varwidth.sty applied!
+) (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/fancyvrb\fancyvrb.sty)
+ (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.sty)
+)) (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
+
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/kvdefinekeys\kvdefinek
+eys.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pdfescape\pdfescape.st
+y
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcmds.
+sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/infwarerr\infwarerr.st
+y))) (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/hycolor\hycolor.sty
+) (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/gettitlestring\gettitl
+estring.sty))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\stringenc.st
+y) (C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/bigintcalc\bigintcalc.
+sty)))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hxetex.def
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfile
+check.sty
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/generic/uniquecounter\uniqueco
+unter.sty)))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/tools\longtable.sty))
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/multirow\multirow.sty)
+(progress_format_kku.tex
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/tools\afterpage.sty))
+(D:\Blur system project\Blur-System-Latest\Template_Project_2026\tmp/pdfs/bibli
+ography-continuation/build\progress_report_2569.aux)
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/caption\ltcaption.sty)
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\k A'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\k a'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v D'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v d'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\k E'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v E'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\k e'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v e'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\'L'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v L'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\'l'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v l'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\'N'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v N'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\'n'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v n'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\H O'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\H o'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\'R'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v R'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\'r'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v r'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\'S'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\'s'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\c T'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v T'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\c t'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\v t'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\H U'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\r U'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\H u'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\r u'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\'Z'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\.Z'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\'z'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+Package microtype Warning: Unknown slot number of character
+(microtype)                `\.z'
+(microtype)                in font encoding `TU' in inheritance list
+(microtype)                `microtype.cfg/425(protrusion)'.
+
+
+(D:\Blur system project\Blur-System-Latest\Template_Project_2026\tmp/pdfs/bibli
+ography-continuation/build\progress_report_2569.out)
+(D:\Blur system project\Blur-System-Latest\Template_Project_2026\tmp/pdfs/bibli
+ography-continuation/build\progress_report_2569.out) [1] [1]
+(progress_abstractTH.tex) [0] (progress_abstractEN.tex) [1]
+(progress_acknowledgement.tex) [2]
+(D:\Blur system project\Blur-System-Latest\Template_Project_2026\tmp/pdfs/bibli
+ography-continuation/build\progress_report_2569.toc
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msa.cfg)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msb.cfg)
+(C:\Users\ACER\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-cmr.cfg)
+[3]) [4]
+(D:\Blur system project\Blur-System-Latest\Template_Project_2026\tmp/pdfs/bibli
+ography-continuation/build\progress_report_2569.lof) [5]
+(D:\Blur system project\Blur-System-Latest\Template_Project_2026\tmp/pdfs/bibli
+ography-continuation/build\progress_report_2569.lot) [6]
+Chapter 1.
+(progress_chapter1.tex [1]) [2]
+Chapter 2.
+(progress_chapter2.tex
+Underfull \hbox (badness 1168) in paragraph at lines 11--12
+[]\TU/THSarabunNew.ttf(0)/m/n/14.05249 โครง ข่าย ประสาท เทียม แบบ คอน โว ลู ชัน
+ (Convolutional Neural Network: CNN) เป็น
+[3] [4]
+Underfull \hbox (badness 10000) in paragraph at lines 52--52
+[]|\TU/THSarabunNew.ttf(0)/b/n/14.05249 Medium
+[5] [6] [7] [8] [9] [10] [11] [12] [13] [14]
+Underfull \hbox (badness 5302) in paragraph at lines 283--284
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 ตรวจ กรอบ ใบหน้า ใน แต่ละ
+
+Underfull \hbox (badness 1960) in paragraph at lines 289--290
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 ติดตาม กรอบ Manual Blur
+
+Underfull \hbox (badness 1314) in paragraph at lines 291--291
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 ลด การ สั่น ของ ผล ตรวจ จับ ข้าม
+
+Underfull \hbox (badness 1881) in paragraph at lines 291--292
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 ปรับ พิกัด กรอบ ให้การ ปกปิด
+
+Underfull \hbox (badness 1902) in paragraph at lines 293--294
+\TU/THSarabunNew.ttf(0)/m/n/14.05249 กับ cosine similarity และ
+
+Underfull \hbox (badness 10000) in paragraph at lines 295--296
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 ตรวจ จับ เป็น ช่วง และ ใช้
+
+Underfull \hbox (badness 2426) in paragraph at lines 301--302
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 Gaussian Blur, Pixelation
+
+Underfull \hbox (badness 10000) in paragraph at lines 303--303
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 ตรวจ ข้อมูล ส่วน บุคคล จาก
+) [15]
+Chapter 3.
+(progress_chapter3.tex [16] [17] [18] [19] [20] [21] [22] [23] [24] [25]
+[26] [27] [28] [29] (images-progress/use-case-blur-system.tex) [30] [31]
+[32] [33] [34] [35] [36]
+Underfull \hbox (badness 10000) in paragraph at lines 406--406
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 TensorRT,InsightFace และ
+[37] [38]) [39]
+Chapter 4.
+(progress_chapter4.tex [40]
+Underfull \hbox (badness 6641) in paragraph at lines 63--63
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 ชื่อ ไฟล์, ขนาด เฟรม, FPS,
+[41] [42] [43] [44] [45] [46] [47] [48]
+Underfull \hbox (badness 10000) in paragraph at lines 194--194
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 ออกแบบ UI/ UX และ
+
+Underfull \hbox (badness 7362) in paragraph at lines 194--195
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 มี กระบวนการ อัป โหลด Tools,
+
+Underfull \hbox (badness 1005) in paragraph at lines 198--199
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 มี กระบวนการ ตรวจ จับ แบบ เบื้อง
+
+Underfull \hbox (badness 1158) in paragraph at lines 206--207
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 สร้าง ตัวอย่าง ก่อน ส่ง ออก และ ส่ง
+
+Underfull \hbox (badness 1308) in paragraph at lines 206--207
+\TU/THSarabunNew.ttf(0)/m/n/14.05249 คืน URL สำหรับ ดาวน์โหลด หรือ
+
+Underfull \hbox (badness 10000) in paragraph at lines 208--209
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 ยัง ต้อง เก็บ ผล การ ประเมิน
+[49] [50] [51] [52]) [53]
+Chapter 5.
+(progress_chapter5.tex
+Underfull \hbox (badness 4144) in paragraph at lines 17--17
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 พัฒนา เว็บ แอปพลิเคชัน สำหรับ ตรวจ จับ 
+และ
+
+Underfull \hbox (badness 1210) in paragraph at lines 23--24
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 มี เอฟเฟกต์ ตัวอย่าง และ การ ส่ง
+
+Underfull \hbox (badness 10000) in paragraph at lines 25--25
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 ประเมิน ความ แม่นยำ ความเร็ว และ ความ
+[54]
+Underfull \hbox (badness 2547) in paragraph at lines 79--79
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 ภาพ คุณภาพ ต่ำ แสง น้อย
+
+Underfull \hbox (badness 3250) in paragraph at lines 81--82
+\TU/THSarabunNew.ttf(0)/m/n/14.05249 และ พัฒนา โมเดล ป้าย ทะเบียน/
+
+Underfull \hbox (badness 1748) in paragraph at lines 83--84
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 เพิ่ม คิว งาน สร้าง ตัวอย่าง ความ
+
+Underfull \hbox (badness 10000) in paragraph at lines 87--87
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 สถานะ งาน เก็บ ใน หน่วย
+[55]) [56]
+(D:\Blur system project\Blur-System-Latest\Template_Project_2026\tmp/pdfs/bibli
+ography-continuation/build\progress_report_2569.bbl [57] [58])
+(progress_appendices.tex [59] [60]
+Underfull \hbox (badness 5374) in paragraph at lines 16--17
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 อ่าน เฟรม ตัวอย่าง สำหรับ เลือก
+
+Underfull \hbox (badness 3199) in paragraph at lines 26--27
+[]|\TU/THSarabunNew.ttf(0)/m/n/14.05249 อ่าน หรือ บันทึก กรอบ Manual
+) [61] (progress_biography.tex) [62]
+(D:\Blur system project\Blur-System-Latest\Template_Project_2026\tmp/pdfs/bibli
+ography-continuation/build\progress_report_2569.aux) )
+(see the transcript file for additional information)
+Output written on D:\Blur system project\Blur-System-Latest\Template_Project_20
+26\tmp\pdfs\bibliography-continuation\build\progress_report_2569.xdv (71 pages,
+ 1015428 bytes).
+Transcript written on "D:\Blur system project\Blur-System-Latest\Template_Proje
+ct_2026\tmp\pdfs\bibliography-continuation\build\progress_report_2569.log".
+Latexmk: Getting log file 'tmp/pdfs/bibliography-continuation/build/progress_report_2569.log'
+Latexmk: Examining 'tmp/pdfs/bibliography-continuation/build/progress_report_2569.fls'
+"\x{0e20}" does not map to cp1252 at C:/Users/ACER/AppData/Local/Programs/MiKTeX/scripts/latexmk/latexmk.pl line 13236, <$fls_file> line 522.
+in conversion UTF-8 to system code page of line 429 of tmp/pdfs/bibliography-continuation/build/progress_report_2569.fls
+INPUT ./images-progress/ภาพ demo หน้าเมนู Detect&Select .jpg
+"\x{0e20}" does not map to cp1252 at C:/Users/ACER/AppData/Local/Programs/MiKTeX/scripts/latexmk/latexmk.pl line 13236, <$fls_file> line 522.
+in conversion UTF-8 to system code page of line 430 of tmp/pdfs/bibliography-continuation/build/progress_report_2569.fls
+INPUT ./images-progress/ภาพ demo หน้าเมนู Detect&Select .jpg
+Latexmk.tmp/pdfs/bibliography-continuation/build/progress_report_2569.fls.  There were 39 line(s) with character coding
+  errors: Characters not available in system code page and/or non-UTF-8 in
+  file when expected. Dependency information may be incomplete.
+Latexmk: Examining 'tmp/pdfs/bibliography-continuation/build/progress_report_2569.log'
+The first few error lines are listed above
+Latexmk: Found input bbl file 'tmp/pdfs/bibliography-continuation/build/progress_report_2569.bbl'
+Latexmk: Log file says output to 'tmp/pdfs/bibliography-continuation/build/progress_report_2569.xdv'
+Latexmk: Log file says output to 'tmp/pdfs/bibliography-continuation/build/progress_report_2569.xdv'
+Latexmk: Using bibtex to make bibliography file(s).
+  ===Source file 'tmp/pdfs/bibliography-continuation/build/progress_report_2569.bbl' for 'xelatex'
+Latexmk: Found bibliography file(s):
+  ./progress_references.bib
+Latexmk: applying rule 'xdvipdfmx'...
+Rule 'xdvipdfmx':  Reasons for rerun
+Category 'other':
+  Rerun of 'xdvipdfmx' forced or previously required:
+    Reason or flag: 'go_mode'
+
+------------
+Run number 1 of rule 'xdvipdfmx'
+------------
+------------
+Running 'xdvipdfmx -E -o "tmp/pdfs/bibliography-continuation/build/progress_report_2569.pdf"  "tmp/pdfs/bibliography-continuation/build/progress_report_2569.xdv"'
+------------
+tmp/pdfs/bibliography-continuation/build/progress_report_2569.xdv -> tmp/pdfs/bibliography-continuation/build/progress_report_2569.pdf
+[1][2][3][4][5][6][7][8][9][10][11][12][13][14][15][16][17][18][19][20][21][22][23][24][25][26][27][28][29][30][31][32][33][34][35][36][37][38][39][40][41][42][43][44][45][46][47][48][49][50][51][52][53][54][55][56][57][58][59][60][61][62][63][64][65][66][67][68][69][70][71]
+2660341 bytes written
+Latexmk: All targets (tmp/pdfs/bibliography-continuation/build/progress_report_2569.xdv tmp/pdfs/bibliography-continuation/build/progress_report_2569.pdf) are up-to-date
+
+Reverting Windows console CPs to (in,out) = (437,65001)

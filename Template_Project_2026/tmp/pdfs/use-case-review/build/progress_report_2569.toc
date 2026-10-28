@@ -1,0 +1,76 @@
+\contentsline {chapter}{บทคัดย่อ}{\relax ก}{Doc-Start}%
+\contentsline {chapter}{ABSTRACT}{ข}{Doc-Start}%
+\contentsline {chapter}{กิตติกรรมประกาศ}{ค}{chapter*.1}%
+\contentsline {chapter}{สารบัญ}{ง}{chapter*.2}%
+\contentsline {chapter}{สารบัญภาพ}{ฉ}{chapter*.3}%
+\contentsline {chapter}{สารบัญตาราง}{ช}{chapter*.4}%
+\contentsline {chapter}{\numberline {1}บทนำ}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}ความเป็นมาและความสำคัญของปัญหา}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}วัตถุประสงค์}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}ขอบเขตและข้อจำกัดของระบบ}{1}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}ขอบเขต}{1}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}ข้อจำกัดของโครงงาน}{2}{subsection.1.3.2}%
+\contentsline {section}{\numberline {1.4}ประโยชน์ที่คาดว่าจะได้รับ}{2}{section.1.4}%
+\contentsline {chapter}{\numberline {2}ทฤษฎีและงานวิจัยที่เกี่ยวข้อง}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}ทฤษฎีที่เกี่ยวข้อง}{3}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}การปกปิดข้อมูลในภาพและวิดีโอ}{3}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Convolutional Neural Network(CNN)}{3}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}การตรวจจับใบหน้าด้วย YOLO26}{3}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}การศึกษาเปรียบเทียบแบบจำลองตรวจจับใบหน้า}{4}{subsection.2.1.4}%
+\contentsline {subsubsection}{\numberline {(1)}YOLO26}{4}{subsubsection.2.1.4.1}%
+\contentsline {subsubsection}{\numberline {(2)}RetinaFace}{4}{subsubsection.2.1.4.2}%
+\contentsline {subsubsection}{\numberline {(3)}SCRFD}{4}{subsubsection.2.1.4.3}%
+\contentsline {subsubsection}{\numberline {(4)}หลักฐานเชิงปริมาณภายใต้เงื่อนไขเดียวกัน}{5}{subsubsection.2.1.4.4}%
+\contentsline {subsubsection}{\numberline {(5)}ตารางเปรียบเทียบเชิงคุณภาพ}{6}{subsubsection.2.1.4.5}%
+\contentsline {subsubsection}{\numberline {(6)}เหตุผลในการเลือกแบบจำลองสำหรับระบบ}{7}{subsubsection.2.1.4.6}%
+\contentsline {subsection}{\numberline {2.1.5}วิธีตรวจจับใบหน้าแบบ Haar Cascade}{7}{subsection.2.1.5}%
+\contentsline {subsection}{\numberline {2.1.6}Support Vector Machine(SVM)}{8}{subsection.2.1.6}%
+\contentsline {subsection}{\numberline {2.1.7}การรู้จำใบหน้าและการแทนลักษณะ}{8}{subsection.2.1.7}%
+\contentsline {subsubsection}{\numberline {(1)}Principal Component Analysis และ Eigenfaces}{9}{subsubsection.2.1.7.1}%
+\contentsline {subsubsection}{\numberline {(2)}Linear Discriminant Analysis และ Fisherfaces}{10}{subsubsection.2.1.7.2}%
+\contentsline {subsubsection}{\numberline {(3)}Elastic Bunch Graph Matching}{11}{subsubsection.2.1.7.3}%
+\contentsline {subsubsection}{\numberline {(4)}ArcFace และการจัดกลุ่มบุคคล}{12}{subsubsection.2.1.7.4}%
+\contentsline {subsection}{\numberline {2.1.8}การติดตามกรอบวัตถุ}{12}{subsection.2.1.8}%
+\contentsline {subsection}{\numberline {2.1.9}Temporal Smoothing}{13}{subsection.2.1.9}%
+\contentsline {subsection}{\numberline {2.1.10}Person Re-identification}{13}{subsection.2.1.10}%
+\contentsline {subsection}{\numberline {2.1.11}Frame Skipping}{13}{subsection.2.1.11}%
+\contentsline {subsection}{\numberline {2.1.12}Real-time Processing}{13}{subsection.2.1.12}%
+\contentsline {subsection}{\numberline {2.1.13}Canvas Compositing}{14}{subsection.2.1.13}%
+\contentsline {subsection}{\numberline {2.1.14}การตรวจจับข้อความและข้อมูลส่วนบุคคลจากข้อความ}{14}{subsection.2.1.14}%
+\contentsline {subsection}{\numberline {2.1.15}สถาปัตยกรรมเว็บแอปพลิเคชัน}{14}{subsection.2.1.15}%
+\contentsline {section}{\numberline {2.2}งานวิจัยและงานที่เกี่ยวข้อง}{14}{section.2.2}%
+\contentsline {chapter}{\numberline {3}วิธีการดำเนินโครงงาน}{16}{chapter.3}%
+\contentsline {section}{\numberline {3.1}ขั้นตอนการดำเนินงาน}{16}{section.3.1}%
+\contentsline {section}{\numberline {3.2}สถาปัตยกรรมของระบบ}{16}{section.3.2}%
+\contentsline {section}{\numberline {3.3}ลำดับการประมวลผลสื่อ}{17}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}การประมวลผลแบบเวลาจริงของ Livestream}{18}{subsection.3.3.1}%
+\contentsline {section}{\numberline {3.4}แผนภาพการทำงานของระบบ}{23}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Activity Diagram}{23}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Use Case Diagram}{29}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}System Sequence Diagram}{30}{subsection.3.4.3}%
+\contentsline {section}{\numberline {3.5}เครื่องมือที่ใช้ในการดำเนินงาน}{37}{section.3.5}%
+\contentsline {section}{\numberline {3.6}แผนการทดสอบและเกณฑ์การประเมิน}{37}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}วิธีประเมินความแม่นยำและความเร็วที่เสนอ}{37}{subsection.3.6.1}%
+\contentsline {chapter}{\numberline {4}การวิเคราะห์ ออกแบบและพัฒนาระบบ}{39}{chapter.4}%
+\contentsline {section}{\numberline {4.1}การวิเคราะห์ระบบ}{39}{section.4.1}%
+\contentsline {section}{\numberline {4.2}การออกแบบข้อมูลและส่วนประกอบ}{40}{section.4.2}%
+\contentsline {section}{\numberline {4.3}การออกแบบส่วนติดต่อผู้ใช้}{41}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}ส่วนติดต่อผู้ใช้ของ Livestream}{48}{subsection.4.3.1}%
+\contentsline {section}{\numberline {4.4}การพัฒนาและการปรับปรุงจากภาคการศึกษาก่อนหน้า}{48}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}การตรวจจับและสร้าง Face Map}{49}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}การปกปิดแบบเลือกได้และการสร้างผลลัพธ์}{50}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}การปกปิดด้วยตนเองและการติดตาม}{50}{subsection.4.4.3}%
+\contentsline {section}{\numberline {4.5}ผลเปรียบเทียบ}{51}{section.4.5}%
+\contentsline {chapter}{\numberline {5}สรุปผลการดำเนินงาน}{53}{chapter.5}%
+\contentsline {section}{\numberline {5.1}สรุปผลการดำเนินโครงงาน}{53}{section.5.1}%
+\contentsline {section}{\numberline {5.2}ข้อจำกัดของระบบ}{53}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}ข้อจำกัดด้านการทำงาน}{53}{subsection.5.2.1}%
+\contentsline {section}{\numberline {5.3}ปัญหา อุปสรรค และแนวทางแก้ไข}{54}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}การวิเคราะห์ความเสี่ยงของข้อผิดพลาดจากกระบวนการทำงาน}{54}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}ปัญหาและแนวทางปรับปรุงระบบ}{55}{subsection.5.3.2}%
+\contentsline {section}{\numberline {5.4}สิ่งที่จะทำต่อในเทอมหน้า}{55}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}การปรับปรุงฟังก์ชันการทำงาน}{55}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}แนวทางการวิจัยต่อยอด}{55}{subsection.5.4.2}%
+\contentsline {chapter}{เอกสารอ้างอิง}{56}{subsection.5.4.2}%
+\contentsline {chapter}{ภาคผนวก~\relax ก: รายการ API หลักของระบบ}{60}{chapter.0}%
+\contentsline {chapter}{ประวัติผู้เขียน}{61}{appendix*.46}%
