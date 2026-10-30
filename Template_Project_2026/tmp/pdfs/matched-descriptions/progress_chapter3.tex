@@ -1,0 +1,449 @@
+\begingroup
+\setlength{\intextsep}{0.5\baselineskip}
+
+\section{ขั้นตอนการดำเนินงาน}
+
+การพัฒนาใช้แนวทางวนรอบระหว่างการตรวจสอบความต้องการ ออกแบบ พัฒนา ตรวจสอบผล และปรับปรุง เริ่มจากทบทวนรายงานเดิมและปรับปรุงเพิ่มเติม จากนั้นแยกฟังก์ชันที่พัฒนาแล้วออกจากฟังก์ชันที่ยังเป็นแผนงาน เพื่อให้ขอบเขตของรายงานสอดคล้องกับระบบปัจจุบัน
+
+\begin{enumerate}
+    \item วิเคราะห์ปัญหาความเป็นส่วนตัวและกำหนดการใช้งานหลัก ได้แก่ การปกปิดใบหน้า การเลือกบุคคล และการปกปิดด้วยตนเอง
+    \item ออกแบบลำดับข้อมูลจากการอัปโหลดไฟล์ การสร้างเฟรมตัวอย่าง การตรวจจับและจัดกลุ่มใบหน้า จนถึงการสร้างไฟล์ผลลัพธ์
+    \item พัฒนาส่วนหน้า ส่วน API บริการตรวจจับ การรู้จำ การติดตาม และการสร้างผลลัพธ์วิดีโอ
+    \item ตรวจสอบเส้นทางการทำงานและโค้ดส่วนสำคัญ รวมถึงการตรวจ lint ของส่วนหน้า
+    \item จัดทำรายการข้อจำกัดและแผนการทดสอบเชิงปริมาณในระยะต่อไป
+\end{enumerate}
+
+\section{สถาปัตยกรรมของระบบ}
+
+ภาพที่ \ref{fig:architecture} แสดงสถาปัตยกรรมระดับสูงของระบบ ผู้ใช้ติดต่อกับส่วนหน้าที่พัฒนาด้วย Next.js ซึ่งส่งต่อคำขอไปยัง FastAPI บริการตรวจจับ การรู้จำ การติดตาม และการสร้างผลลัพธ์ทำงานภายในส่วนหลัง (backend) ข้อมูลเชิงโครงสร้างจัดเก็บใน SQLite ขณะที่ไฟล์ผลลัพธ์สามารถส่งต่อไปยัง Cloudinary ได้เมื่อกำหนดค่าที่จำเป็นไว้แล้ว
+
+\figureintroduction{fig:architecture}{แสดงการเชื่อมต่อจาก Web Browser ผ่านส่วนหน้า Next.js/React ไปยัง FastAPI ซึ่งประสานบริการตรวจจับใบหน้า การสร้างเวกเตอร์ลักษณะ การติดตาม และการสร้างผลลัพธ์ โดยใช้ SQLite จัดเก็บข้อมูลของระบบ และใช้ Cloudinary เป็นทางเลือกสำหรับจัดเก็บไฟล์ผลลัพธ์เมื่อกำหนดค่าบริการไว้แล้ว}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{%
+\begin{tikzpicture}[
+    node distance=1.1cm and 1.2cm,
+    box/.style={draw, rounded corners=3pt, minimum width=2.7cm, minimum height=1.0cm, align=center},
+    data/.style={draw, cylinder, shape border rotate=90, aspect=0.25, minimum height=1.1cm, minimum width=1.5cm, align=center},
+    line/.style={-{Latex[length=2mm]}, thick}
+]
+\node[box, fill=gray!12] (user) {ผู้ใช้\\Web Browser};
+\node[box, fill=gray!12, right=of user] (next) {Next.js / React\\Route Handlers};
+\node[box, fill=gray!12, right=of next] (api) {FastAPI\\Backend API};
+\node[box, fill=gray!12, below=of api] (services) {YOLO, InsightFace,\\Tracking, Rendering};
+\node[data, fill=gray!12, below left=of services] (db) {SQLite};
+\node[box, fill=gray!12, below right=of services] (cloud) {Cloudinary\\(optional)};
+\draw[line] (user) -- (next);
+\draw[line] (next) -- (api);
+\draw[line] (api) -- (services);
+\draw[line] (services) -- (db);
+\draw[line] (services) -- (cloud);
+\end{tikzpicture}
+}
+\caption{สถาปัตยกรรมของระบบ Blur System}
+\label{fig:architecture}
+\end{figure}
+
+\section{ลำดับการประมวลผลสื่อ}
+
+หลังรับไฟล์ ระบบบันทึกข้อมูลและสร้างเฟรมตัวอย่าง ให้ผู้ใช้เลือกโหมดดำเนินการ จากนั้นระบบตรวจจับใบหน้า สร้างเวกเตอร์ลักษณะเพื่อจัดกลุ่มบุคคล และบันทึกตำแหน่งตามลำดับเฟรม เมื่อผู้ใช้กำหนดรายการที่จะปกปิดหรือเพิ่มกรอบ Manual Blur ระบบจะนำข้อมูลดังกล่าวไปสร้างตัวอย่างผลลัพธ์และส่งออกไฟล์โดยใช้เอฟเฟกต์ที่เลือก ดังภาพที่ \ref{fig:workflow}
+
+\figureintroduction{fig:workflow}{แสดงขั้นตอนตั้งแต่รับไฟล์และสร้างเฟรมตัวอย่าง ตรวจจับและจัดกลุ่มใบหน้า พร้อมบันทึก Timeline จากนั้นผู้ใช้เลือกบุคคล เพิ่มพื้นที่ปกปิดด้วยตนเอง และกำหนดเอฟเฟกต์ ก่อนตรวจสอบตัวอย่างและส่งออกไฟล์ผลลัพธ์}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    processbox/.style={draw, rounded corners=3pt, minimum width=4.3cm, minimum height=0.8cm, align=center, fill=gray!12},
+    line/.style={-{Latex[length=2mm]}, thick}
+]
+\node[processbox] (a) {อัปโหลดภาพหรือวิดีโอ};
+\node[processbox, below=of a] (b) {สร้างข้อมูลวิดีโอและเฟรมตัวอย่าง};
+\node[processbox, below=of b] (c) {ตรวจจับใบหน้า จัดกลุ่มบุคคล และบันทึก Timeline};
+\node[processbox, below=of c] (d) {เลือกบุคคล เพิ่ม Manual Blur และกำหนดเอฟเฟกต์};
+\node[processbox, below=of d] (e) {สร้างตัวอย่างเพื่อให้ผู้ใช้ตรวจสอบ};
+\node[processbox, below=of e] (f) {สร้างและส่งออกไฟล์ผลลัพธ์};
+\draw[line] (a) -- (b);
+\draw[line] (b) -- (c);
+\draw[line] (c) -- (d);
+\draw[line] (d) -- (e);
+\draw[line] (e) -- (f);
+\end{tikzpicture}
+\caption{ผังงานลำดับการประมวลผลภาพและวิดีโอ}
+\label{fig:workflow}
+\end{figure}
+
+\subsection{การประมวลผลแบบเวลาจริงของ Livestream}
+
+ระบบ Livestream เป็นกระบวนการเพิ่มเติมจากการประมวลผลไฟล์ โดยรับภาพจากกล้องและส่งเฉพาะเฟรมสำหรับการตรวจจับไปยังบริการตรวจจับ ขณะที่ส่วนหน้าจะแสดงภาพต้นฉบับและวาดผลลัพธ์ที่ผ่านการปกปิดบน Canvas แยกต่างหาก แผนภาพ Swimlane ในภาพที่ \ref{fig:live-swimlane} แสดงความรับผิดชอบของแต่ละส่วน และภาพที่ \ref{fig:live-architecture} แสดงเส้นทางข้อมูลหลักของฟังก์ชันนี้
+
+\figureintroduction{fig:live-swimlane}{แสดงการแบ่งความรับผิดชอบระหว่าง Browser/Webcam, Detection API, Tracking and Identity และ Stabilization and Privacy ตั้งแต่รับเฟรมจนถึงการแสดงผลที่ปกปิดแล้ว}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[box/.style={draw,rounded corners,align=center,text width=2.8cm,minimum height=1cm},line/.style={-{Latex[length=2mm]},thick}]
+\foreach \x/\name in {0/{Browser},3.5/{Detection API},7/{Tracking and Identity},10.5/{Privacy and Display}} {
+ \draw[gray] (\x-1.7,0.7) rectangle (\x+1.7,-8.8);
+ \node[align=center,text width=3.2cm,font=\bfseries] at (\x,0) {\name};
+}
+\node[box] (capture) at (0,-1.5) {รับเฟรมจากกล้อง};
+\node[box] (send) at (0,-3.3) {ส่ง JPEG และ Session ID};
+\node[box] (decode) at (3.5,-3.3) {ถอดรหัสเฟรม};
+\node[box] (detect) at (3.5,-5.1) {ตรวจจับใบหน้าด้วย YOLO};
+\node[box] (track) at (7,-5.1) {จับคู่กรอบและคง Person ID};
+\node[box] (smooth) at (7,-7) {กรองและปรับตำแหน่งกรอบ};
+\node[box] (select) at (10.5,-7) {เลือกกรอบตาม Privacy Mode};
+\node[box] (blur) at (10.5,-5.1) {ใช้เอฟเฟกต์ปกปิด};
+\node[box] (display) at (10.5,-3.3) {แสดงผลบน Canvas};
+\draw[line] (capture)--(send);\draw[line] (send)--(decode);
+\draw[line] (decode)--(detect);\draw[line] (detect)--(track);
+\draw[line] (track)--(smooth);\draw[line] (smooth)--(select);
+\draw[line] (select)--(blur);\draw[line] (blur)--(display);
+\draw[line,dashed] (display.north) |- (0,1.2) node[midway,above]{ประมวลผลเฟรมถัดไป} -- (capture.north);
+\end{tikzpicture}}
+\caption{Swimlane Diagram การตรวจจับ ติดตาม และปกปิดบุคคลแบบเวลาจริง}
+\label{fig:live-swimlane}
+\end{figure}
+
+\figureintroduction{fig:live-architecture}{แสดงเส้นทางข้อมูลจาก Webcam ผ่าน Capture Canvas, FastAPI, YOLO, การติดตามและรู้จำบุคคล การทำให้กรอบนิ่ง และการปกปิด ก่อนส่งผลไปยัง Display Canvas}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{%
+\begin{tikzpicture}[
+    node distance=0.75cm and 0.9cm,
+    box/.style={draw, rounded corners=3pt, minimum width=3.0cm, minimum height=0.9cm, align=center, fill=gray!12},
+    line/.style={-{Latex[length=2mm]}, thick}
+]
+\node[box] (camera) {Webcam\\Video Frame};
+\node[box, right=of camera] (capture) {Capture Canvas\\JPEG + Session ID};
+\node[box, right=of capture] (api) {FastAPI\\Webcam Detect};
+\node[box, below=of api] (detect) {YOLO Face\\Detection};
+\node[box, left=of detect] (identity) {IoU Tracking +\\Person Re-ID};
+\node[box, left=of identity] (smooth) {Median Filter +\\Track Smoothing};
+\node[box, below=of smooth] (privacy) {Privacy Mode\\Selected / Except};
+\node[box, right=of privacy] (blur) {Gaussian / Pixelate\\Black Box};
+\node[box, right=of blur] (display) {Display Canvas\\Live Output};
+\draw[line] (camera) -- (capture);
+\draw[line] (capture) -- (api);
+\draw[line] (api) -- (detect);
+\draw[line] (detect) -- (identity);
+\draw[line] (identity) -- (smooth);
+\draw[line] (smooth) -- (privacy);
+\draw[line] (privacy) -- (blur);
+\draw[line] (blur) -- (display);
+\draw[line, dashed] (display.east) -- ++(0.6,0) |- ([yshift=0.6cm]camera.north) node[above right,font=\small]{เฟรมถัดไป} -- (camera.north);
+\end{tikzpicture}
+}
+\caption{สถาปัตยกรรมการประมวลผล Livestream แบบเวลาจริง}
+\label{fig:live-architecture}
+\end{figure}
+
+\figureintroduction{fig:live-activity}{แสดงการเปิดกล้อง รับเฟรม ตรวจจับ ติดตาม กรองตำแหน่ง เลือกพื้นที่ตามโหมดความเป็นส่วนตัว และเรนเดอร์ผลลัพธ์แบบวนซ้ำ}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{%
+\begin{tikzpicture}[
+    node distance=0.55cm,
+    process/.style={draw, rounded corners=3pt, minimum width=4.4cm, minimum height=0.72cm, align=center, fill=gray!12},
+    decision/.style={draw, diamond, aspect=2.1, align=center, fill=gray!12},
+    line/.style={-{Latex[length=2mm]}, thick}
+]
+\node[process] (start) {เปิดหน้า Livestream และขอสิทธิ์กล้อง};
+\node[process, below=of start] (frame) {อ่านเฟรมจาก Webcam};
+\node[process, below=of frame] (send) {ส่งเฟรมตามรอบที่กำหนดไปยัง API};
+\node[process, below=of send] (detect) {ตรวจจับใบหน้าและสร้าง/คง Person ID};
+\node[process, below=of detect] (smooth) {จับคู่กรอบและลดการสั่นของตำแหน่ง};
+\node[decision, below=of smooth] (mode) {มีบุคคลที่ต้องปกปิด?};
+\node[process, below left=of mode, xshift=-1.1cm] (blur) {เลือกกรอบตาม Privacy Mode\\และใช้ Blur Technique};
+\node[process, below right=of mode, xshift=1.1cm] (plain) {แสดงเฟรมต้นฉบับ};
+\node[process, below=of mode, yshift=-1.0cm] (render) {วาดผลบน Display Canvas};
+\draw[line] (start) -- (frame);
+\draw[line] (frame) -- (send);
+\draw[line] (send) -- (detect);
+\draw[line] (detect) -- (smooth);
+\draw[line] (smooth) -- (mode);
+\draw[line] (mode) -- node[above left, font=\small]{ใช่} (blur);
+\draw[line] (mode) -- node[above right, font=\small]{ไม่ใช่} (plain);
+\draw[line] (blur) |- (render);
+\draw[line] (plain) |- (render);
+\draw[line, dashed] (render.east) -- ++(7,0) node[right]{เฟรมถัดไป} |- (frame.east);
+\end{tikzpicture}
+}
+\caption{Activity Diagram การเลือกและปกปิดบุคคลใน Livestream}
+\label{fig:live-activity}
+\end{figure}
+
+\figureintroduction{fig:live-sequence}{แสดงข้อความระหว่างผู้ใช้ Browser FastAPI และ Detection and Tracking Engine ตั้งแต่เริ่มกล้อง ส่งเฟรม รับผลตรวจจับ และแสดงผลลัพธ์แบบวนรอบ}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[
+    lifeline/.style={draw, minimum width=2.6cm, minimum height=0.7cm, align=center, fill=gray!12},
+    line/.style={-{Latex[length=2mm]}, thick},
+    dashedline/.style={dashed, gray}
+]
+\node[lifeline] (user) at (0,0) {ผู้ใช้};
+\node[lifeline] (browser) at (4,0) {Browser\\Livestream};
+\node[lifeline] (api) at (8,0) {FastAPI\\Webcam API};
+\node[lifeline] (engine) at (12,0) {Detection +\\Tracking Engine};
+\draw[dashedline] (user.south) -- ++(0,-7.5);
+\draw[dashedline] (browser.south) -- ++(0,-7.5);
+\draw[dashedline] (api.south) -- ++(0,-7.5);
+\draw[dashedline] (engine.south) -- ++(0,-7.5);
+\draw[line] (0,-1.2) -- node[above, font=\small]{เลือกโมเดล โหมด และเทคนิคเบลอ} (4,-1.2);
+\draw[line] (4,-2.0) -- node[above, font=\small]{ขอสิทธิ์กล้องและเริ่ม Stream} (0,-2.0);
+\draw[line] (4,-2.8) -- node[above, font=\small]{ส่งภาพ JPEG + session\_id} (8,-2.8);
+\draw[line] (8,-3.6) -- node[above, font=\small]{ตรวจจับใบหน้า} (12,-3.6);
+\draw[line] (12,-4.4) -- node[above, font=\small]{person\_id + bounding boxes} (8,-4.4);
+\draw[line] (8,-5.2) -- node[above, font=\small]{detections + latency} (4,-5.2);
+\draw[line] (4,-6.0) -- node[above, font=\small]{ติดตาม กรองกรอบ และวาด Blur} (4,-6.0);
+\draw[line] (4,-6.8) -- node[above, font=\small]{แสดงผลแบบเวลาจริง} (0,-6.8);
+\draw[line, dashed] (4,-7.4) to[bend left=25] node[above, font=\small]{วนรอบเฟรมถัดไป} (8,-7.4);
+\end{tikzpicture}
+}
+\caption{System Sequence Diagram การตรวจจับและปกปิดบุคคลแบบ Livestream}
+\label{fig:live-sequence}
+\end{figure}
+
+\clearpage
+\section{แผนภาพการทำงานของระบบ}
+
+\subsection{Activity Diagram}
+
+% ==================================================
+% TODO IMAGE: ใส่ Activity Diagram การอัปโหลดสื่อเข้าสู่ระบบ
+% Caption: Activity Diagram การอัปโหลดสื่อเข้าสู่ระบบ
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.74\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram uploadfiles.jpg}}
+\caption{Activity Diagram การอัปโหลดสื่อเข้าสู่ระบบ}
+\label{fig:activity-upload}
+\figuredescription{fig:activity-upload}{แสดงกิจกรรมตั้งแต่ผู้ใช้เลือกสื่อ ระบบตรวจสอบประเภทและขนาดไฟล์ บันทึกข้อมูล และสร้างภาพตัวอย่างสำหรับขั้นตอนถัดไป}
+\end{figure}
+
+% ==================================================
+% TODO IMAGE: ใส่ Activity Diagram โหมด AI Auto-Blur
+% Caption: Activity Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activitydiagram ai auto blur.jpg}}
+\caption{Activity Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}
+\label{fig:activity-auto-blur}
+\figuredescription{fig:activity-auto-blur}{แสดงกิจกรรมของโหมด AI Auto-Blur ตั้งแต่เริ่มกระบวนการตรวจจับใบหน้า จัดกลุ่มบุคคล ติดตามข้ามเฟรม และสร้างตัวอย่างที่ปกปิดใบหน้าทั้งหมดโดยอัตโนมัติ}
+\end{figure}
+
+% ==================================================
+% TODO IMAGE: ใส่ Activity Diagram การตรวจจับและเลือกบุคคล
+% Caption: Activity Diagram การตรวจจับและเลือกบุคคลที่ต้องการปกปิด
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram detect and select.jpg}}
+\caption{Activity Diagram การตรวจจับและเลือกบุคคลที่ต้องการปกปิด}
+\label{fig:activity-detect-select}
+\figuredescription{fig:activity-detect-select}{แสดงกิจกรรมการตรวจจับและจัดกลุ่มใบหน้าเป็นบุคคลบน Face Map การตรวจสอบ Timeline และการเลือกว่าจะปกปิดบุคคลที่เลือกหรือทุกคนยกเว้นบุคคลที่เลือก}
+\end{figure}
+
+% ==================================================
+% TODO IMAGE: ใส่ Activity Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง
+% Caption: Activity Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram manual control.jpg}}
+\caption{Activity Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}
+\label{fig:activity-manual-control}
+\figuredescription{fig:activity-manual-control}{แสดงกิจกรรมของ Manual Control สำหรับวาดและปรับขนาดกรอบ กำหนดการติดตามวัตถุ บันทึกกรอบ และตรวจตัวอย่างก่อนส่งออกวิดีโอ}
+\end{figure}
+
+% ==================================================
+% TODO IMAGE: ใส่ Activity Diagram การปกปิดภาพนิ่งด้วยตนเอง
+% Caption: Activity Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram image manual redaction.jpg}}
+\caption{Activity Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}
+\label{fig:activity-image-redaction}
+\figuredescription{fig:activity-image-redaction}{แสดงกิจกรรมการเพิ่มหรือลบพื้นที่ปกปิดบนภาพนิ่ง เลือกรูปแบบและระดับความเข้มของเอฟเฟกต์ แล้วประมวลผลและส่งออกภาพ}
+\end{figure}
+
+% ==================================================
+% TODO IMAGE: ใส่ Activity Diagram การดูตัวอย่างและส่งออกไฟล์
+% Caption: Activity Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram preview and export.jpg}}
+\caption{Activity Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}
+\label{fig:activity-preview-export}
+\figuredescription{fig:activity-preview-export}{แสดงกิจกรรมการตรวจตัวอย่างผลลัพธ์ การย้อนกลับไปปรับตั้งค่า การเรนเดอร์ไฟล์ความละเอียดเต็ม และการดาวน์โหลดหรือรับลิงก์ไฟล์จาก Cloudinary}
+\end{figure}
+
+\subsection{Use Case Diagram}
+
+ภาพที่ \ref{fig:use-case} แสดงกรณีใช้งานที่ผู้ใช้ติดต่อกับระบบ ทั้งการปกปิดข้อมูลในไฟล์ภาพหรือวิดีโอและการใช้งาน Livestream โดยเส้นทึบแสดงความสัมพันธ์ระหว่างผู้ใช้กับกรณีใช้งาน ไม่ได้แสดงลำดับขั้นตอนการทำงาน
+\begin{figure}[H]
+\centering
+\input{images-progress/use-case-blur-system}
+\caption{Use Case Diagram ภาพรวมการใช้งานระบบ Blur System}
+\label{fig:use-case}
+\figuredescription{fig:use-case}{ผู้ใช้สามารถอัปโหลดสื่อ เลือกวิธีและพื้นที่ปกปิด ตรวจสอบตัวอย่าง และส่งออกผลลัพธ์ ส่วน Livestream รองรับการเปิดหรือหยุดสตรีม การเลือกตระกูลและขนาดโมเดล การเลือกบุคคลหลายราย และโหมดปกปิดทุกคน เฉพาะผู้ที่เลือก หรือทุกคนยกเว้นผู้ที่เลือก โดยใช้งานได้โดยไม่ต้องอัปโหลดไฟล์}
+\end{figure}
+
+\subsection{System Sequence Diagram}
+
+System Sequence Diagram แยกตามกรณีใช้งานเพื่อแสดงข้อความที่แลกเปลี่ยนระหว่างผู้ใช้ ส่วนหน้า ส่วนหลัง บริการประมวลผล และฐานข้อมูล
+
+% ==================================================
+% TODO IMAGE: ใส่ System Sequence Diagram การอัปโหลดสื่อ
+% Caption: System Sequence Diagram การอัปโหลดสื่อเข้าสู่ระบบ
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การอัปโหลดไฟล์สื่อ.jpg}}
+\caption{System Sequence Diagram การอัปโหลดสื่อเข้าสู่ระบบ}
+\label{fig:ssd-upload}
+\figuredescription{fig:ssd-upload}{แสดงลำดับการตรวจสอบไฟล์ ส่งคำขออัปโหลด บันทึกข้อมูลสื่อในฐานข้อมูล สร้างภาพตัวอย่าง และส่งข้อมูลกลับไปยังส่วนหน้า}
+\end{figure}
+
+% ==================================================
+% TODO IMAGE: ใส่ System Sequence Diagram โหมด AI Auto-Blur
+% Caption: System Sequence Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การเบลออัตโนมัติ.jpg}}
+\caption{System Sequence Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}
+\label{fig:ssd-auto-blur}
+\figuredescription{fig:ssd-auto-blur}{แสดงลำดับการเริ่มงาน AI Auto-Blur การตรวจจับและสร้าง Face Embedding การจัดกลุ่มและติดตามบุคคล ตลอดจนการรายงานความคืบหน้าและสร้างตัวอย่างผลลัพธ์}
+\end{figure}
+
+% ==================================================
+% TODO IMAGE: ใส่ System Sequence Diagram การตรวจจับใบหน้า
+% Caption: System Sequence Diagram การตรวจจับและจัดกลุ่มใบหน้า
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — ตรวจจับใบหน้า.jpg}}
+\caption{System Sequence Diagram การตรวจจับและจัดกลุ่มใบหน้า}
+\label{fig:ssd-face-detection}
+\figuredescription{fig:ssd-face-detection}{แสดงลำดับการเริ่ม Detection Pipeline การตรวจจับและจัดกลุ่มใบหน้า การบันทึกผล และการเรียกดูสถานะของงานแบบเบื้องหลัง}
+\end{figure}
+
+% ==================================================
+% TODO IMAGE: ใส่ System Sequence Diagram การเลือกบุคคลและปกปิดแบบรายบุคคล
+% Caption: System Sequence Diagram การเลือกบุคคลและการปกปิดแบบรายบุคคล
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การเลือกบุคคลและเบลอ.jpg}}
+\caption{System Sequence Diagram การเลือกบุคคลและการปกปิดแบบรายบุคคล}
+\label{fig:ssd-selective-blur}
+\figuredescription{fig:ssd-selective-blur}{แสดงลำดับการโหลด Face Map การเลือกบุคคลและรูปแบบการปกปิด การบันทึกค่า \texttt{should\_blur} และการสร้างตัวอย่างตามตัวเลือกของผู้ใช้}
+\end{figure}
+
+% ==================================================
+% TODO IMAGE: ใส่ System Sequence Diagram การควบคุมการปกปิดด้วยตนเอง
+% Caption: System Sequence Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — Manual Control.jpg}}
+\caption{System Sequence Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}
+\label{fig:ssd-manual-control}
+\figuredescription{fig:ssd-manual-control}{แสดงลำดับการโหลดเฟรม วาดและบันทึกกรอบ Manual Blur การสร้างตัวติดตาม KCF/CSRT และการสร้างตัวอย่างผลลัพธ์}
+\end{figure}
+
+% ==================================================
+% TODO IMAGE: ใส่ System Sequence Diagram การปกปิดภาพนิ่งด้วยตนเอง
+% Caption: System Sequence Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การเบลอรูปภาพด้วยตนเอง.jpg}}
+\caption{System Sequence Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}
+\label{fig:ssd-image-redaction}
+\figuredescription{fig:ssd-image-redaction}{แสดงลำดับการเพิ่มหรือลบ Redaction Zone บนภาพนิ่ง การตั้งค่าเอฟเฟกต์และความเข้ม และการส่งคำขอสร้างภาพตัวอย่าง}
+\end{figure}
+
+% ==================================================
+% TODO IMAGE: ใส่ System Sequence Diagram การดูตัวอย่างและส่งออกไฟล์
+% Caption: System Sequence Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์
+% ==================================================
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การดูตัวอย่างและส่งออกไฟล์ (Preview & Export).jpg}}
+\caption{System Sequence Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}
+\label{fig:ssd-preview-export}
+\figuredescription{fig:ssd-preview-export}{แสดงลำดับการเปิดตัวอย่าง การยืนยันส่งออก การเรนเดอร์ไฟล์ การรวมเสียงวิดีโอ การอัปโหลด Cloudinary และการส่งคืนลิงก์ดาวน์โหลด}
+\end{figure}
+
+\section{เครื่องมือที่ใช้ในการดำเนินงาน}
+
+\begin{table}[H]
+\centering
+\caption{ซอฟต์แวร์และไลบรารีหลักที่ใช้ในโครงงาน}
+\label{tab:tools}
+\begin{tabular}{|p{0.31\textwidth}|p{0.54\textwidth}|}
+\hline
+\textbf{เครื่องมือ} & \textbf{การใช้งาน} \\
+\hline
+Next.js 16, React 19, TypeScript & สร้างส่วนติดต่อผู้ใช้และ route handler สำหรับเชื่อมต่อส่วนหลัง \\
+\hline
+FastAPI, Uvicorn & สร้าง REST API และรันงานตรวจจับแบบเบื้องหลัง \\
+\hline
+Ultralytics YOLO & ตรวจจับใบหน้า โดยมีแบบจำลองทั่วไปเป็นทางเลือกสำรอง \\
+\hline
+TensorRT,InsightFace และ ONNX Runtime & สร้างเวกเตอร์ลักษณะใบหน้าสำหรับจัดกลุ่มบุคคล \\
+\hline
+OpenCV, NumPy, SciPy & อ่านและเขียนสื่อ ปรับภาพ ใช้ tracker และจับคู่กรอบด้วย Hungarian algorithm \\
+\hline
+SQLAlchemy และ SQLite & จัดเก็บข้อมูลวิดีโอ ผลตรวจจับ กลุ่มบุคคล การเลือกปกปิด และกรอบที่กำหนดด้วยตนเอง \\
+\hline
+Cloudinary & จัดเก็บผลลัพธ์บนคลาวด์เมื่อกำหนดข้อมูลรับรองไว้ \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{แผนการทดสอบและเกณฑ์การประเมิน}
+
+การทดสอบระยะถัดไปแบ่งออกเป็น การทดสอบฟังก์ชันแบบ end-to-end ตั้งแต่การอัปโหลดจนถึงการส่งออกไฟล์ การทดสอบความแม่นยำของการตรวจจับและความถูกต้องของการจัดกลุ่มบุคคลด้วยชุดข้อมูลที่กำหนด และ การวัดเวลาเฉลี่ยต่อเฟรม เวลาสร้างผลลัพธ์ทั้งไฟล์ และความครอบคลุมของพื้นที่ปกปิด เกณฑ์เชิงคุณภาพจะตรวจสอบว่าใบหน้าที่ควรปกปิดไม่หลุดจากกรอบ และผู้ใช้สามารถแก้ไขกรณีตรวจจับผิดพลาดได้ผ่าน Manual Control
+
+\subsection{วิธีประเมินความแม่นยำและความเร็วที่เสนอ}
+
+ส่วนนี้กำหนดวิธีประเมินสำหรับการทดลองระยะถัดไป ยังไม่ใช่ผลการทดสอบของระบบ ก่อนทดลองจะระบุรุ่นและไฟล์น้ำหนักของโมเดล ชุดข้อมูลและจำนวนตัวอย่าง ขนาดอินพุต ค่า confidence และ IoU อุปกรณ์ CPU/GPU หน่วยความจำ และ runtime ที่ใช้ โดยแยกข้อมูลสำหรับปรับค่าเกณฑ์ออกจากข้อมูลสำหรับรายงานผล เพื่อให้ตรวจสอบและทำซ้ำได้
+
+% ปรับเฉพาะรายการนี้ให้เนื้อหาตรงแนวย่อหน้าปกติ ไม่รับระยะเยื้องของ subsection
+\begin{enumerate}[
+  label=(\arabic*),
+  labelindent=0pt,
+  leftmargin=\firstindentlength,
+  labelwidth=0.65\firstindentlength,
+  labelsep=0.35\firstindentlength,
+  itemindent=0pt,
+  align=left,
+  listparindent=0pt,
+  topsep=0.4\baselineskip,
+  itemsep=0.4\baselineskip,
+  parsep=0pt
+]
+  \clubpenalty=10000
+  \widowpenalty=10000
+  \interlinepenalty=10000
+  \item \textbf{การตรวจจับใบหน้า:} กำหนดกรอบใบหน้าจริงไว้ล่วงหน้า และจับคู่กับกรอบที่ระบบทำนายแบบหนึ่งต่อหนึ่ง โดยเสนอให้ใช้ IoU ตั้งแต่ 0.5 เป็นเกณฑ์เริ่มต้น กรอบที่จับคู่ถูกต้องนับเป็น TP กรอบทำนายที่ไม่จับคู่เป็น FP และใบหน้าจริงที่ไม่ถูกตรวจพบเป็น FN จากนั้นคำนวณ Precision $=TP/(TP+FP)$, Recall $=TP/(TP+FN)$ และ F1-score $=2PR/(P+R)$ โดย $P$ และ $R$ คือ Precision และ Recall หากตัวหารเป็นศูนย์ให้รายงานว่าไม่สามารถคำนวณได้พร้อมจำนวนตัวอย่าง
+  \item \textbf{การจัดกลุ่มบุคคลและความต่อเนื่อง:} กำหนดรหัสบุคคลจริงของแต่ละใบหน้า จับคู่รหัสที่ระบบสร้างกับรหัสจริงแบบหนึ่งต่อหนึ่งตลอดทั้งคลิป แล้วรายงานสัดส่วนใบหน้าที่จัดเข้าบุคคลถูกต้อง พร้อมจำนวนกรณีคนละคนถูกรวมเป็นกลุ่มเดียว คนเดียวถูกแยกหลายกลุ่ม และการเปลี่ยนรหัสระหว่างติดตาม โดยแยกใบหน้าที่ตรวจไม่พบออกจากความผิดพลาดของการจัดกลุ่ม
+  \item \textbf{ความครอบคลุมของการปกปิด:} วัดสัดส่วนพื้นที่ใบหน้าที่ต้องปกปิดซึ่งซ้อนทับกับพื้นที่เอฟเฟกต์ และจำนวนเฟรมที่ใบหน้าเป้าหมายหลุดจากกรอบ พร้อมตรวจกรณีบุคคลที่ได้รับการยกเว้นถูกปกปิดผิดราย ตัวชี้วัดพื้นที่นี้ใช้ประเมินตำแหน่งกรอบ ส่วนความสามารถในการระบุตัวบุคคลหลังปกปิดต้องประเมินเพิ่มเติม
+  \item \textbf{ความเร็ว:} แยกเวลาอนุมานของโมเดล เวลา end-to-end ตั้งแต่รับเฟรมจนได้ผลปกปิด และเวลาส่งออกทั้งไฟล์ รายงานเวลาเฉลี่ยต่อเฟรมและ FPS จากจำนวนเฟรมที่ประมวลผลเสร็จจริงหารด้วยเวลารวม โดยระบุให้ชัดว่ารวมการอ่านไฟล์ การส่งผ่านเครือข่าย การจัดกลุ่ม และการเรนเดอร์หรือไม่
+\end{enumerate}
+
+ผลจากเอกสารอ้างอิงหรือกราฟการฝึกโมเดลจะรายงานแยกจากผลทดลองของโครงงาน และจะไม่ใช้ความเร็วการตรวจจับเพียงขั้นตอนเดียวแทนความเร็วของระบบทั้งหมด
+
+\endgroup

@@ -1,0 +1,159 @@
+\begin{thebibliography}{10}
+
+\bibitem{opencv_filtering}
+{OpenCV Development Team}, ``Smoothing images.''
+  \url{https://docs.opencv.org/4.x/d4/d13/tutorial_py_filtering.html}.
+\newblock Accessed October 28, 2026.
+
+\bibitem{rot2022}
+P.~Rot, P.~Peer, and V.~Struc, ``Privacyprober: Assessment and detection of
+  soft-biometric privacy-enhancing techniques.''
+  \url{https://doi.org/10.48550/arXiv.2211.08864}, 2022.
+
+\bibitem{lecun1998}
+Y.~LeCun, L.~Bottou, Y.~Bengio, and P.~Haffner, ``Gradient-based learning
+  applied to document recognition,'' {\em Proceedings of the IEEE}, vol.~86,
+  no.~11, pp.~2278--2324, 1998.
+
+\bibitem{redmon2016yolo}
+J.~Redmon, S.~Divvala, R.~Girshick, and A.~Farhadi, ``You only look once:
+  Unified, real-time object detection,'' in {\em Proceedings of the IEEE
+  Conference on Computer Vision and Pattern Recognition}, pp.~779--788, 2016.
+
+\bibitem{ultralytics2026yolo26docs}
+{Ultralytics}, ``Ultralytics yolo26 documentation.''
+  \url{https://docs.ultralytics.com/models/yolo26/}, 2026.
+\newblock Official model variants and COCO detection benchmark reference.
+
+\bibitem{jocher2026yolo26}
+G.~Jocher, J.~Qiu, M.~Liu, S.~Lyu, F.~C. Akyon, and M.~E. Kalfaoglu,
+  ``Ultralytics {YOLO26}: Unified real-time end-to-end vision models.''
+  \url{https://arxiv.org/abs/2606.03748}, 2026.
+
+\bibitem{deng2020retinaface}
+J.~Deng, J.~Guo, E.~Ververas, I.~Kotsia, and S.~Zafeiriou, ``Retinaface:
+  Single-shot multi-level face localisation in the wild,'' in {\em Proceedings
+  of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pp.~5203--5212, 2020.
+
+\bibitem{guo2021scrfd}
+J.~Guo, J.~Deng, A.~Lattas, and S.~Zafeiriou, ``Sample and computation
+  redistribution for efficient face detection.''
+  \url{https://arxiv.org/abs/2105.04714}, 2021.
+
+\bibitem{viola2001}
+P.~Viola and M.~Jones, ``Rapid object detection using a boosted cascade of
+  simple features,'' in {\em Proceedings of the 2001 IEEE Computer Society
+  Conference on Computer Vision and Pattern Recognition}, vol.~1,
+  pp.~I--511--I--518, 2001.
+
+\bibitem{opencv_haar_features}
+{OpenCV Development Team}, ``Face detection using haar cascades.''
+  \url{https://docs.opencv.org/3.0-alpha/doc/py_tutorials/py_objdetect/py_face_detection/py_face_detection.html}.
+\newblock
+  แหล่งที่มาของภาพคุณลักษณะ
+  Haar; สืบค้นเมื่อ 4 กันยายน 2026.
+
+\bibitem{cortes1995}
+C.~Cortes and V.~Vapnik, ``Support-vector networks,'' {\em Machine Learning},
+  vol.~20, pp.~273--297, 1995.
+
+\bibitem{sun2025}
+Z.~Sun and J.~Liu, ``Ensuring privacy in face recognition: A survey on data
+  generation, inference and storage,'' {\em Discover Applied Sciences}, vol.~7,
+  no.~441, 2025.
+
+\bibitem{opencv_face}
+{OpenCV Development Team}, ``Face recognition with opencv.''
+  \url{https://docs.opencv.org/4.x/da/d60/tutorial_face_main.html}.
+\newblock Accessed October 28, 2026.
+
+\bibitem{geeksforgeeks2021eigenfaces}
+{GeeksforGeeks}, ``Face recognition using eigenfaces ({PCA} algorithm).''
+  \url{https://www.geeksforgeeks.org/machine-learning/ml-face-recognition-using-eigenfaces-pca-algorithm/},
+  2021.
+\newblock แหล่งที่มาของภาพ Eigenfaces;
+  สืบค้นเมื่อ 4 กันยายน 2026.
+
+\bibitem{scholarpedia_fisherfaces}
+{Scholarpedia}, ``Fisherfaces.''
+  \url{https://www.scholarpedia.org/article/File:Fisherfaces.jpg}.
+\newblock แหล่งที่มาของภาพ Fisherfaces;
+  สืบค้นเมื่อ 4 กันยายน 2026.
+
+\bibitem{albiol2008hogebgm}
+A.~Albiol, D.~Monzo, A.~Martin, J.~Sastre, and A.~Albiol, ``Face recognition
+  using {HOG--EBGM},'' {\em Pattern Recognition Letters}, vol.~29, no.~10,
+  pp.~1537--1543, 2008.
+
+\bibitem{deng2019arcface}
+J.~Deng, J.~Guo, N.~Xue, and S.~Zafeiriou, ``Arcface: Additive angular margin
+  loss for deep face recognition,'' in {\em Proceedings of the IEEE/CVF
+  Conference on Computer Vision and Pattern Recognition}, pp.~4690--4699, 2019.
+
+\bibitem{bewley2016sort}
+A.~Bewley, Z.~Ge, L.~Ott, F.~Ramos, and B.~Upcroft, ``Simple online and
+  realtime tracking,'' in {\em 2016 IEEE International Conference on Image
+  Processing}, pp.~3464--3468, IEEE, 2016.
+
+\bibitem{nist_smoothing}
+{NIST/SEMATECH}, ``Single exponential smoothing.''
+  \url{https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc431.htm}.
+\newblock Accessed October 28, 2026.
+
+\bibitem{zhu2017flow}
+X.~Zhu, Y.~Xiong, J.~Dai, L.~Yuan, and Y.~Wei, ``Deep feature flow for video
+  recognition,'' in {\em Proceedings of the IEEE Conference on Computer Vision
+  and Pattern Recognition}, pp.~2349--2358, 2017.
+
+\bibitem{mdn_canvas}
+{MDN Contributors}, ``Canvas api tutorial: Compositing and clipping.''
+  \url{https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Compositing}.
+\newblock Accessed October 28, 2026.
+
+\bibitem{pii_label}
+``Privacy preserving personal identifiable information ({PII}) label detection
+  using machine learning.''
+  \url{https://www.researchgate.net/publication/375880997_Privacy_Preserving_Personal_Identifiable_Information_PII_Label_Detection_Using_Machine_Learning}.
+\newblock Retrieved January 9, 2026, as recorded in the attached Word document.
+
+\bibitem{fastapi}
+{FastAPI}, ``Fastapi documentation.'' \url{https://fastapi.tiangolo.com/}.
+
+\bibitem{iiieta_anpr}
+{IIETA}, ``A comprehensive literature review of vehicle license plate detection
+  methods.'' \url{https://doi.org/10.18280/ts.410304}.
+\newblock Accessed from the source list in the attached Word document.
+
+\bibitem{mdpi_anpr}
+``Enhanced {YOLOv8}-based system for automatic number plate recognition.''
+  \url{https://www.mdpi.com/2227-7080/12/9/164}.
+\newblock Retrieved January 9, 2026, as recorded in the attached Word document.
+
+\bibitem{vizcarra2024}
+C.~Vizcarra, A.~Alahmed, A.~Algosaibi, M.~Alnaeem, A.~Aldalbahi, N.~Aljaafari,
+  A.~Sawalmeh, M.~Nazzal, A.~Khreishah, A.~Alhumam, and M.~Anam, ``Deep
+  learning adversarial attacks and defenses on license plate recognition
+  system,'' {\em Cluster Computing}, vol.~80, no.~8, pp.~11627--11644, 2024.
+
+\bibitem{anpr_dataset}
+``Using {ANPR} data to create an anonymized linked open dataset on urban
+  bustle.''
+  \url{https://www.researchgate.net/publication/360161980_Using_ANPR_data_to_create_an_anonymized_linked_open_dataset_on_urban_bustle}.
+\newblock Retrieved January 9, 2026, as recorded in the attached Word document.
+
+\bibitem{wu2023yunet}
+W.~Wu, H.~Peng, and S.~Yu, ``{YuNet}: A tiny millisecond-level face detector,''
+  {\em Machine Intelligence Research}, vol.~20, no.~5, pp.~656--665, 2023.
+
+\bibitem{ultralytics2023yolov8}
+{Ultralytics}, ``Ultralytics yolov8 documentation.''
+  \url{https://docs.ultralytics.com/models/yolov8/}, 2023.
+\newblock Official model variants and COCO detection benchmark reference.
+
+\bibitem{ultralytics2024yolo11}
+{Ultralytics}, ``Ultralytics yolo11 documentation.''
+  \url{https://docs.ultralytics.com/models/yolo11/}, 2024.
+\newblock Official model variants and COCO detection benchmark reference.
+
+\end{thebibliography}

@@ -142,6 +142,10 @@ C.~Vizcarra, A.~Alahmed, A.~Algosaibi, M.~Alnaeem, A.~Aldalbahi, N.~Aljaafari,
   \url{https://www.researchgate.net/publication/360161980_Using_ANPR_data_to_create_an_anonymized_linked_open_dataset_on_urban_bustle}.
 \newblock Retrieved January 9, 2026, as recorded in the attached Word document.
 
+\bibitem{wu2023yunet}
+W.~Wu, H.~Peng, and S.~Yu, ``{YuNet}: A tiny millisecond-level face detector,''
+  {\em Machine Intelligence Research}, vol.~20, no.~5, pp.~656--665, 2023.
+
 \bibitem{ultralytics2023yolov8}
 {Ultralytics}, ``Ultralytics yolov8 documentation.''
   \url{https://docs.ultralytics.com/models/yolov8/}, 2023.

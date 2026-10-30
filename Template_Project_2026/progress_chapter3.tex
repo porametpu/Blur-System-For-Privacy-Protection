@@ -1,3 +1,6 @@
+\begingroup
+\setlength{\intextsep}{0.5\baselineskip}
+
 \section{ขั้นตอนการดำเนินงาน}
 
 การพัฒนาใช้แนวทางวนรอบระหว่างการตรวจสอบความต้องการ ออกแบบ พัฒนา ตรวจสอบผล และปรับปรุง เริ่มจากทบทวนรายงานเดิมและปรับปรุงเพิ่มเติม จากนั้นแยกฟังก์ชันที่พัฒนาแล้วออกจากฟังก์ชันที่ยังเป็นแผนงาน เพื่อให้ขอบเขตของรายงานสอดคล้องกับระบบปัจจุบัน
@@ -10,7 +13,6 @@
     \item จัดทำรายการข้อจำกัดและแผนการทดสอบเชิงปริมาณในระยะต่อไป
 \end{enumerate}
 
-\clearpage
 \section{สถาปัตยกรรมของระบบ}
 
 ภาพที่ \ref{fig:architecture} แสดงสถาปัตยกรรมระดับสูงของระบบ ผู้ใช้ติดต่อกับส่วนหน้าที่พัฒนาด้วย Next.js ซึ่งส่งต่อคำขอไปยัง FastAPI บริการตรวจจับ การรู้จำ การติดตาม และการสร้างผลลัพธ์ทำงานภายในส่วนหลัง (backend) ข้อมูลเชิงโครงสร้างจัดเก็บใน SQLite ขณะที่ไฟล์ผลลัพธ์สามารถส่งต่อไปยัง Cloudinary ได้เมื่อกำหนดค่าที่จำเป็นไว้แล้ว
@@ -39,10 +41,9 @@
 }
 \caption{สถาปัตยกรรมของระบบ Blur System}
 \label{fig:architecture}
-\figuredescription{fig:architecture}{แสดงการเชื่อมต่อจาก Web Browser ผ่านส่วนหน้า Next.js/React ไปยัง FastAPI ซึ่งประสานบริการตรวจจับใบหน้า การสร้างเวกเตอร์ลักษณะ การติดตาม และการสร้างผลลัพธ์ โดยใช้ SQLite จัดเก็บข้อมูลของระบบ และใช้ Cloudinary เป็นทางเลือกสำหรับจัดเก็บไฟล์ผลลัพธ์เมื่อกำหนดค่าบริการไว้แล้ว}
+\figuredescription{fig:architecture}{แสดงการเชื่อมต่อจาก Web Browser ผ่าน Next.js/React ไปยัง FastAPI และบริการประมวลผล โดยใช้ SQLite เก็บข้อมูลของระบบ และเลือกใช้ Cloudinary สำหรับจัดเก็บไฟล์ผลลัพธ์}
 \end{figure}
 
-\clearpage
 \section{ลำดับการประมวลผลสื่อ}
 
 หลังรับไฟล์ ระบบบันทึกข้อมูลและสร้างเฟรมตัวอย่าง ให้ผู้ใช้เลือกโหมดดำเนินการ จากนั้นระบบตรวจจับใบหน้า สร้างเวกเตอร์ลักษณะเพื่อจัดกลุ่มบุคคล และบันทึกตำแหน่งตามลำดับเฟรม เมื่อผู้ใช้กำหนดรายการที่จะปกปิดหรือเพิ่มกรอบ Manual Blur ระบบจะนำข้อมูลดังกล่าวไปสร้างตัวอย่างผลลัพธ์และส่งออกไฟล์โดยใช้เอฟเฟกต์ที่เลือก ดังภาพที่ \ref{fig:workflow}
@@ -50,7 +51,7 @@
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    node distance=0.8cm,
+    node distance=0.55cm,
     processbox/.style={draw, rounded corners=3pt, minimum width=4.3cm, minimum height=0.8cm, align=center, fill=gray!12},
     line/.style={-{Latex[length=2mm]}, thick}
 ]
@@ -68,15 +69,7 @@
 \end{tikzpicture}
 \caption{ผังงานลำดับการประมวลผลภาพและวิดีโอ}
 \label{fig:workflow}
-\figuredescription{fig:workflow}{แสดงขั้นตอนตั้งแต่รับไฟล์และสร้างเฟรมตัวอย่าง ตรวจจับและจัดกลุ่มใบหน้า พร้อมบันทึก Timeline จากนั้นผู้ใช้เลือกบุคคล เพิ่มพื้นที่ปกปิดด้วยตนเอง และกำหนดเอฟเฟกต์ ก่อนตรวจสอบตัวอย่างและส่งออกไฟล์ผลลัพธ์}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.88\textwidth]{\detokenize{images-progress/ภาพ demo หน้าเมนู Detect&Select .jpg}}
-\caption{หน้าจอจริงสำหรับตรวจจับและเลือกบุคคลในกระบวนการปกปิด}
-\label{fig:workflow-screen}
-\figuredescription{fig:workflow-screen}{แสดงส่วนติดต่อที่ผู้ใช้ตรวจรายการใบหน้าและเลือกบุคคลที่จะปกปิดก่อนตรวจสอบและส่งออกผลลัพธ์}
+\figuredescription{fig:workflow}{แสดงลำดับการอัปโหลดสื่อ สร้างเฟรมตัวอย่าง ตรวจจับและจัดกลุ่มบุคคล บันทึก Timeline เลือกพื้นที่และเอฟเฟกต์ปกปิด ก่อนตรวจสอบตัวอย่างและส่งออกผลลัพธ์}
 \end{figure}
 
 \subsection{การประมวลผลแบบเวลาจริงของ Livestream}
@@ -108,7 +101,7 @@
 \end{tikzpicture}}
 \caption{Swimlane Diagram การตรวจจับ ติดตาม และปกปิดบุคคลแบบเวลาจริง}
 \label{fig:live-swimlane}
-\figuredescription{fig:live-swimlane}{แสดงการแบ่งความรับผิดชอบระหว่าง Browser/Webcam, Detection API, Tracking and Identity และ Stabilization and Privacy ตั้งแต่รับเฟรมจนถึงการแสดงผลที่ปกปิดแล้ว}
+\figuredescription{fig:live-swimlane}{แสดงการแบ่งหน้าที่ระหว่าง Browser, Detection API, Tracking and Identity และ Privacy and Display ตั้งแต่รับและส่งเฟรม ตรวจจับใบหน้า ติดตามบุคคล ปรับตำแหน่งกรอบ จนถึงการปกปิดและแสดงผลบน Canvas}
 \end{figure}
 
 \begin{figure}[H]
@@ -211,6 +204,7 @@
 \figuredescription{fig:live-sequence}{แสดงข้อความระหว่างผู้ใช้ Browser FastAPI และ Detection and Tracking Engine ตั้งแต่เริ่มกล้อง ส่งเฟรม รับผลตรวจจับ และแสดงผลลัพธ์แบบวนรอบ}
 \end{figure}
 
+\clearpage
 \section{แผนภาพการทำงานของระบบ}
 
 \subsection{Activity Diagram}
@@ -221,7 +215,7 @@
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram uploadfiles.jpg}}
+\includegraphics[height=0.74\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram uploadfiles.jpg}}
 \caption{Activity Diagram การอัปโหลดสื่อเข้าสู่ระบบ}
 \label{fig:activity-upload}
 \figuredescription{fig:activity-upload}{แสดงกิจกรรมตั้งแต่ผู้ใช้เลือกสื่อ ระบบตรวจสอบประเภทและขนาดไฟล์ บันทึกข้อมูล และสร้างภาพตัวอย่างสำหรับขั้นตอนถัดไป}
@@ -233,7 +227,7 @@
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/activitydiagram ai auto blur.jpg}}
+\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activitydiagram ai auto blur.jpg}}
 \caption{Activity Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}
 \label{fig:activity-auto-blur}
 \figuredescription{fig:activity-auto-blur}{แสดงกิจกรรมของโหมด AI Auto-Blur ตั้งแต่เริ่มกระบวนการตรวจจับใบหน้า จัดกลุ่มบุคคล ติดตามข้ามเฟรม และสร้างตัวอย่างที่ปกปิดใบหน้าทั้งหมดโดยอัตโนมัติ}
@@ -245,7 +239,7 @@
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram detect and select.jpg}}
+\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram detect and select.jpg}}
 \caption{Activity Diagram การตรวจจับและเลือกบุคคลที่ต้องการปกปิด}
 \label{fig:activity-detect-select}
 \figuredescription{fig:activity-detect-select}{แสดงกิจกรรมการตรวจจับและจัดกลุ่มใบหน้าเป็นบุคคลบน Face Map การตรวจสอบ Timeline และการเลือกว่าจะปกปิดบุคคลที่เลือกหรือทุกคนยกเว้นบุคคลที่เลือก}
@@ -257,7 +251,7 @@
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram manual control.jpg}}
+\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram manual control.jpg}}
 \caption{Activity Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}
 \label{fig:activity-manual-control}
 \figuredescription{fig:activity-manual-control}{แสดงกิจกรรมของ Manual Control สำหรับวาดและปรับขนาดกรอบ กำหนดการติดตามวัตถุ บันทึกกรอบ และตรวจตัวอย่างก่อนส่งออกวิดีโอ}
@@ -269,7 +263,7 @@
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram image manual redaction.jpg}}
+\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram image manual redaction.jpg}}
 \caption{Activity Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}
 \label{fig:activity-image-redaction}
 \figuredescription{fig:activity-image-redaction}{แสดงกิจกรรมการเพิ่มหรือลบพื้นที่ปกปิดบนภาพนิ่ง เลือกรูปแบบและระดับความเข้มของเอฟเฟกต์ แล้วประมวลผลและส่งออกภาพ}
@@ -281,13 +275,12 @@
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram preview and export.jpg}}
+\includegraphics[height=0.82\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/activity diagram preview and export.jpg}}
 \caption{Activity Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}
 \label{fig:activity-preview-export}
 \figuredescription{fig:activity-preview-export}{แสดงกิจกรรมการตรวจตัวอย่างผลลัพธ์ การย้อนกลับไปปรับตั้งค่า การเรนเดอร์ไฟล์ความละเอียดเต็ม และการดาวน์โหลดหรือรับลิงก์ไฟล์จาก Cloudinary}
 \end{figure}
 
-\clearpage
 \subsection{Use Case Diagram}
 
 ภาพที่ \ref{fig:use-case} แสดงกรณีใช้งานที่ผู้ใช้ติดต่อกับระบบ ทั้งการปกปิดข้อมูลในไฟล์ภาพหรือวิดีโอและการใช้งาน Livestream โดยเส้นทึบแสดงความสัมพันธ์ระหว่างผู้ใช้กับกรณีใช้งาน ไม่ได้แสดงลำดับขั้นตอนการทำงาน
@@ -309,7 +302,7 @@ System Sequence Diagram แยกตามกรณีใช้งานเพ�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การอัปโหลดไฟล์สื่อ.jpg}}
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การอัปโหลดไฟล์สื่อ.jpg}}
 \caption{System Sequence Diagram การอัปโหลดสื่อเข้าสู่ระบบ}
 \label{fig:ssd-upload}
 \figuredescription{fig:ssd-upload}{แสดงลำดับการตรวจสอบไฟล์ ส่งคำขออัปโหลด บันทึกข้อมูลสื่อในฐานข้อมูล สร้างภาพตัวอย่าง และส่งข้อมูลกลับไปยังส่วนหน้า}
@@ -321,7 +314,7 @@ System Sequence Diagram แยกตามกรณีใช้งานเพ�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การเบลออัตโนมัติ.jpg}}
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การเบลออัตโนมัติ.jpg}}
 \caption{System Sequence Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}
 \label{fig:ssd-auto-blur}
 \figuredescription{fig:ssd-auto-blur}{แสดงลำดับการเริ่มงาน AI Auto-Blur การตรวจจับและสร้าง Face Embedding การจัดกลุ่มและติดตามบุคคล ตลอดจนการรายงานความคืบหน้าและสร้างตัวอย่างผลลัพธ์}
@@ -333,7 +326,7 @@ System Sequence Diagram แยกตามกรณีใช้งานเพ�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — ตรวจจับใบหน้า.jpg}}
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — ตรวจจับใบหน้า.jpg}}
 \caption{System Sequence Diagram การตรวจจับและจัดกลุ่มใบหน้า}
 \label{fig:ssd-face-detection}
 \figuredescription{fig:ssd-face-detection}{แสดงลำดับการเริ่ม Detection Pipeline การตรวจจับและจัดกลุ่มใบหน้า การบันทึกผล และการเรียกดูสถานะของงานแบบเบื้องหลัง}
@@ -345,7 +338,7 @@ System Sequence Diagram แยกตามกรณีใช้งานเพ�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การเลือกบุคคลและเบลอ.jpg}}
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การเลือกบุคคลและเบลอ.jpg}}
 \caption{System Sequence Diagram การเลือกบุคคลและการปกปิดแบบรายบุคคล}
 \label{fig:ssd-selective-blur}
 \figuredescription{fig:ssd-selective-blur}{แสดงลำดับการโหลด Face Map การเลือกบุคคลและรูปแบบการปกปิด การบันทึกค่า \texttt{should\_blur} และการสร้างตัวอย่างตามตัวเลือกของผู้ใช้}
@@ -357,7 +350,7 @@ System Sequence Diagram แยกตามกรณีใช้งานเพ�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — Manual Control.jpg}}
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — Manual Control.jpg}}
 \caption{System Sequence Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}
 \label{fig:ssd-manual-control}
 \figuredescription{fig:ssd-manual-control}{แสดงลำดับการโหลดเฟรม วาดและบันทึกกรอบ Manual Blur การสร้างตัวติดตาม KCF/CSRT และการสร้างตัวอย่างผลลัพธ์}
@@ -369,7 +362,7 @@ System Sequence Diagram แยกตามกรณีใช้งานเพ�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การเบลอรูปภาพด้วยตนเอง.jpg}}
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การเบลอรูปภาพด้วยตนเอง.jpg}}
 \caption{System Sequence Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}
 \label{fig:ssd-image-redaction}
 \figuredescription{fig:ssd-image-redaction}{แสดงลำดับการเพิ่มหรือลบ Redaction Zone บนภาพนิ่ง การตั้งค่าเอฟเฟกต์และความเข้ม และการส่งคำขอสร้างภาพตัวอย่าง}
@@ -381,7 +374,7 @@ System Sequence Diagram แยกตามกรณีใช้งานเพ�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.60\textheight,width=0.95\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การดูตัวอย่างและส่งออกไฟล์ (Preview & Export).jpg}}
+\includegraphics[height=0.84\textheight,width=\textwidth,keepaspectratio]{\detokenize{images-progress/System Sequence Diagram — การดูตัวอย่างและส่งออกไฟล์ (Preview & Export).jpg}}
 \caption{System Sequence Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}
 \label{fig:ssd-preview-export}
 \figuredescription{fig:ssd-preview-export}{แสดงลำดับการเปิดตัวอย่าง การยืนยันส่งออก การเรนเดอร์ไฟล์ การรวมเสียงวิดีโอ การอัปโหลด Cloudinary และการส่งคืนลิงก์ดาวน์โหลด}
@@ -446,3 +439,5 @@ Cloudinary & จัดเก็บผลลัพธ์บนคลาวด์�
 \end{enumerate}
 
 ผลจากเอกสารอ้างอิงหรือกราฟการฝึกโมเดลจะรายงานแยกจากผลทดลองของโครงงาน และจะไม่ใช้ความเร็วการตรวจจับเพียงขั้นตอนเดียวแทนความเร็วของระบบทั้งหมด
+
+\endgroup

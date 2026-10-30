@@ -1,0 +1,37 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1}{\ignorespaces ตัวอย่างคุณลักษณะ Haar แบบขอบ แบบเส้น และแบบสี่สี่เหลี่ยมที่ใช้ในตัวจำแนกแบบ Cascade}}{8}{figure.caption.6}%
+\contentsline {figure}{\numberline {2}{\ignorespaces ตัวอย่างใบหน้าไอเกนจากกระบวนการ PCA}}{9}{figure.caption.7}%
+\contentsline {figure}{\numberline {3}{\ignorespaces ตัวอย่างใบหน้า Fisherfaces จากกระบวนการ LDA}}{10}{figure.caption.8}%
+\contentsline {figure}{\numberline {4}{\ignorespaces การเปรียบเทียบจุดสำคัญที่กำหนดด้วยมือและตรวจจับอัตโนมัติด้วย Gabor-EBGM และ HOG-EBGM}}{10}{figure.caption.9}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5}{\ignorespaces สถาปัตยกรรมของระบบ Blur System}}{16}{figure.caption.11}%
+\contentsline {figure}{\numberline {6}{\ignorespaces ผังงานลำดับการประมวลผลภาพและวิดีโอ}}{16}{figure.caption.12}%
+\contentsline {figure}{\numberline {7}{\ignorespaces หน้าจอจริงสำหรับตรวจจับและเลือกบุคคลในกระบวนการปกปิด}}{17}{figure.caption.13}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Swimlane Diagram การตรวจจับ ติดตาม และปกปิดบุคคลแบบเวลาจริง}}{18}{figure.caption.14}%
+\contentsline {figure}{\numberline {9}{\ignorespaces สถาปัตยกรรมการประมวลผล Livestream แบบเวลาจริง}}{18}{figure.caption.15}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Activity Diagram การเลือกและปกปิดบุคคลใน Livestream}}{19}{figure.caption.16}%
+\contentsline {figure}{\numberline {11}{\ignorespaces System Sequence Diagram การตรวจจับและปกปิดบุคคลแบบ Livestream}}{19}{figure.caption.17}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Activity Diagram การอัปโหลดสื่อเข้าสู่ระบบ}}{20}{figure.caption.18}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Activity Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}}{21}{figure.caption.19}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Activity Diagram การตรวจจับและเลือกบุคคลที่ต้องการปกปิด}}{22}{figure.caption.20}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Activity Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}}{23}{figure.caption.21}%
+\contentsline {figure}{\numberline {16}{\ignorespaces Activity Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}}{24}{figure.caption.22}%
+\contentsline {figure}{\numberline {17}{\ignorespaces Activity Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}}{25}{figure.caption.23}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Use Case Diagram ภาพรวมการใช้งานระบบ Blur System}}{26}{figure.caption.24}%
+\contentsline {figure}{\numberline {19}{\ignorespaces System Sequence Diagram การอัปโหลดสื่อเข้าสู่ระบบ}}{27}{figure.caption.25}%
+\contentsline {figure}{\numberline {20}{\ignorespaces System Sequence Diagram การปกปิดใบหน้าอัตโนมัติด้วย AI}}{28}{figure.caption.26}%
+\contentsline {figure}{\numberline {21}{\ignorespaces System Sequence Diagram การตรวจจับและจัดกลุ่มใบหน้า}}{29}{figure.caption.27}%
+\contentsline {figure}{\numberline {22}{\ignorespaces System Sequence Diagram การเลือกบุคคลและการปกปิดแบบรายบุคคล}}{30}{figure.caption.28}%
+\contentsline {figure}{\numberline {23}{\ignorespaces System Sequence Diagram การควบคุมการปกปิดวิดีโอด้วยตนเอง}}{31}{figure.caption.29}%
+\contentsline {figure}{\numberline {24}{\ignorespaces System Sequence Diagram การปกปิดข้อมูลในภาพนิ่งด้วยตนเอง}}{32}{figure.caption.30}%
+\contentsline {figure}{\numberline {25}{\ignorespaces System Sequence Diagram การดูตัวอย่างและส่งออกไฟล์ผลลัพธ์}}{33}{figure.caption.31}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {26}{\ignorespaces หน้าจอหลักและส่วนอัปโหลดไฟล์}}{39}{figure.caption.34}%
+\contentsline {figure}{\numberline {27}{\ignorespaces หน้าจอเลือกเครื่องมือและตั้งค่าการประมวลผล}}{39}{figure.caption.35}%
+\contentsline {figure}{\numberline {28}{\ignorespaces หน้าจอการตรวจจับและเลือกบุคคลที่ต้องการปกปิด}}{40}{figure.caption.36}%
+\contentsline {figure}{\numberline {29}{\ignorespaces หน้าจอรายการคีย์เฟรมและช่วงเวลาที่ตรวจพบบุคคล}}{40}{figure.caption.37}%
+\contentsline {figure}{\numberline {30}{\ignorespaces หน้าจอควบคุมและกำหนดพื้นที่ปกปิดด้วยตนเอง Manual Control}}{41}{figure.caption.38}%
+\contentsline {figure}{\numberline {31}{\ignorespaces หน้าจอการทำงานของโหมด AI Auto-Blur}}{41}{figure.caption.39}%
+\contentsline {figure}{\numberline {32}{\ignorespaces หน้าจอตรวจสอบผลลัพธ์หลังประมวลผลก่อนส่งออกไฟล์}}{42}{figure.caption.40}%
+\addvspace {10\p@ }

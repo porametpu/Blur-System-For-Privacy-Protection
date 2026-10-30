@@ -66,12 +66,18 @@
   \end{minipage}%
 }
 
-% แหล่งที่มาของภาพ แยกระหว่างภาพจากภายนอกและภาพที่ผู้จัดทำสร้างขึ้นเอง
-\newcommand{\figuresource}[1]{%
-  \par\vspace{\baselineskip}
-  \begin{minipage}{\textwidth}%
-    \centering\small\textbf{ที่มา:} #1
-  \end{minipage}%
+% กรอบภาพหน้าจอคงขนาดรวมตามความกว้างที่ระบุ รวมเส้นกรอบด้วย
+\newcommand{\reportscreenshot}[2][0.86\textwidth]{%
+  \begingroup
+  \setlength{\fboxsep}{0pt}%
+  \setlength{\fboxrule}{0.4pt}%
+  \fbox{\includegraphics[width=\dimexpr#1-2\fboxrule\relax]{#2}}%
+  \endgroup
+}
+
+% คำอธิบายก่อนภาพแยกจากตัวภาพ เพื่อใช้พื้นที่ท้ายหน้าก่อนหน้าได้
+\newcommand{\figureintroduction}[2]{%
+  \par\noindent จากภาพที่ \ref{#1} #2\par
 }
 
 \begin{document}

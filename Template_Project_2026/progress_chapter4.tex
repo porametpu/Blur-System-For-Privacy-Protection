@@ -52,11 +52,16 @@ FR-14 & ระบบแยกภาพต้นฉบับจาก Canvas ท�
 
 ฐานข้อมูลของระบบแบ่งข้อมูลเป็นสามกลุ่ม ได้แก่ ข้อมูลสื่อ ผลการวิเคราะห์ใบหน้า และการตั้งค่าปกปิด ตารางที่ \ref{tab:data-model} สรุป entity สำคัญที่กำหนดด้วย SQLAlchemy
 
+% จัดตารางให้ต่อจากหัวข้อโดยคงขนาดตัวอักษรเดิม
+\begingroup
+\setlength{\intextsep}{0.4\baselineskip}
+\renewcommand{\arraystretch}{1.1}
+\captionsetup[table]{skip=0.5\baselineskip}
 \begin{table}[H]
 \centering
 \caption{โครงสร้างข้อมูลหลักของระบบ}
 \label{tab:data-model}
-\begin{tabular}{|p{0.26\textwidth}|p{0.28\textwidth}|p{0.31\textwidth}|}
+\begin{tabular}{|p{0.26\textwidth}|p{0.30\textwidth}|p{0.33\textwidth}|}
 \hline
 \textbf{ตาราง} & \textbf{ข้อมูลสำคัญ} & \textbf{บทบาท} \\
 \hline
@@ -76,8 +81,11 @@ manual\_blur\_boxes & พิกัด ขนาด เฟรมเริ่ม�
 \hline
 \end{tabular}
 \end{table}
+\endgroup
 
-ส่วนหลัง (backend) แยกความรับผิดชอบเป็นบริการตรวจจับใบหน้า บริการรู้จำใบหน้า บริการติดตามวัตถุ และบริการสร้างผลลัพธ์ การแยกส่วนดังกล่าวช่วยให้เปลี่ยนแบบจำลองหรือปรับวิธีปกปิดได้ แบ่งเป็นคอมโพเนนต์สำหรับอัปโหลดสื่อ เลือกบุคคล แสดง Timeline ควบคุมการปกปิดด้วยตนเอง และส่งออกผลลัพธ์
+\begin{samepage}
+ส่วนหลัง (backend) แยกความรับผิดชอบเป็นบริการตรวจจับใบหน้า บริการรู้จำใบหน้า บริการติดตามวัตถุ และบริการสร้างผลลัพธ์ การแยกส่วนดังกล่าวช่วยให้เปลี่ยนแบบจำลองหรือปรับวิธีปกปิดได้ แบ่งเป็นคอมโพเนนต์สำหรับอัปโหลดสื่อ เลือกบุคคล แสดง Timeline ควบคุมการปกปิดด้วยตนเอง และส่งออกผลลัพธ์\par
+\end{samepage}
 
 \section{การออกแบบส่วนติดต่อผู้ใช้}
 
@@ -93,7 +101,7 @@ manual\_blur\_boxes & พิกัด ขนาด เฟรมเริ่ม�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.86\textwidth]{\detokenize{images-progress/ภาพ demo หน้าแรก (Home).jpg}}
+\reportscreenshot{\detokenize{images-progress/ภาพ demo หน้าแรก (Home).jpg}}
 \caption{หน้าจอหลักและส่วนอัปโหลดไฟล์}
 \label{fig:demo-home}
 \figuredescription{fig:demo-home}{เป็นหน้าจอเริ่มต้นสำหรับเลือกหรือลากไฟล์ภาพและวิดีโอเข้าสู่พื้นที่อัปโหลดของระบบ}
@@ -105,7 +113,7 @@ manual\_blur\_boxes & พิกัด ขนาด เฟรมเริ่ม�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.86\textwidth]{\detokenize{images-progress/ภาพ demo หน้าการตั้งค่าการประมวลผล(Tools).jpg}}
+\reportscreenshot{\detokenize{images-progress/ภาพ demo หน้าการตั้งค่าการประมวลผล(Tools).jpg}}
 \caption{หน้าจอเลือกเครื่องมือและตั้งค่าการประมวลผล}
 \label{fig:demo-tools}
 \figuredescription{fig:demo-tools}{แสดงหน้าจอเลือก AI Auto-Blur, Detect \& Select หรือ Manual Control พร้อมกำหนดรูปแบบและระดับความเข้มของการปกปิด}
@@ -117,7 +125,7 @@ manual\_blur\_boxes & พิกัด ขนาด เฟรมเริ่ม�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.86\textwidth]{\detokenize{images-progress/ภาพ demo หน้าเมนู Detect&Select .jpg}}
+\reportscreenshot{\detokenize{images-progress/ภาพ demo หน้าเมนู Detect&Select .jpg}}
 \caption{หน้าจอการตรวจจับและเลือกบุคคลที่ต้องการปกปิด}
 \label{fig:demo-detect-select}
 \figuredescription{fig:demo-detect-select}{แสดงผลการตรวจจับเป็น Face Map เพื่อให้ผู้ใช้ตรวจสอบบุคคลที่พบ เลือกบุคคลที่ต้องการปกปิด และกำหนดรูปแบบการปกปิด}
@@ -129,7 +137,7 @@ manual\_blur\_boxes & พิกัด ขนาด เฟรมเริ่ม�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.86\textwidth]{\detokenize{images-progress/ภาพ demo หน้าจอแสดงจำนวน Keyframes.jpg}}
+\reportscreenshot{\detokenize{images-progress/ภาพ demo หน้าจอแสดงจำนวน Keyframes.jpg}}
 \caption{หน้าจอรายการคีย์เฟรมและช่วงเวลาที่ตรวจพบบุคคล}
 \label{fig:demo-timeline}
 \figuredescription{fig:demo-timeline}{แสดงรายการคีย์เฟรม หมายเลขเฟรม และเวลาที่ตรวจพบบุคคล เพื่อให้ผู้ใช้เลือกตรวจสอบช่วงสำคัญของวิดีโอได้สะดวก}
@@ -141,10 +149,10 @@ manual\_blur\_boxes & พิกัด ขนาด เฟรมเริ่ม�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.86\textwidth]{\detokenize{images-progress/ภาพ demo เมนู Manual Control.jpg}}
+\reportscreenshot{\detokenize{images-progress/ภาพ demo เมนู Manual Control.jpg}}
 \caption{หน้าจอควบคุมและกำหนดพื้นที่ปกปิดด้วยตนเอง Manual Control}
 \label{fig:demo-manual-control}
-\figuredescription{fig:demo-manual-control}{ภาพตัวอย่างหน้า Manual Control สำหรับวาดกรอบครอบบริเวณที่ต้องการปกปิด ปรับขนาดกรอบ และกำหนดให้กรอบติดตามวัตถุในวิดีโอ}
+\figuredescription{fig:demo-manual-control}{แสดงหน้า Manual Control พร้อมพื้นที่ภาพสำหรับวาดกรอบปกปิด ตัวเลือก Track Objects และปุ่ม Save \& Preview สำหรับบันทึกกรอบและตรวจสอบตัวอย่าง}
 \end{figure}
 
 % ==================================================
@@ -153,10 +161,10 @@ manual\_blur\_boxes & พิกัด ขนาด เฟรมเริ่ม�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.86\textwidth]{\detokenize{images-progress/PreviewAI-AutoBlur.jpg}}
-\caption{หน้าจอการทำงานของโหมด AI Auto-Blur}
+\reportscreenshot{\detokenize{images-progress/PreviewAI-AutoBlur.jpg}}
+\caption{หน้าจอแสดงความคืบหน้าการประมวลผล AI Auto-Blur}
 \label{fig:demo-auto-blur}
-\figuredescription{fig:demo-auto-blur}{ภาพตัวอย่างการทำงานของโหมด AI Auto-Blur ซึ่งตรวจจับและปกปิดใบหน้าโดยอัตโนมัติ}
+\figuredescription{fig:demo-auto-blur}{แสดงหน้าจอ AI Auto-Blur in Progress พร้อมแถบและร้อยละความคืบหน้า ขณะระบบวิเคราะห์เฟรม ตรวจจับใบหน้า และเตรียมผลลัพธ์สำหรับตรวจสอบในขั้นตอนถัดไป}
 \end{figure}
 
 % ==================================================
@@ -165,7 +173,7 @@ manual\_blur\_boxes & พิกัด ขนาด เฟรมเริ่ม�
 % ==================================================
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.86\textwidth]{\detokenize{images-progress/ภาพ หน้า Preview Result.jpg}}
+\reportscreenshot{\detokenize{images-progress/ภาพ หน้า Preview Result.jpg}}
 \caption{หน้าจอตรวจสอบผลลัพธ์หลังประมวลผลก่อนส่งออกไฟล์}
 \label{fig:demo-preview}
 \figuredescription{fig:demo-preview}{เป็นหน้าจอตรวจสอบผลหลังประมวลผล ผู้ใช้สามารถเล่นวิดีโอตัวอย่างเพื่อยืนยันว่าพื้นที่เป้าหมายถูกปกปิดครบถ้วนก่อนส่งออกไฟล์}
@@ -179,14 +187,20 @@ manual\_blur\_boxes & พิกัด ขนาด เฟรมเริ่ม�
 
 การแสดงผลแยกภาพต้นฉบับออกจากภาพที่เรนเดอร์บน Canvas เพื่อป้องกันการนำภาพที่เบลอแล้วกลับมาเบลอซ้ำ ส่วนการติดตามใช้ Person ID จาก session ร่วมกับ IoU และการกรองตำแหน่ง ทำให้บุคคลที่ออกจากเฟรมชั่วคราวสามารถกลับมาเป็นบุคคลเดิมได้โดยไม่ต้องเลือกใหม่ แผนภาพที่เกี่ยวข้องแสดงในภาพที่ \ref{fig:live-swimlane}, \ref{fig:live-architecture}, \ref{fig:live-activity} และ \ref{fig:live-sequence}
 
-\clearpage
 \section{การพัฒนาและการปรับปรุงจากภาคการศึกษาก่อนหน้า}
 
 ตารางที่ \ref{tab:progress-update} แสดงความก้าวหน้าเปรียบเทียบกับสถานะในรายงานเดิม
 
+% ใช้ความกว้างพื้นที่พิมพ์เพื่อลดการตัดบรรทัด โดยคงขนาดฟอนต์
+\begingroup
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\LTpre}{0.4\baselineskip}
+\setlength{\LTpost}{0.4\baselineskip}
+\captionsetup[table]{skip=0.5\baselineskip}
 \small
 \setlength{\LTcapwidth}{\textwidth}
-\begin{longtable}{|p{0.29\textwidth}|p{0.25\textwidth}|p{0.31\textwidth}|}
+\begin{longtable}{|p{0.29\textwidth}|p{0.25\textwidth}|p{0.38\textwidth}|}
 \caption{ความก้าวหน้าของระบบในรอบปัจจุบัน}
 \label{tab:progress-update}\\
 \hline
@@ -215,6 +229,7 @@ Preview และ Export & ระบุเป็นหน้าผลลัพ�
 การประเมินเชิงปริมาณ & อยู่ระหว่างพัฒนา & ยังต้องเก็บผลการประเมินประสิทธิภาพและความแม่นยำเพิ่มเติม \\
 \hline
 \end{longtable}
+\endgroup
 
 \subsection{การตรวจจับและสร้าง Face Map}
 
@@ -238,12 +253,12 @@ Manual Control แสดงภาพตัวอย่างให้ผู้�
 
 \section{ผลเปรียบเทียบ}
 
-ส่วนนี้แยกผลการทดสอบบนชุดข้อมูล WIDER FACE ของโครงงานออกจากผลอ้างอิงของแบบจำลองตระกูล YOLO บนชุดข้อมูล COCO เพื่อไม่ให้เปรียบเทียบตัวชี้วัดจากคนละชุดข้อมูลโดยตรง
+ส่วนนี้แยกผลที่ระบุว่า YOLOv26n (Ours) บนชุดข้อมูล WIDER FACE ออกจากผลอ้างอิง โดยแถว YuNet, RetinaFace และ MTCNN ในตารางที่ \ref{tab:yunet_comparison} นำมาจากงานของ Wu และคณะ \cite{wu2023yunet} ส่วนผลอ้างอิงของแบบจำลองตระกูล YOLO บนชุดข้อมูล COCO แสดงแยกในตารางที่ \ref{tab:yolo-family-reference} เพื่อไม่ให้เปรียบเทียบตัวชี้วัดจากคนละชุดข้อมูลโดยตรง
 
 \begin{table}[H]
 \centering
 \small
-\caption{ผลการเปรียบเทียบโมเดลตรวจจับใบหน้าและผลอ้างอิงแบบจำลอง YOLO ทุกขนาด}
+\caption[ผลการเปรียบเทียบโมเดลตรวจจับใบหน้าและผลอ้างอิงแบบจำลอง YOLO ทุกขนาด]{ผลการเปรียบเทียบโมเดลตรวจจับใบหน้าและผลอ้างอิงแบบจำลอง YOLO ทุกขนาด~\cite{wu2023yunet}}
 \label{tab:yunet_comparison}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{c l r r c c c c}
@@ -337,11 +352,13 @@ Manual Control แสดงภาพตัวอย่างให้ผู้�
 
 \end{table}
 
+ตาราง \ref{tab:yunet_comparison} แสดงว่าแบบจำลองแต่ละชนิดมีข้อแลกเปลี่ยนต่างกัน ที่ขนาด 320 พิกเซล YuNet ใช้เวลาน้อยกว่า YOLOv26n ขณะที่ YOLOv26n มีค่า AP ในกลุ่ม Medium และ Hard สูงกว่า การเลือกแบบจำลองจึงต้องพิจารณาทั้งความละเอียด ความแม่นยำ และเวลา โดยไม่สรุปว่าแบบจำลองหนึ่งดีกว่าทุกเงื่อนไข ทั้งนี้ ควรแนบรายละเอียดชุดทดสอบ น้ำหนักแบบจำลอง และฮาร์ดแวร์ของผลที่ระบุว่า Ours ก่อนใช้ยืนยันประสิทธิภาพของระบบ
+
 \clearpage
 \small
 \setlength{\LTcapwidth}{\textwidth}
 \begin{longtable}{c c c r r r r}
-\caption{ผลแบบจำลอง YOLO บน COCO ที่ความละเอียด 640 พิกเซล}
+\caption[ผลแบบจำลอง YOLO บน COCO ที่ความละเอียด 640 พิกเซล]{ผลแบบจำลอง YOLO บน COCO ที่ความละเอียด 640 พิกเซล~\cite{ultralytics2023yolov8,ultralytics2024yolo11,ultralytics2026yolo26docs}}
 \label{tab:yolo-family-reference}\\
 \toprule
 \textbf{Input size} & \textbf{Family} & \textbf{Size} & \textbf{mAP$_{50:95}$} & \textbf{CPU ONNX (ms)} & \textbf{Params (M)} & \textbf{FLOPs (B)} \\
@@ -366,6 +383,6 @@ Manual Control แสดงภาพตัวอย่างให้ผู้�
 \bottomrule
 \end{longtable}
 
-ตาราง \ref{tab:yunet_comparison} แสดงว่าแบบจำลองแต่ละชนิดมีข้อแลกเปลี่ยนต่างกัน ที่ขนาด 320 พิกเซล YuNet ใช้เวลาน้อยกว่า YOLOv26n ขณะที่ YOLOv26n มีค่า AP ในกลุ่ม Medium และ Hard สูงกว่า การเลือกแบบจำลองจึงต้องพิจารณาทั้งความละเอียด ความแม่นยำ และเวลา โดยไม่สรุปว่าแบบจำลองหนึ่งดีกว่าทุกเงื่อนไข ทั้งนี้ ควรแนบรายละเอียดชุดทดสอบ น้ำหนักแบบจำลอง และฮาร์ดแวร์ของผลที่ระบุว่า Ours ก่อนใช้ยืนยันประสิทธิภาพของระบบ
+
 
 ผลลัพธ์ตามตาราง \ref{tab:yolo-family-reference} เป็นผลอ้างอิงจากเอกสารของ Ultralytics \cite{ultralytics2023yolov8,ultralytics2024yolo11,ultralytics2026yolo26docs} ใช้เพื่อแสดงแนวโน้มของแต่ละขนาดเท่านั้น ค่า COCO mAP ไม่สามารถนำไปแทนค่า AP ของงาน Face Detection โดยตรง

@@ -45,7 +45,7 @@ SCRFD มีหลายระดับตั้งแต่ 0.5 GF ถึง 34
 \begin{table}[H]
 \centering
 \small
-\caption{ผลเปรียบเทียบ RetinaFace และ SCRFD ภายใต้โปรโตคอลเดียวกัน}
+\caption[ผลเปรียบเทียบ RetinaFace และ SCRFD ภายใต้โปรโตคอลเดียวกัน]{ผลเปรียบเทียบ RetinaFace และ SCRFD ภายใต้โปรโตคอลเดียวกัน~\cite{guo2021scrfd}}
 \label{tab:face-detector-fair-benchmark}
 \begin{tabular}{|p{0.22\textwidth}|p{0.10\textwidth}|p{0.10\textwidth}|p{0.10\textwidth}|p{0.13\textwidth}|p{0.15\textwidth}|}
 \hline
@@ -66,20 +66,19 @@ SCRFD-0.5GF & 90.57 & 88.12 & 68.51 & 3.6 & 0.57 \\
 
 ผลดังกล่าวสนับสนุนว่า SCRFD มีจุดเด่นด้านอัตราแลกเปลี่ยนระหว่างความแม่นยำและความเร็วภายใต้โปรโตคอลนี้ โดยเฉพาะ WIDER FACE Hard ซึ่งมีใบหน้าเล็กจำนวนมาก อย่างไรก็ตาม ตารางนี้ไม่รวม YOLO26 เพราะยังไม่มีผล YOLO26-Face จากแหล่งอ้างอิงหลักภายใต้โปรโตคอลเดียวกัน การสรุปว่า SCRFD หรือ RetinaFace แม่นยำกว่า YOLO26 สำหรับระบบนี้จึงยังทำไม่ได้จากเอกสารเพียงอย่างเดียว
 
-\clearpage
 \subsubsection{ตารางเปรียบเทียบเชิงคุณภาพ}
 
 ตารางที่ \ref{tab:face-detector-comparison} สังเคราะห์สถาปัตยกรรมและแนวทางนำไปใช้ของ YOLO26 จากงานของ Jocher และคณะและเอกสาร Ultralytics \cite{jocher2026yolo26,ultralytics2026yolo26docs} ส่วน RetinaFace อ้างอิงงานของ Deng และคณะ \cite{deng2020retinaface} และ SCRFD อ้างอิงงานของ Guo และคณะ \cite{guo2021scrfd} โดยตัวเลข RetinaFace และ SCRFD ภายใต้โปรโตคอล VGA มาจากการเปรียบเทียบในงาน SCRFD ข้อสรุปด้านความเหมาะสมกับโครงงานเป็นการวิเคราะห์จากขอบเขตและกระบวนการทำงานของระบบ ไม่ใช่ผลทดลองเปรียบเทียบของโครงงาน
 
 {\small
 \begin{longtable}{|>{\raggedright\arraybackslash}p{0.17\textwidth}|>{\raggedright\arraybackslash}p{0.22\textwidth}|>{\raggedright\arraybackslash}p{0.22\textwidth}|>{\raggedright\arraybackslash}p{0.22\textwidth}|}
-\caption{การเปรียบเทียบ YOLO26, RetinaFace และ SCRFD สำหรับงานปกปิดใบหน้า}
+\caption[การเปรียบเทียบ YOLO26, RetinaFace และ SCRFD สำหรับงานปกปิดใบหน้า]{การเปรียบเทียบ YOLO26, RetinaFace และ SCRFD สำหรับงานปกปิดใบหน้า~\cite{jocher2026yolo26,ultralytics2026yolo26docs,deng2020retinaface,guo2021scrfd}}
 \label{tab:face-detector-comparison}\\
 \hline
 \textbf{ประเด็น} & \textbf{YOLO26} & \textbf{RetinaFace} & \textbf{SCRFD} \\
 \hline
 \endfirsthead
-\caption[]{การเปรียบเทียบ YOLO26, RetinaFace และ SCRFD สำหรับงานปกปิดใบหน้า (ต่อ)}\\
+\caption[]{การเปรียบเทียบ YOLO26, RetinaFace และ SCRFD สำหรับงานปกปิดใบหน้า (ต่อ)~\cite{jocher2026yolo26,ultralytics2026yolo26docs,deng2020retinaface,guo2021scrfd}}\\
 \hline
 \textbf{ประเด็น} & \textbf{YOLO26} & \textbf{RetinaFace} & \textbf{SCRFD} \\
 \hline
@@ -128,9 +127,8 @@ Haar Cascade เป็นวิธีตรวจจับวัตถุแบ�
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.64\textwidth]{images-progress/Haar feature.jpg}
-\caption{ตัวอย่างคุณลักษณะ Haar แบบขอบ แบบเส้น และแบบสี่สี่เหลี่ยมที่ใช้ในตัวจำแนกแบบ Cascade}
+\caption[ตัวอย่างคุณลักษณะ Haar แบบขอบ แบบเส้น และแบบสี่สี่เหลี่ยมที่ใช้ในตัวจำแนกแบบ Cascade]{ตัวอย่างคุณลักษณะ Haar แบบขอบ แบบเส้น และแบบสี่สี่เหลี่ยมที่ใช้ในตัวจำแนกแบบ Cascade~\cite{opencv_haar_features}}
 \label{fig:haar-features}
-\figuresource{OpenCV \cite{opencv_haar_features}}
 \figuredescription{fig:haar-features}{พื้นที่สีขาวและสีดำแทนบริเวณที่นำผลรวมค่าความเข้มของพิกเซลมาเปรียบเทียบ ภาพแสดงคุณลักษณะสามกลุ่ม ได้แก่ คุณลักษณะแบบขอบ (Edge Features) แบบเส้น (Line Features) และแบบสี่สี่เหลี่ยม (Four-rectangle Features) ซึ่งใช้ตรวจหารูปแบบความสว่างและความมืดที่สัมพันธ์กับส่วนประกอบของใบหน้า}
 \end{figure}
 
@@ -166,9 +164,8 @@ x_i-\psi \approx \sum_{j=1}^{K}w_j u_j,
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.64\textwidth]{images-progress/Face Recognition.jpg}
-\caption{ตัวอย่างใบหน้าไอเกนจากกระบวนการ PCA}
+\caption[ตัวอย่างใบหน้าไอเกนจากกระบวนการ PCA]{ตัวอย่างใบหน้าไอเกนจากกระบวนการ PCA~\cite{geeksforgeeks2021eigenfaces}}
 \label{fig:pca-eigenfaces}
-\figuresource{GeeksforGeeks \cite{geeksforgeeks2021eigenfaces}}
 \figuredescription{fig:pca-eigenfaces}{ภาพแสดงใบหน้าไอเกนจำนวน 12 องค์ประกอบ โดยแต่ละองค์ประกอบแทนทิศทางความแปรปรวนหลักของข้อมูลใบหน้า เมื่อนำองค์ประกอบเหล่านี้มารวมกันด้วยค่าน้ำหนักที่เหมาะสมจะสามารถประมาณภาพใบหน้าในปริภูมิที่มีมิติลดลงได้}
 \end{figure}
 
@@ -184,9 +181,8 @@ Linear Discriminant Analysis (LDA) เลือกทิศทางฉายข
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.64\textwidth]{images-progress/Fisherfaces.jpg}
-\caption{ตัวอย่างใบหน้า Fisherfaces จากกระบวนการ LDA}
+\caption[ตัวอย่างใบหน้า Fisherfaces จากกระบวนการ LDA]{ตัวอย่างใบหน้า Fisherfaces จากกระบวนการ LDA~\cite{scholarpedia_fisherfaces}}
 \label{fig:lda-fisherfaces}
-\figuresource{Scholarpedia \cite{scholarpedia_fisherfaces}}
 \figuredescription{fig:lda-fisherfaces}{ภาพแสดงตัวแทน Fisherfaces ที่ได้จากการฉายข้อมูลด้วย LDA ซึ่งมุ่งเน้นลักษณะที่ช่วยเพิ่มความแตกต่างระหว่างกลุ่มบุคคลและลดความแปรปรวนของตัวอย่างภายในบุคคลเดียวกัน}
 \end{figure}
 
@@ -202,9 +198,8 @@ Elastic Bunch Graph Matching (EBGM) แทนใบหน้าเป็นก�
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.64\textwidth]{images-progress/EBGM.jpg}
-\caption{การเปรียบเทียบจุดสำคัญที่กำหนดด้วยมือและตรวจจับอัตโนมัติด้วย Gabor-EBGM และ HOG-EBGM}
+\caption[การเปรียบเทียบจุดสำคัญที่กำหนดด้วยมือและตรวจจับอัตโนมัติด้วย Gabor-EBGM และ HOG-EBGM]{การเปรียบเทียบจุดสำคัญที่กำหนดด้วยมือและตรวจจับอัตโนมัติด้วย Gabor-EBGM และ HOG-EBGM~\cite{albiol2008hogebgm}}
 \label{fig:ebgm-landmarks}
-\figuresource{Albiol และคณะ \cite{albiol2008hogebgm}}
 \figuredescription{fig:ebgm-landmarks}{วงกลมสีเขียวแสดงจุดสำคัญที่กำหนดด้วยมือ ส่วนสัญลักษณ์ดาวสีแดงแสดงจุดที่ตรวจจับโดยอัตโนมัติ ภาพด้านซ้ายเป็นผลของ Gabor-EBGM และภาพด้านขวาเป็นผลของ HOG-EBGM โดยเส้นเชื่อมระหว่างจุดแสดงโครงสร้างเชิงเรขาคณิตที่ใช้ประกอบการจับคู่ใบหน้า}
 \end{figure}
 
